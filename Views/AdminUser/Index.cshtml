@@ -1,0 +1,848 @@
+﻿@model IEnumerable<TravelAI.Models.User>
+
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+<div class="admin-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div>
+            <h1>Quản lý người dùng</h1>
+            <p>Quản lý tài khoản, quyền truy cập và trạng thái người dùng.</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="btn-back">
+            ← Dashboard
+        </a>
+    </div>
+
+    <!-- THỐNG KÊ -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div>
+                <span>Tổng người dùng</span>
+                <strong>@ViewBag.TotalUsers</strong>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🛡️</div>
+            <div>
+                <span>Quản trị viên</span>
+                <strong>@ViewBag.TotalAdmins</strong>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">👤</div>
+            <div>
+                <span>Khách hàng</span>
+                <strong>@ViewBag.TotalCustomers</strong>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div>
+                <span>Đang hoạt động</span>
+                <strong>@ViewBag.ActiveUsers</strong>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🔒</div>
+            <div>
+                <span>Bị khóa</span>
+                <strong>@ViewBag.LockedUsers</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- THÔNG BÁO -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            ✓ @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-error">
+            ⚠ @TempData["Error"]
+        </div>
+    }
+
+    <!-- BỘ LỌC -->
+    <div class="filter-card">
+
+        <form asp-action="Index"
+              asp-controller="AdminUser"
+              method="get">
+
+            <div class="filter-grid">
+
+                <div class="form-group search-group">
+                    <label>Tìm kiếm</label>
+
+                    <input type="text"
+                           name="searchString"
+                           value="@ViewBag.SearchString"
+                           placeholder="Nhập tên hoặc email..." />
+                </div>
+
+                <div class="form-group">
+                    <label>Quyền</label>
+
+                    <select name="role">
+                        <option value="">Tất cả quyền</option>
+
+                        @if (ViewBag.Role == "Admin")
+                        {
+                            <option value="Admin" selected>
+                                Admin
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Admin">
+                                Admin
+                            </option>
+                        }
+
+                        @if (ViewBag.Role == "Customer")
+                        {
+                            <option value="Customer" selected>
+                                Customer
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Customer">
+                                Customer
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Trạng thái</label>
+
+                    <select name="status">
+                        <option value="">Tất cả trạng thái</option>
+
+                        @if (ViewBag.Status == "Active")
+                        {
+                            <option value="Active" selected>
+                                Đang hoạt động
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Active">
+                                Đang hoạt động
+                            </option>
+                        }
+
+                        @if (ViewBag.Status == "Locked")
+                        {
+                            <option value="Locked" selected>
+                                Đã khóa
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Locked">
+                                Đã khóa
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit"
+                            class="btn-search">
+                        🔍 Tìm kiếm
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn-reset">
+                        ↻ Đặt lại
+                    </a>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- BẢNG USER -->
+    <div class="table-card">
+
+        <div class="table-header">
+            <div>
+                <h2>Danh sách người dùng</h2>
+                <span>
+                    Hiển thị @Model.Count() tài khoản
+                </span>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Người dùng</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Quyền</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày đăng ký</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8"
+                                class="empty-row">
+                                Không tìm thấy người dùng nào.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        var index = 1;
+
+                        foreach (var user in Model)
+                        {
+                            <tr>
+
+                                <!-- STT -->
+                                <td>
+                                    <strong>@index</strong>
+                                </td>
+
+                                <!-- USER -->
+                                <td>
+                                    <div class="user-info">
+
+                                        @if (!string.IsNullOrWhiteSpace(user.Avatar))
+                                        {
+                                            <img src="@user.Avatar"
+                                                 alt="@user.FullName"
+                                                 class="avatar" />
+                                        }
+                                        else
+                                        {
+                                            <div class="avatar avatar-default">
+                                                @user.FullName.Substring(
+                                                    0,
+                                                    1
+                                                ).ToUpper()
+                                            </div>
+                                        }
+
+                                        <div>
+                                            <strong>
+                                                @user.FullName
+                                            </strong>
+
+                                            <small>
+                                                ID: #@user.Id
+                                            </small>
+                                        </div>
+
+                                    </div>
+                                </td>
+
+                                <!-- EMAIL -->
+                                <td>
+                                    @user.Email
+                                </td>
+
+                                <!-- PHONE -->
+                                <td>
+                                    @if (string.IsNullOrWhiteSpace(user.Phone))
+                                    {
+                                        <span class="text-muted">
+                                            Chưa cập nhật
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        @user.Phone
+                                    }
+                                </td>
+
+                                <!-- ROLE -->
+                                <td>
+
+                                    @if (user.Role == "Admin")
+                                    {
+                                        <span class="badge badge-admin">
+                                            🛡️ Admin
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-customer">
+                                            👤 Customer
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    @if (user.Status == "Active")
+                                    {
+                                        <span class="badge badge-active">
+                                            ● Hoạt động
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-locked">
+                                            ● Đã khóa
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <!-- CREATED -->
+                                <td>
+                                    @user.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <!-- ACTION -->
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <!-- DETAILS -->
+                                        <a asp-action="Details"
+                                           asp-route-id="@user.Id"
+                                           class="action-btn detail"
+                                           title="Xem chi tiết">
+                                            👁
+                                        </a>
+
+                                        <!-- CHANGE ROLE -->
+                                        <form asp-action="ChangeRole"
+                                              method="post"
+                                              class="inline-form">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@user.Id" />
+
+                                            @if (user.Role == "Customer")
+                                            {
+                                                <input type="hidden"
+                                                       name="role"
+                                                       value="Admin" />
+
+                                                <button type="submit"
+                                                        class="action-btn role"
+                                                        title="Nâng lên Admin"
+                                                        onclick="return confirm('Bạn có chắc muốn cấp quyền Admin cho tài khoản này?');">
+                                                    🛡
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <input type="hidden"
+                                                       name="role"
+                                                       value="Customer" />
+
+                                                <button type="submit"
+                                                        class="action-btn role"
+                                                        title="Chuyển về Customer"
+                                                        onclick="return confirm('Bạn có chắc muốn chuyển tài khoản này về Customer?');">
+                                                    👤
+                                                </button>
+                                            }
+
+                                        </form>
+
+                                        <!-- LOCK / UNLOCK -->
+                                        <form asp-action="ChangeStatus"
+                                              method="post"
+                                              class="inline-form">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@user.Id" />
+
+                                            @if (user.Status == "Active")
+                                            {
+                                                <button type="submit"
+                                                        class="action-btn lock"
+                                                        title="Khóa tài khoản"
+                                                        onclick="return confirm('Bạn có chắc muốn khóa tài khoản này?');">
+                                                    🔒
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="submit"
+                                                        class="action-btn unlock"
+                                                        title="Mở khóa tài khoản"
+                                                        onclick="return confirm('Bạn có chắc muốn mở khóa tài khoản này?');">
+                                                    🔓
+                                                </button>
+                                            }
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            index++;
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .admin-page {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 30px;
+        background: #f6f8fb;
+        min-height: 100vh;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        color: #172033;
+    }
+
+    .page-header p {
+        margin: 8px 0 0;
+        color: #6b7280;
+    }
+
+    .btn-back {
+        padding: 11px 18px;
+        background: white;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .btn-back:hover {
+        background: #f3f4f6;
+    }
+
+    /* ================= STATS ================= */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid #edf0f4;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+    }
+
+    .stat-card span {
+        display: block;
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+    .stat-card strong {
+        font-size: 24px;
+        color: #111827;
+    }
+
+    /* ================= ALERT ================= */
+
+    .alert {
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .alert-success {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+    }
+
+    .alert-error {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+    }
+
+    /* ================= FILTER ================= */
+
+    .filter-card {
+        background: white;
+        padding: 22px;
+        border-radius: 14px;
+        margin-bottom: 25px;
+        border: 1px solid #edf0f4;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 15px;
+        align-items: end;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 7px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        height: 43px;
+        padding: 0 13px;
+        border: 1px solid #dfe3e8;
+        border-radius: 9px;
+        outline: none;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #2563eb;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-search,
+    .btn-reset {
+        height: 43px;
+        padding: 0 17px;
+        border-radius: 9px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .btn-search {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-search:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-reset {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    /* ================= TABLE ================= */
+
+    .table-card {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid #edf0f4;
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .table-header h2 {
+        margin: 0 0 5px;
+        font-size: 19px;
+        color: #172033;
+    }
+
+    .table-header span {
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1100px;
+    }
+
+    th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        padding: 14px;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 15px 14px;
+        border-top: 1px solid #f0f2f5;
+        color: #374151;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    tbody tr:hover {
+        background: #fafcff;
+    }
+
+    /* ================= USER ================= */
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 190px;
+    }
+
+    .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .avatar-default {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e0e7ff;
+        color: #3730a3;
+        font-weight: 700;
+        font-size: 17px;
+    }
+
+    .user-info strong {
+        display: block;
+        color: #111827;
+        margin-bottom: 3px;
+    }
+
+    .user-info small {
+        color: #9ca3af;
+    }
+
+    .text-muted {
+        color: #9ca3af;
+        font-style: italic;
+    }
+
+    /* ================= BADGES ================= */
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge-admin {
+        background: #ede9fe;
+        color: #6d28d9;
+    }
+
+    .badge-customer {
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+
+    .badge-active {
+        background: #ecfdf5;
+        color: #047857;
+    }
+
+    .badge-locked {
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    /* ================= ACTION ================= */
+
+    .action-buttons {
+        display: flex;
+        gap: 6px;
+    }
+
+    .inline-form {
+        display: inline;
+        margin: 0;
+    }
+
+    .action-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 15px;
+    }
+
+    .action-btn.detail {
+        background: #eff6ff;
+    }
+
+    .action-btn.role {
+        background: #f5f3ff;
+    }
+
+    .action-btn.lock {
+        background: #fef2f2;
+    }
+
+    .action-btn.unlock {
+        background: #ecfdf5;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-1px);
+        opacity: .8;
+    }
+
+    .empty-row {
+        text-align: center;
+        padding: 50px !important;
+        color: #9ca3af;
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    @@media (max-width: 1100px) {
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .filter-actions {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @@media (max-width: 650px) {
+
+        .admin-page {
+            padding: 15px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-actions {
+            grid-column: auto;
+        }
+    }
+
+</style>

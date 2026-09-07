@@ -15,9 +15,7 @@ namespace TravelAI.Controllers
             _context = context;
         }
 
-        // =========================
-        // DANH SÁCH USER
-        // =========================
+        // ================= DANH SÁCH USER =================
 
         public async Task<IActionResult> Index(
             string? searchString,
@@ -38,42 +36,52 @@ namespace TravelAI.Controllers
             }
 
             // Lọc Role
-            if (!string.IsNullOrWhiteSpace(role) &&
-                role != "All")
+            if (!string.IsNullOrWhiteSpace(role))
             {
                 users = users.Where(u => u.Role == role);
             }
 
             // Lọc Status
-            if (!string.IsNullOrWhiteSpace(status) &&
-                status != "All")
+            if (!string.IsNullOrWhiteSpace(status))
             {
                 users = users.Where(u => u.Status == status);
             }
 
-            var result = await users
-                .OrderByDescending(u => u.Id)
+            var userList = await users
+                .OrderByDescending(u => u.CreatedAt)
                 .ToListAsync();
 
             ViewBag.SearchString = searchString;
-            ViewBag.Role = role ?? "All";
-            ViewBag.Status = status ?? "All";
+            ViewBag.Role = role;
+            ViewBag.Status = status;
 
-            return View(result);
+            // Thống kê
+            ViewBag.TotalUsers = await _context.Users.CountAsync();
+
+            ViewBag.TotalAdmins = await _context.Users
+                .CountAsync(u => u.Role == "Admin");
+
+            ViewBag.TotalCustomers = await _context.Users
+                .CountAsync(u => u.Role == "Customer");
+
+            ViewBag.ActiveUsers = await _context.Users
+                .CountAsync(u => u.Status == "Active");
+
+            ViewBag.LockedUsers = await _context.Users
+                .CountAsync(u => u.Status == "Locked");
+
+            return View(userList);
         }
 
-        // =========================
-        // CHI TIẾT USER
-        // =========================
+        // ================= CHI TIẾT USER =================
 
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var user = await _context.Users
+                .Include(u => u.Bookings)
+                .Include(u => u.HotelBookings)
+                .Include(u => u.Reviews)
+                .Include(u => u.Favorites)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
@@ -84,9 +92,7 @@ namespace TravelAI.Controllers
             return View(user);
         }
 
-        // =========================
-        // ĐỔI ROLE
-        // =========================
+        // ================= ĐỔI QUYỀN =================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -102,33 +108,29 @@ namespace TravelAI.Controllers
                 return NotFound();
             }
 
-            var allowedRoles = new[]
-            {
-                "User",
-                "Admin"
-            };
+            // Lấy ID Admin hiện tại
+            var currentUserId = User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier);
 
-            if (!allowedRoles.Contains(role))
+            if (currentUserId != null &&
+                int.TryParse(currentUserId.Value, out int currentId))
+            {
+                // Không cho Admin tự đổi quyền của chính mình
+                if (user.Id == currentId)
+                {
+                    TempData["Error"] =
+                        "Bạn không thể tự thay đổi quyền của chính mình.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            // Chỉ cho phép 2 Role hợp lệ
+            if (role != "Admin" &&
+                role != "Customer")
             {
                 TempData["Error"] =
                     "Quyền người dùng không hợp lệ.";
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Không cho Admin tự hạ quyền chính mình
-            var currentUserId =
-                User.FindFirst(
-                    System.Security.Claims.ClaimTypes.NameIdentifier
-                )?.Value;
-
-            if (int.TryParse(currentUserId, out var currentId) &&
-                currentId == user.Id &&
-                user.Role == "Admin" &&
-                role != "Admin")
-            {
-                TempData["Error"] =
-                    "Bạn không thể tự hạ quyền Admin của chính mình.";
 
                 return RedirectToAction(nameof(Index));
             }
@@ -138,16 +140,12 @@ namespace TravelAI.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Success"] =
-                role == "Admin"
-                    ? "Đã cấp quyền Admin cho người dùng."
-                    : "Đã chuyển người dùng về quyền User.";
+                $"Đã thay đổi quyền của {user.FullName} thành {role}.";
 
             return RedirectToAction(nameof(Index));
         }
 
-        // =========================
-        // KHÓA / MỞ KHÓA USER
-        // =========================
+        // ================= KHÓA / MỞ KHÓA =================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -161,34 +159,37 @@ namespace TravelAI.Controllers
                 return NotFound();
             }
 
-            // Không cho Admin tự khóa chính mình
-            var currentUserId =
-                User.FindFirst(
-                    System.Security.Claims.ClaimTypes.NameIdentifier
-                )?.Value;
+            // Lấy ID Admin hiện tại
+            var currentUserId = User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier);
 
-            if (int.TryParse(currentUserId, out var currentId) &&
-                currentId == user.Id)
+            if (currentUserId != null &&
+                int.TryParse(currentUserId.Value, out int currentId))
             {
-                TempData["Error"] =
-                    "Bạn không thể tự khóa tài khoản của chính mình.";
+                // Không cho Admin tự khóa mình
+                if (user.Id == currentId)
+                {
+                    TempData["Error"] =
+                        "Bạn không thể tự khóa tài khoản của mình.";
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
+            // Đổi trạng thái
             if (user.Status == "Active")
             {
                 user.Status = "Locked";
 
                 TempData["Success"] =
-                    "Đã khóa tài khoản người dùng.";
+                    $"Đã khóa tài khoản {user.FullName}.";
             }
             else
             {
                 user.Status = "Active";
 
                 TempData["Success"] =
-                    "Đã mở khóa tài khoản người dùng.";
+                    $"Đã mở khóa tài khoản {user.FullName}.";
             }
 
             await _context.SaveChangesAsync();
