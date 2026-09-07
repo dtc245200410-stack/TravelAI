@@ -1,0 +1,685 @@
+﻿@model IEnumerable<TravelAI.Models.Tour>
+
+@{
+    ViewData["Title"] = "Tour du lịch";
+
+    var destinations = ViewBag.Destinations as List<TravelAI.Models.Destination>
+                        ?? new List<TravelAI.Models.Destination>();
+
+    string? searchString = ViewBag.SearchString;
+    string? selectedDestination = ViewBag.SelectedDestination;
+    string? selectedSort = ViewBag.SelectedSort;
+
+    var tourCount = ViewBag.TotalTours ?? Model?.Count() ?? 0;
+    var currentPage = ViewBag.CurrentPage ?? 1;
+    var totalPages = ViewBag.TotalPages ?? 1;
+}
+
+<div class="container py-5">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="mb-4">
+
+        <div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-end gap-3">
+
+            <div>
+
+                <div class="text-primary fw-semibold mb-2">
+
+                    <i class="bi bi-airplane-engines me-1"></i>
+
+                    KHÁM PHÁ HÀNH TRÌNH
+
+                </div>
+
+                <h1 class="fw-bold mb-2">
+                    Tour du lịch
+                </h1>
+
+                <p class="text-muted mb-0">
+                    Khám phá những hành trình hấp dẫn được TravelAI
+                    lựa chọn dành cho bạn.
+                </p>
+
+            </div>
+
+            <div class="text-muted small">
+
+                Tìm thấy
+
+                <strong class="text-dark">
+                    @tourCount
+                </strong>
+
+                tour
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= SEARCH + FILTER ================= -->
+
+    <div class="card border-0 shadow-sm rounded-4 mb-5">
+
+        <div class="card-body p-4">
+
+            <form asp-controller="Tour"
+                  asp-action="Index"
+                  method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- SEARCH -->
+
+                    <div class="col-lg-5">
+
+                        <label class="form-label fw-semibold">
+                            Tìm kiếm tour
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text bg-light border-end-0">
+
+                                <i class="bi bi-search"></i>
+
+                            </span>
+
+                            <input type="text"
+                                   name="searchString"
+                                   value="@searchString"
+                                   class="form-control border-start-0"
+                                   placeholder="Tên tour, địa điểm, điểm đến..." />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DESTINATION -->
+
+                    <div class="col-lg-3">
+
+                        <label class="form-label fw-semibold">
+                            Điểm đến
+                        </label>
+
+                        <select name="destination"
+                                class="form-select">
+
+                            @if (string.IsNullOrEmpty(selectedDestination))
+                            {
+                                <option value="" selected>
+                                    Tất cả điểm đến
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="">
+                                    Tất cả điểm đến
+                                </option>
+                            }
+
+                            @foreach (var destination in destinations)
+                            {
+                                if (selectedDestination == destination.Name)
+                                {
+                                    <option value="@destination.Name" selected>
+                                        @destination.Name
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@destination.Name">
+                                        @destination.Name
+                                    </option>
+                                }
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SORT -->
+
+                    <div class="col-lg-3">
+
+                        <label class="form-label fw-semibold">
+                            Sắp xếp
+                        </label>
+
+                        <select name="sort"
+                                class="form-select">
+
+                            @if (selectedSort == "priceAsc")
+                            {
+                                <option value="priceAsc" selected>
+                                    Giá thấp → cao
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="priceAsc">
+                                    Giá thấp → cao
+                                </option>
+                            }
+
+                            @if (selectedSort == "priceDesc")
+                            {
+                                <option value="priceDesc" selected>
+                                    Giá cao → thấp
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="priceDesc">
+                                    Giá cao → thấp
+                                </option>
+                            }
+
+                            @if (selectedSort == "rating" ||
+                                 string.IsNullOrEmpty(selectedSort))
+                            {
+                                <option value="rating" selected>
+                                    Đánh giá cao nhất
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="rating">
+                                    Đánh giá cao nhất
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SEARCH BUTTON -->
+
+                    <div class="col-lg-1">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100 rounded-3">
+
+                            <i class="bi bi-search"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= QUICK DESTINATIONS ================= -->
+    @if (destinations.Any())
+    {
+        <div class="mb-4">
+
+            <div class="d-flex align-items-center gap-2 mb-3">
+
+                <i class="bi bi-geo-alt text-primary"></i>
+
+                <span class="fw-semibold">
+                    Điểm đến nổi bật
+                </span>
+
+            </div>
+
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <!-- ALL -->
+
+                <a asp-controller="Tour"
+                   asp-action="Index"
+                   asp-route-searchString="@searchString"
+                   asp-route-sort="@selectedSort"
+                   class="btn @(string.IsNullOrEmpty(selectedDestination)
+                                                   ? "btn-primary"
+                                                   : "btn-outline-primary")
+                    rounded-pill px-3">
+
+                    Tất cả
+
+                </a>
+
+
+                <!-- DESTINATIONS -->
+                @foreach (var destination in destinations.Take(8))
+                {
+                    <a asp-controller="Tour"
+                       asp-action="Index"
+                       asp-route-searchString="@searchString"
+                       asp-route-destination="@destination.Name"
+                       asp-route-sort="@selectedSort"
+                       class="btn @(selectedDestination == destination.Name
+                                                           ? "btn-primary"
+                                                           : "btn-outline-primary")
+                        rounded-pill px-3">
+
+                        @destination.Name
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+    }
+
+
+    <!-- ================= TOUR LIST ================= -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+
+            @foreach (var tour in Model)
+            {
+                var imageUrl = string.IsNullOrWhiteSpace(tour.ImageUrl)
+                    ? "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1000&q=80"
+                    : tour.ImageUrl;
+
+                var currentPrice = tour.SalePrice ?? tour.Price;
+
+                var hasDiscount =
+                    tour.SalePrice.HasValue &&
+                    tour.SalePrice.Value < tour.Price;
+
+                var discountPercent = hasDiscount
+                    ? (int)Math.Round(
+                        (1 - tour.SalePrice!.Value / tour.Price) * 100)
+                    : 0;
+
+
+                <div class="col-md-6 col-xl-4">
+
+                    <div class="card border-0 shadow-sm
+                        rounded-4 overflow-hidden h-100 tour-card">
+
+
+                        <!-- ================= IMAGE ================= -->
+
+                        <div class="position-relative">
+
+                            <img src="@imageUrl"
+                                 alt="@tour.Name"
+                                 class="w-100"
+                                 style="height:230px; object-fit:cover;" />
+
+
+                            <!-- DISCOUNT -->
+                            @if (hasDiscount)
+                            {
+                                <span class="position-absolute top-0 start-0
+                                    badge bg-danger m-3
+                                    rounded-pill px-3 py-2">
+
+                                    -@discountPercent%
+
+                                </span>
+                            }
+
+
+                            <!-- RATING BADGE -->
+
+                            <span class="position-absolute top-0 end-0
+                                badge bg-white text-dark shadow-sm
+                                m-3 rounded-pill px-3 py-2">
+
+                                <i class="bi bi-star-fill text-warning me-1"></i>
+
+                                @tour.Rating.ToString("0.0")
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- ================= CONTENT ================= -->
+
+                        <div class="card-body p-4 d-flex flex-column">
+
+
+                            <!-- DESTINATION -->
+
+                            <div class="text-primary small fw-semibold mb-2">
+
+                                <i class="bi bi-geo-alt me-1"></i>
+
+                                @(tour.Destination?.Name ?? "Đang cập nhật")
+
+                            </div>
+
+
+                            <!-- TOUR NAME -->
+
+                            <h5 class="fw-bold mb-2">
+
+                                @tour.Name
+
+                            </h5>
+
+
+                            <!-- DESCRIPTION -->
+                            @if (!string.IsNullOrWhiteSpace(tour.Description))
+                            {
+                                var description = tour.Description;
+
+                                if (description.Length > 100)
+                                {
+                                    description =
+                                        description.Substring(0, 100) + "...";
+                                }
+
+                                <p class="text-muted small mb-3">
+
+                                    @description
+
+                                </p>
+                            }
+
+
+                            <!-- ================= INFO ================= -->
+
+                            <div class="small text-muted mb-3">
+
+
+                                <!-- DURATION -->
+
+                                <div class="mb-2">
+
+                                    <i class="bi bi-clock me-2"></i>
+
+                                    @tour.Duration
+
+                                </div>
+
+
+                                <!-- DEPARTURE -->
+
+                                <div class="mb-2">
+
+                                    <i class="bi bi-geo-alt me-2"></i>
+
+                                    Khởi hành:
+
+                                    @tour.DepartureLocation
+
+                                </div>
+
+
+                                <!-- AVAILABLE -->
+
+                                <div>
+
+                                    <i class="bi bi-people me-2"></i>
+
+                                    Còn
+
+                                    <strong class="text-dark">
+                                        @tour.AvailablePeople
+                                    </strong>
+
+                                    chỗ
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ================= RATING ================= -->
+
+                            <div class="d-flex align-items-center mb-3">
+
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Round(tour.Rating))
+                                    {
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star text-warning"></i>
+                                    }
+                                }
+
+                                <span class="small text-muted ms-2">
+
+                                    @tour.Rating.ToString("0.0")
+
+                                    (@tour.ReviewCount đánh giá)
+
+                                </span>
+
+                            </div>
+
+
+                            <!-- ================= PRICE ================= -->
+
+                            <div class="mt-auto pt-3 border-top">
+
+                                <div class="d-flex
+                                    justify-content-between
+                                    align-items-end">
+
+
+                                    <!-- PRICE -->
+
+                                    <div>
+
+                                        @if (hasDiscount)
+                                        {
+                                            <div class="text-muted small
+                                                text-decoration-line-through">
+
+                                                @tour.Price.ToString("N0") đ
+
+                                            </div>
+                                        }
+
+                                        <div class="fs-5 fw-bold text-primary">
+
+                                            @currentPrice.ToString("N0") đ
+
+                                        </div>
+
+                                        <div class="text-muted small">
+
+                                            / người
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- DETAILS -->
+
+                                    <a asp-controller="Tour"
+                                       asp-action="Details"
+                                       asp-route-id="@tour.Id"
+                                       class="btn btn-primary rounded-3 px-3">
+
+                                        Xem chi tiết
+
+                                        <i class="bi bi-arrow-right ms-1"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- ================= PAGINATION ================= -->
+        @if (totalPages > 1)
+        {
+            <div class="d-flex flex-column
+                flex-md-row
+                justify-content-between
+                align-items-center
+                gap-3 mt-5">
+
+
+                <!-- PAGE INFORMATION -->
+
+                <div class="text-muted small">
+
+                    Trang
+
+                    <strong class="text-dark">
+                        @currentPage
+                    </strong>
+
+                    /
+
+                    <strong class="text-dark">
+                        @totalPages
+                    </strong>
+
+                    ·
+
+                    <strong class="text-dark">
+                        @tourCount
+                    </strong>
+
+                    tour
+
+                </div>
+
+
+                <!-- PAGINATION -->
+
+                <nav aria-label="Phân trang tour">
+
+                    <ul class="pagination mb-0">
+
+
+                        <!-- PREVIOUS -->
+
+                        <li class="page-item
+                            @(currentPage <= 1 ? "disabled" : "")">
+
+                            <a class="page-link rounded-start-3"
+                               asp-controller="Tour"
+                               asp-action="Index"
+                               asp-route-searchString="@searchString"
+                               asp-route-destination="@selectedDestination"
+                               asp-route-sort="@selectedSort"
+                               asp-route-page="@(currentPage - 1)">
+
+                                <i class="bi bi-chevron-left"></i>
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- PAGE NUMBERS -->
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item
+                                @(i == currentPage ? "active" : "")">
+
+                                <a class="page-link"
+                                   asp-controller="Tour"
+                                   asp-action="Index"
+                                   asp-route-searchString="@searchString"
+                                   asp-route-destination="@selectedDestination"
+                                   asp-route-sort="@selectedSort"
+                                   asp-route-page="@i">
+
+                                    @i
+
+                                </a>
+
+                            </li>
+                        }
+
+
+                        <!-- NEXT -->
+
+                        <li class="page-item
+                            @(currentPage >= totalPages ? "disabled" : "")">
+
+                            <a class="page-link rounded-end-3"
+                               asp-controller="Tour"
+                               asp-action="Index"
+                               asp-route-searchString="@searchString"
+                               asp-route-destination="@selectedDestination"
+                               asp-route-sort="@selectedSort"
+                               asp-route-page="@(currentPage + 1)">
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+            </div>
+        }
+
+    }
+    else
+    {
+        <!-- ================= EMPTY ================= -->
+
+        <div class="text-center py-5">
+
+            <div class="mb-3">
+
+                <i class="bi bi-search fs-1 text-muted"></i>
+
+            </div>
+
+            <h4 class="fw-bold">
+                Không tìm thấy tour
+            </h4>
+
+            <p class="text-muted mb-4">
+
+                Hãy thử thay đổi từ khóa
+                hoặc bộ lọc tìm kiếm.
+
+            </p>
+
+            <a asp-controller="Tour"
+               asp-action="Index"
+               class="btn btn-primary rounded-3 px-4">
+
+                <i class="bi bi-arrow-counterclockwise me-1"></i>
+
+                Xóa bộ lọc
+
+            </a>
+
+        </div>
+    }
+
+</div>

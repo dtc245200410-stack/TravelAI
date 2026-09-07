@@ -1,0 +1,428 @@
+﻿@model IEnumerable<TravelAI.Models.Hotel>
+
+@{
+    ViewData["Title"] = "Khách sạn";
+
+    var cities = ViewBag.Cities as List<string> ?? new List<string>();
+    var searchString = ViewBag.SearchString as string;
+    var selectedCity = ViewBag.SelectedCity as string;
+    var selectedSort = ViewBag.SelectedSort as string;
+}
+
+<div class="container py-5">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="mb-4">
+
+        <h1 class="fw-bold mb-2">
+            Khách sạn
+        </h1>
+
+        <p class="text-muted mb-0">
+            Tìm nơi lưu trú phù hợp cho chuyến đi của bạn
+        </p>
+
+    </div>
+
+
+    <!-- ================= SEARCH & FILTER ================= -->
+
+    <div class="card border-0 shadow-sm rounded-4 mb-5">
+
+        <div class="card-body p-4">
+
+            <form asp-controller="Hotel"
+                  asp-action="Index"
+                  method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- SEARCH -->
+
+                    <div class="col-lg-5">
+
+                        <label class="form-label fw-semibold">
+                            Tìm kiếm
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+
+                            <input type="text"
+                                   name="searchString"
+                                   value="@searchString"
+                                   class="form-control"
+                                   placeholder="Tên khách sạn, địa điểm..." />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CITY -->
+
+                    <div class="col-lg-3">
+
+                        <label class="form-label fw-semibold">
+                            Địa điểm
+                        </label>
+
+                        <select name="city"
+                                class="form-select">
+
+                            <option value="">
+                                Tất cả địa điểm
+                            </option>
+
+                            @foreach (var item in cities)
+                            {
+                                <option value="@item"
+                                        selected="@(item == selectedCity)">
+                                    @item
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SORT -->
+
+                    <div class="col-lg-2">
+
+                        <label class="form-label fw-semibold">
+                            Sắp xếp
+                        </label>
+
+                        <select name="sort"
+                                class="form-select">
+
+                            <option value="">
+                                Nổi bật
+                            </option>
+
+                            <option value="rating"
+                                    selected="@(selectedSort == "rating")">
+                                Đánh giá cao
+                            </option>
+
+                            <option value="nameAsc"
+                                    selected="@(selectedSort == "nameAsc")">
+                                Tên A-Z
+                            </option>
+
+                            <option value="nameDesc"
+                                    selected="@(selectedSort == "nameDesc")">
+                                Tên Z-A
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- BUTTON -->
+
+                    <div class="col-lg-2">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+
+                            <i class="bi bi-search me-1"></i>
+                            Tìm kiếm
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= RESULT ================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h4 class="fw-bold mb-1">
+                Khách sạn nổi bật
+            </h4>
+
+            <span class="text-muted">
+                Tìm thấy @Model.Count() khách sạn
+            </span>
+
+        </div>
+
+    </div>
+
+
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+
+            @foreach (var hotel in Model)
+            {
+                var imageUrl = string.IsNullOrWhiteSpace(hotel.ImageUrl)
+                    ? "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80"
+                    : hotel.ImageUrl;
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="card hotel-card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+
+                        <!-- IMAGE -->
+
+                        <div class="position-relative">
+
+                            <img src="@imageUrl"
+                                 class="card-img-top"
+                                 alt="@hotel.Name"
+                                 style="height:240px; object-fit:cover;" />
+
+                            @if (hotel.Rating >= 4.5)
+                            {
+                                <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark rounded-pill px-3 py-2">
+                                    <i class="bi bi-star-fill"></i>
+                                    Được yêu thích
+                                </span>
+                            }
+
+                        </div>
+
+
+                        <!-- CONTENT -->
+
+                        <div class="card-body p-4 d-flex flex-column">
+
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+
+                                <h5 class="fw-bold mb-2">
+                                    @hotel.Name
+                                </h5>
+
+                            </div>
+
+
+                            <!-- RATING -->
+
+                            <div class="mb-2">
+
+                                <span class="text-warning">
+
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Round(hotel.Rating))
+                                        {
+                                            <i class="bi bi-star-fill"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star"></i>
+                                        }
+                                    }
+
+                                </span>
+
+                                <span class="fw-semibold ms-1">
+                                    @hotel.Rating.ToString("0.0")
+                                </span>
+
+                                <span class="text-muted">
+                                    (@hotel.ReviewCount đánh giá)
+                                </span>
+
+                            </div>
+
+
+                            <!-- LOCATION -->
+
+                            <div class="text-muted small mb-3">
+
+                                <i class="bi bi-geo-alt me-1"></i>
+
+                                @hotel.City, @hotel.Province
+
+                            </div>
+
+
+                            <!-- DESCRIPTION -->
+
+                            <p class="text-muted small mb-4">
+
+                                @{
+                                    var description = hotel.Description ?? "";
+
+                                    if (description.Length > 110)
+                                    {
+                                        description = description.Substring(0, 110) + "...";
+                                    }
+                                }
+
+                                @description
+
+                            </p>
+                            <!-- PRICE -->
+                            @{
+                                var minRoomPrice = hotel.Rooms?
+                                    .Where(r => r.Status == "Active" && r.AvailableQuantity > 0)
+                                    .Select(r => r.PricePerNight)
+                                    .DefaultIfEmpty(0)
+                                    .Min() ?? 0;
+                            }
+
+                            <div class="mb-3">
+
+                                @if (minRoomPrice > 0)
+                                {
+                                    <div class="d-flex align-items-baseline gap-1">
+
+                                        <span class="text-muted small">
+                                            Giá từ
+                                        </span>
+
+                                        <span class="fw-bold text-primary fs-5">
+                                            @minRoomPrice.ToString("N0") đ
+                                        </span>
+
+                                        <span class="text-muted small">
+                                            / đêm
+                                        </span>
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">
+                                        Hiện chưa có phòng trống
+                                    </span>
+                                }
+
+                            </div>
+
+
+                            <!-- BUTTON -->
+
+                            <div class="mt-auto">
+
+                                <a asp-controller="Hotel"
+                                   asp-action="Details"
+                                   asp-route-id="@hotel.Id"
+                                   class="btn btn-outline-primary w-100 rounded-3">
+
+                                    Xem chi tiết
+
+                                    <i class="bi bi-arrow-right ms-1"></i>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <!-- EMPTY -->
+
+        <div class="text-center py-5">
+
+            <div class="mb-3">
+
+                <i class="bi bi-building"
+                   style="font-size:60px; opacity:.4;"></i>
+
+            </div>
+
+            <h4 class="fw-bold">
+                Không tìm thấy khách sạn
+            </h4>
+
+            <p class="text-muted">
+                Hãy thử thay đổi từ khóa hoặc địa điểm tìm kiếm.
+            </p>
+
+            <a asp-controller="Hotel"
+               asp-action="Index"
+               class="btn btn-primary">
+
+                Xem tất cả khách sạn
+
+            </a>
+
+        </div>
+    }
+    @if (ViewBag.TotalPages > 1)
+    {
+        var currentPage = (int)ViewBag.CurrentPage;
+        var totalPages = (int)ViewBag.TotalPages;
+
+        <nav class="mt-5" aria-label="Phân trang khách sạn">
+            <ul class="pagination justify-content-center">
+
+                <!-- Trang trước -->
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-controller="Hotel"
+                       asp-action="Index"
+                       asp-route-searchString="@searchString"
+                       asp-route-city="@selectedCity"
+                       asp-route-sort="@selectedSort"
+                       asp-route-page="@(currentPage - 1)">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+
+                <!-- Các trang -->
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+
+                        <a class="page-link"
+                           asp-controller="Hotel"
+                           asp-action="Index"
+                           asp-route-searchString="@searchString"
+                           asp-route-city="@selectedCity"
+                           asp-route-sort="@selectedSort"
+                           asp-route-page="@i">
+                            @i
+                        </a>
+
+                    </li>
+                }
+
+                <!-- Trang sau -->
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-controller="Hotel"
+                       asp-action="Index"
+                       asp-route-searchString="@searchString"
+                       asp-route-city="@selectedCity"
+                       asp-route-sort="@selectedSort"
+                       asp-route-page="@(currentPage + 1)">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    }
+
+</div>

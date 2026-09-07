@@ -1,0 +1,517 @@
+﻿@using System.Globalization
+@using TravelAI.Models
+
+@{
+    ViewData["Title"] = "Đặt phòng";
+
+    var hotel = ViewBag.Hotel as Hotel;
+    var room = ViewBag.Room as Room;
+
+    var hotelImage = string.IsNullOrWhiteSpace(hotel?.ImageUrl)
+        ? "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"
+        : hotel.ImageUrl;
+
+    var roomImage = string.IsNullOrWhiteSpace(room?.ImageUrl)
+        ? hotelImage
+        : room.ImageUrl;
+
+    var pricePerNight = room?.PricePerNight ?? 0m;
+}
+
+@if (hotel != null && room != null)
+{
+    <div class="container py-5">
+
+        <!-- ================= TITLE ================= -->
+
+        <div class="mb-4">
+
+            <a asp-controller="Hotel"
+               asp-action="Details"
+               asp-route-id="@hotel.Id"
+               class="text-decoration-none text-muted">
+
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại khách sạn
+
+            </a>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- ================= LEFT ================= -->
+
+            <div class="col-lg-7">
+
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+                    <img src="@roomImage"
+                         alt="@room.RoomName"
+                         class="w-100"
+                         style="height:320px; object-fit:cover;" />
+
+                    <div class="card-body p-4">
+
+                        <div class="text-muted small mb-2">
+
+                            <i class="bi bi-building me-1"></i>
+
+                            @hotel.Name
+
+                        </div>
+
+                        <h2 class="fw-bold mb-2">
+                            @room.RoomName
+                        </h2>
+
+                        <div class="text-muted mb-3">
+
+                            <i class="bi bi-geo-alt me-1"></i>
+
+                            @hotel.City, @hotel.Province
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+
+                                <div class="bg-light rounded-3 p-3">
+
+                                    <div class="text-muted small">
+                                        Loại phòng
+                                    </div>
+
+                                    <div class="fw-semibold">
+                                        @room.RoomType
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <div class="bg-light rounded-3 p-3">
+
+                                    <div class="text-muted small">
+                                        Sức chứa
+                                    </div>
+
+                                    <div class="fw-semibold">
+                                        @room.MaxGuests khách
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-4">
+
+                                <div class="bg-light rounded-3 p-3">
+
+                                    <div class="text-muted small">
+                                        Còn phòng
+                                    </div>
+
+                                    <div class="fw-semibold">
+                                        @room.AvailableQuantity phòng
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= RIGHT ================= -->
+
+            <div class="col-lg-5">
+
+                <div class="card border-0 shadow-sm rounded-4">
+
+                    <div class="card-body p-4">
+
+                        <h3 class="fw-bold mb-4">
+                            Thông tin đặt phòng
+                        </h3>
+
+
+                        <form asp-controller="Hotel"
+                              asp-action="Create"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   name="hotelId"
+                                   value="@hotel.Id" />
+
+                            <input type="hidden"
+                                   name="roomId"
+                                   value="@room.Id" />
+
+
+                            <!-- CHECK IN -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Ngày nhận phòng
+                                </label>
+
+                                <input type="date"
+                                       id="checkInDate"
+                                       name="checkInDate"
+                                       class="form-control form-control-lg"
+                                       min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                       value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                       required />
+                            </div>
+
+
+                            <!-- CHECK OUT -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Ngày trả phòng
+                                </label>
+
+                                <input type="date"
+                                       id="checkOutDate"
+                                       name="checkOutDate"
+                                       class="form-control form-control-lg"
+                                       min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"
+                                       value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")"
+                                       required />
+                            </div>
+
+
+                            <!-- GUESTS -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Số khách
+                                </label>
+
+                                <input type="number"
+                                       id="numberOfGuests"
+                                       name="numberOfGuests"
+                                       class="form-control form-control-lg"
+                                       min="1"
+                                       max="@(room.MaxGuests * room.AvailableQuantity)"
+                                       value="1"
+                                       required />
+
+                                <span class="text-muted small">
+                                    Tối đa @room.MaxGuests khách/phòng
+                                </span>
+
+                            </div>
+
+
+                            <!-- ROOMS -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Số phòng
+                                </label>
+
+                                <input type="number"
+                                       id="numberOfRooms"
+                                       name="numberOfRooms"
+                                       class="form-control form-control-lg"
+                                       min="1"
+                                       max="@room.AvailableQuantity"
+                                       value="1"
+                                       required />
+
+                                <span class="text-muted small">
+                                    Còn @room.AvailableQuantity phòng
+                                </span>
+
+                            </div>
+
+
+                            <!-- NOTE -->
+
+                            <div class="mb-3">
+
+                                <label class="form-label fw-semibold">
+                                    Ghi chú
+                                </label>
+
+                                <textarea name="note"
+                                          id="note"
+                                          class="form-control"
+                                          rows="3"
+                                          maxlength="500"
+                                          placeholder="Yêu cầu đặc biệt hoặc ghi chú thêm..."></textarea>
+
+                            </div>
+
+
+                            <!-- PRICE -->
+
+                            <div class="bg-light rounded-4 p-4 mt-4">
+
+                                <div class="d-flex justify-content-between mb-2">
+
+                                    <span class="text-muted">
+                                        Giá phòng
+                                    </span>
+
+                                    <strong>
+                                        @pricePerNight.ToString("N0") đ / đêm
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="d-flex justify-content-between mb-2">
+
+                                    <span class="text-muted">
+                                        Số đêm
+                                    </span>
+
+                                    <strong id="numberOfNights">
+                                        1
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="d-flex justify-content-between mb-2">
+
+                                    <span class="text-muted">
+                                        Số phòng
+                                    </span>
+
+                                    <strong id="displayNumberOfRooms">
+                                        1
+                                    </strong>
+
+                                </div>
+
+
+                                <hr />
+
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <span class="fw-semibold">
+                                        Tổng tiền
+                                    </span>
+
+                                    <span class="fs-4 fw-bold text-primary"
+                                          id="totalPrice">
+
+                                        @pricePerNight.ToString("N0") đ
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- BUTTON -->
+
+                            <button type="submit"
+                                    id="btnHotelBooking"
+                                    class="btn btn-primary btn-lg w-100 rounded-3 mt-4">
+
+                                <i class="bi bi-calendar-check me-2"></i>
+
+                                Xác nhận đặt phòng
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const checkInDate =
+            document.getElementById("checkInDate");
+
+        const checkOutDate =
+            document.getElementById("checkOutDate");
+
+        const numberOfRooms =
+            document.getElementById("numberOfRooms");
+
+        const numberOfNights =
+            document.getElementById("numberOfNights");
+
+        const displayNumberOfRooms =
+            document.getElementById("displayNumberOfRooms");
+
+        const totalPrice =
+            document.getElementById("totalPrice");
+
+        const pricePerNight =
+                    @pricePerNight.ToString(CultureInfo.InvariantCulture);
+
+
+        function calculateTotal() {
+
+            const start =
+                new Date(checkInDate.value);
+
+            const end =
+                new Date(checkOutDate.value);
+
+
+            let nights =
+                Math.ceil(
+                    (end - start) /
+                    (1000 * 60 * 60 * 24)
+                );
+
+
+            if (!Number.isFinite(nights) || nights < 1) {
+                nights = 1;
+            }
+
+
+            let rooms =
+                parseInt(numberOfRooms.value) || 1;
+
+
+            const maxRooms =
+                parseInt(numberOfRooms.max);
+
+
+            if (rooms < 1) {
+                rooms = 1;
+                numberOfRooms.value = 1;
+            }
+
+
+            if (rooms > maxRooms) {
+                rooms = maxRooms;
+                numberOfRooms.value = maxRooms;
+            }
+
+
+            const total =
+                pricePerNight *
+                nights *
+                rooms;
+
+
+            numberOfNights.textContent =
+                nights;
+
+
+            displayNumberOfRooms.textContent =
+                rooms;
+
+
+            totalPrice.textContent =
+                total.toLocaleString("vi-VN") + " đ";
+        }
+
+
+        checkInDate.addEventListener(
+            "change",
+            function() {
+
+                const start =
+                    new Date(checkInDate.value);
+
+                const nextDay =
+                    new Date(start);
+
+                nextDay.setDate(
+                    nextDay.getDate() + 1
+                );
+
+
+                const year =
+                    nextDay.getFullYear();
+
+                const month =
+                    String(
+                        nextDay.getMonth() + 1
+                    ).padStart(2, "0");
+
+                const day =
+                    String(
+                        nextDay.getDate()
+                    ).padStart(2, "0");
+
+
+                const minCheckout =
+                    `${year}-${month}-${day}`;
+
+
+                checkOutDate.min =
+                    minCheckout;
+
+
+                if (checkOutDate.value < minCheckout) {
+
+                    checkOutDate.value =
+                        minCheckout;
+
+                }
+
+
+                calculateTotal();
+
+            });
+
+
+        checkOutDate.addEventListener(
+            "change",
+            calculateTotal
+        );
+
+
+        numberOfRooms.addEventListener(
+            "input",
+            calculateTotal
+        );
+
+
+        numberOfRooms.addEventListener(
+            "change",
+            calculateTotal
+        );
+
+
+        calculateTotal();
+
+    </script>
+}

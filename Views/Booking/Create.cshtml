@@ -1,0 +1,1153 @@
+﻿@model TravelAI.Models.Tour
+
+@{
+    ViewData["Title"] = "Đặt tour";
+
+    var imageUrl = string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1200&q=85"
+        : Model.ImageUrl;
+
+    var price = Model.SalePrice ?? Model.Price;
+
+    var hasDiscount =
+        Model.SalePrice.HasValue &&
+        Model.SalePrice.Value < Model.Price;
+
+    var discountPercent = hasDiscount
+        ? (int)Math.Round(
+            (1 - Model.SalePrice!.Value / Model.Price) * 100)
+        : 0;
+}
+
+<div class="booking-page">
+
+    <!-- ==================== HEADER ==================== -->
+
+    <div class="container pt-4 pb-2">
+
+        <a asp-controller="Tour"
+           asp-action="Details"
+           asp-route-id="@Model.Id"
+           class="booking-back-link">
+
+            <i class="bi bi-arrow-left"></i>
+            Quay lại chi tiết tour
+
+        </a>
+
+        <div class="booking-header mt-4">
+
+            <div>
+                <div class="booking-eyebrow">
+                    <i class="bi bi-calendar-check"></i>
+                    ĐẶT TOUR
+                </div>
+
+                <h1>
+                    Hoàn tất đặt tour
+                </h1>
+
+                <p>
+                    Kiểm tra thông tin và nhập số lượng khách
+                    để hoàn tất đặt tour của bạn.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================== MAIN ==================== -->
+
+    <div class="container pb-5">
+
+        <form asp-controller="Booking"
+              asp-action="Create"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="tourId"
+                   value="@Model.Id" />
+
+
+            <div class="row g-4">
+
+                <!-- ==================== TOUR ==================== -->
+
+                <div class="col-lg-7">
+
+                    <div class="booking-tour-card">
+
+                        <div class="booking-tour-image-wrapper">
+
+                            <img src="@imageUrl"
+                                 alt="@Model.Name"
+                                 class="booking-tour-image" />
+
+                            @if (hasDiscount)
+                            {
+                                <span class="booking-discount">
+                                    -@discountPercent%
+                                </span>
+                            }
+
+                        </div>
+
+
+                        <div class="booking-tour-content">
+
+                            <!-- Rating -->
+
+                            <div class="booking-rating">
+
+                                <span class="rating-stars">
+
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Round(Model.Rating))
+                                        {
+                                            <i class="bi bi-star-fill"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star"></i>
+                                        }
+                                    }
+
+                                </span>
+
+                                <strong>
+                                    @Model.Rating.ToString("0.0")
+                                </strong>
+
+                                <span>
+                                    (@Model.ReviewCount đánh giá)
+                                </span>
+
+                            </div>
+
+
+                            <!-- Tour name -->
+
+                            <h2>
+                                @Model.Name
+                            </h2>
+
+
+                            @if (Model.Destination != null)
+                            {
+                                <div class="booking-destination">
+
+                                    <i class="bi bi-geo-alt-fill"></i>
+
+                                    @Model.Destination.Name
+
+                                </div>
+                            }
+
+
+                            <!-- Information -->
+
+                            <div class="booking-tour-info">
+
+                                <div class="tour-info-row">
+
+                                    <div class="tour-info-icon">
+                                        <i class="bi bi-geo-alt"></i>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            Điểm khởi hành
+                                        </span>
+
+                                        <strong>
+                                            @Model.DepartureLocation
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="tour-info-row">
+
+                                    <div class="tour-info-icon">
+                                        <i class="bi bi-calendar-event"></i>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            Ngày khởi hành
+                                        </span>
+
+                                        <strong>
+                                            @Model.DepartureDate.ToString("dd/MM/yyyy")
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="tour-info-row">
+
+                                    <div class="tour-info-icon">
+                                        <i class="bi bi-clock"></i>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            Thời gian
+                                        </span>
+
+                                        <strong>
+                                            @Model.Duration ngày
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="tour-info-row">
+
+                                    <div class="tour-info-icon">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+
+                                    <div>
+                                        <span>
+                                            Chỗ còn lại
+                                        </span>
+
+                                        <strong class="text-success">
+                                            @Model.AvailablePeople chỗ
+                                        </strong>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Note -->
+
+                            <div class="booking-tour-note">
+
+                                <i class="bi bi-info-circle"></i>
+
+                                <span>
+                                    Vui lòng kiểm tra ngày khởi hành
+                                    và số lượng khách trước khi xác nhận.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================== FORM ==================== -->
+
+                <div class="col-lg-5">
+
+                    <div class="booking-form-card">
+
+                        <div class="booking-form-header">
+
+                            <div class="booking-form-icon">
+                                <i class="bi bi-person-check"></i>
+                            </div>
+
+                            <div>
+                                <h3>
+                                    Thông tin đặt tour
+                                </h3>
+
+                                <p>
+                                    Nhập thông tin đặt tour
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <!-- Số người -->
+
+                        <div class="form-section">
+
+                            <label for="numberOfPeople"
+                                   class="booking-label">
+
+                                <i class="bi bi-people me-1"></i>
+                                Số người
+
+                            </label>
+
+
+                            <div class="people-input-wrapper">
+
+                                <button type="button"
+                                        class="people-btn"
+                                        id="decreasePeople">
+
+                                    <i class="bi bi-dash"></i>
+
+                                </button>
+
+
+                                <input type="number"
+                                       id="numberOfPeople"
+                                       name="numberOfPeople"
+                                       class="people-input"
+                                       min="1"
+                                       max="@Model.AvailablePeople"
+                                       value="1"
+                                       required />
+
+
+                                <button type="button"
+                                        class="people-btn"
+                                        id="increasePeople">
+
+                                    <i class="bi bi-plus"></i>
+
+                                </button>
+
+                            </div>
+
+
+                            <div class="booking-availability-text">
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                Còn @Model.AvailablePeople chỗ trống
+
+                            </div>
+
+                            <span asp-validation-for="AvailablePeople"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Ghi chú -->
+
+                        <div class="form-section">
+
+                            <label for="note"
+                                   class="booking-label">
+
+                                <i class="bi bi-chat-left-text me-1"></i>
+                                Ghi chú
+
+                                <span>
+                                    (không bắt buộc)
+                                </span>
+
+                            </label>
+
+                            <textarea name="note"
+                                      id="note"
+                                      class="form-control booking-textarea"
+                                      rows="4"
+                                      maxlength="500"
+                                      placeholder="Ví dụ: yêu cầu về chỗ ngồi, ăn uống, trẻ em..."></textarea>
+
+                            <div class="text-end mt-1">
+
+                                <small class="text-muted">
+                                    Tối đa 500 ký tự
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PRICE -->
+
+                        <div class="booking-summary">
+
+                            <div class="summary-title">
+                                Chi tiết thanh toán
+                            </div>
+
+
+                            <div class="summary-row">
+
+                                <span>
+                                    Giá / người
+                                </span>
+
+                                <strong>
+                                    @price.ToString("N0") đ
+                                </strong>
+
+                            </div>
+
+
+                            <div class="summary-row">
+
+                                <span>
+                                    Số lượng
+                                </span>
+
+                                <strong>
+                                    <span id="summaryPeople">
+                                        1
+                                    </span>
+                                    người
+                                </strong>
+
+                            </div>
+
+
+                            @if (hasDiscount)
+                            {
+                                <div class="summary-row summary-discount">
+
+                                    <span>
+                                        Ưu đãi
+                                    </span>
+
+                                    <strong>
+                                        -@discountPercent%
+                                    </strong>
+
+                                </div>
+                            }
+
+
+                            <div class="summary-divider"></div>
+
+
+                            <div class="summary-total">
+
+                                <span>
+                                    Tổng tiền
+                                </span>
+
+                                <strong id="totalPrice">
+                                    @price.ToString("N0") đ
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- BUTTON -->
+                        @if (Model.AvailablePeople > 0)
+                        {
+                            <button type="submit"
+                                    id="btnBooking"
+                                    class="btn btn-primary booking-submit">
+
+                                <i class="bi bi-check2-circle me-2"></i>
+
+                                Xác nhận đặt tour
+
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="btn btn-secondary booking-submit"
+                                    disabled>
+
+                                <i class="bi bi-x-circle me-2"></i>
+
+                                Tour đã hết chỗ
+
+                            </button>
+                        }
+
+
+                        <!-- SECURITY -->
+
+                        <div class="booking-security">
+
+                            <i class="bi bi-shield-check"></i>
+
+                            <span>
+                                Thông tin đặt tour của bạn
+                                được bảo mật.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==================== JAVASCRIPT ==================== -->
+
+<script>
+
+    const numberOfPeople =
+        document.getElementById("numberOfPeople");
+
+    const totalPrice =
+        document.getElementById("totalPrice");
+
+    const summaryPeople =
+        document.getElementById("summaryPeople");
+
+    const decreasePeople =
+        document.getElementById("decreasePeople");
+
+    const increasePeople =
+        document.getElementById("increasePeople");
+
+
+    // Giá lấy từ server
+    const pricePerPerson =
+        @price.ToString(
+        System.Globalization.CultureInfo.InvariantCulture
+        );
+
+
+    function calculateTotal() {
+
+        let people =
+            parseInt(numberOfPeople.value) || 1;
+
+        const maxPeople =
+            parseInt(numberOfPeople.max);
+
+
+        if (people < 1) {
+
+            people = 1;
+
+        }
+
+
+        if (people > maxPeople) {
+
+            people = maxPeople;
+
+        }
+
+
+        numberOfPeople.value = people;
+
+
+        const total =
+            people * pricePerPerson;
+
+
+        totalPrice.textContent =
+            total.toLocaleString("vi-VN") + " đ";
+
+
+        summaryPeople.textContent =
+            people;
+
+    }
+
+
+    decreasePeople.addEventListener(
+        "click",
+        function() {
+
+            let people =
+                parseInt(numberOfPeople.value) || 1;
+
+            if (people > 1) {
+
+                numberOfPeople.value =
+                    people - 1;
+
+                calculateTotal();
+
+            }
+
+        }
+    );
+
+
+    increasePeople.addEventListener(
+        "click",
+        function() {
+
+            let people =
+                parseInt(numberOfPeople.value) || 1;
+
+            const maxPeople =
+                parseInt(numberOfPeople.max);
+
+
+            if (people < maxPeople) {
+
+                numberOfPeople.value =
+                    people + 1;
+
+                calculateTotal();
+
+            }
+
+        }
+    );
+
+
+    numberOfPeople.addEventListener(
+        "input",
+        calculateTotal
+    );
+
+
+    numberOfPeople.addEventListener(
+        "change",
+        calculateTotal
+    );
+
+
+    calculateTotal();
+
+</script>
+
+
+<style>
+
+    /* =========================================
+           PAGE
+        ========================================= */
+
+    .booking-page {
+        min-height: 100vh;
+        background: #f8fafc;
+    }
+
+
+    /* =========================================
+           HEADER
+        ========================================= */
+
+    .booking-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: .2s ease;
+    }
+
+        .booking-back-link:hover {
+            color: #0d6efd;
+            transform: translateX(-3px);
+        }
+
+
+    .booking-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 8px;
+        color: #0d6efd;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
+
+    .booking-header h1 {
+        margin-bottom: 8px;
+        font-size: 34px;
+        font-weight: 800;
+    }
+
+    .booking-header p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 15px;
+    }
+
+
+    /* =========================================
+           TOUR CARD
+        ========================================= */
+
+    .booking-tour-card {
+        overflow: hidden;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(15, 23, 42, .06);
+    }
+
+
+    .booking-tour-image-wrapper {
+        position: relative;
+        height: 330px;
+        overflow: hidden;
+    }
+
+    .booking-tour-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .5s ease;
+    }
+
+    .booking-tour-card:hover
+    .booking-tour-image {
+        transform: scale(1.03);
+    }
+
+
+    .booking-discount {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        padding: 7px 13px;
+        background: #dc3545;
+        color: white;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    .booking-tour-content {
+        padding: 30px;
+    }
+
+
+    /* =========================================
+           RATING
+        ========================================= */
+
+    .booking-rating {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 10px;
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+    .rating-stars {
+        color: #f59e0b;
+        letter-spacing: 2px;
+    }
+
+
+    .booking-tour-content h2 {
+        margin-bottom: 10px;
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1.3;
+    }
+
+
+    .booking-destination {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: #0d6efd;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+
+    /* =========================================
+           TOUR INFORMATION
+        ========================================= */
+
+    .booking-tour-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 28px;
+    }
+
+
+    .tour-info-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        background: #f8fafc;
+        border: 1px solid #eef2f7;
+        border-radius: 14px;
+    }
+
+
+    .tour-info-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: white;
+        color: #0d6efd;
+        border-radius: 11px;
+        box-shadow: 0 3px 10px rgba(15, 23, 42, .05);
+    }
+
+
+    .tour-info-row span {
+        display: block;
+        margin-bottom: 3px;
+        color: #6c757d;
+        font-size: 12px;
+    }
+
+
+    .tour-info-row strong {
+        display: block;
+        font-size: 14px;
+    }
+
+
+    /* =========================================
+           NOTE
+        ========================================= */
+
+    .booking-tour-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-top: 24px;
+        padding: 14px 16px;
+        background: #eff6ff;
+        border-radius: 12px;
+        color: #4b5563;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+        .booking-tour-note i {
+            margin-top: 2px;
+            color: #0d6efd;
+        }
+
+
+    /* =========================================
+           FORM CARD
+        ========================================= */
+
+    .booking-form-card {
+        position: sticky;
+        top: 90px;
+        padding: 28px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, .08);
+    }
+
+
+    .booking-form-header {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin-bottom: 28px;
+    }
+
+
+    .booking-form-icon {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: rgba(13, 110, 253, .1);
+        color: #0d6efd;
+        border-radius: 13px;
+        font-size: 20px;
+    }
+
+
+    .booking-form-header h3 {
+        margin: 0 0 3px;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+
+    .booking-form-header p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+
+    /* =========================================
+           FORM SECTION
+        ========================================= */
+
+    .form-section {
+        margin-bottom: 25px;
+    }
+
+
+    .booking-label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+
+        .booking-label span {
+            color: #9ca3af;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+
+    /* =========================================
+           PEOPLE INPUT
+        ========================================= */
+
+    .people-input-wrapper {
+        display: flex;
+        height: 52px;
+        overflow: hidden;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        background: white;
+    }
+
+
+    .people-btn {
+        width: 52px;
+        border: 0;
+        background: #f8fafc;
+        color: #0d6efd;
+        font-size: 18px;
+        transition: .2s ease;
+    }
+
+
+        .people-btn:hover {
+            background: #e9f2ff;
+        }
+
+
+    .people-input {
+        flex: 1;
+        min-width: 0;
+        border: 0;
+        outline: none;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+
+        .people-input::-webkit-inner-spin-button,
+        .people-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+
+    .booking-availability-text {
+        margin-top: 8px;
+        color: #198754;
+        font-size: 12px;
+    }
+
+
+    /* =========================================
+           TEXTAREA
+        ========================================= */
+
+    .booking-textarea {
+        resize: vertical;
+        min-height: 110px;
+        border-radius: 12px;
+        font-size: 14px;
+    }
+
+
+        .booking-textarea:focus,
+        .people-input-wrapper:focus-within {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .1);
+        }
+
+
+    /* =========================================
+           SUMMARY
+        ========================================= */
+
+    .booking-summary {
+        margin-top: 8px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 15px;
+    }
+
+
+    .summary-title {
+        margin-bottom: 15px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+
+        .summary-row strong {
+            color: #212529;
+        }
+
+
+    .summary-discount {
+        color: #198754;
+    }
+
+
+        .summary-discount strong {
+            color: #198754;
+        }
+
+
+    .summary-divider {
+        height: 1px;
+        margin: 15px 0;
+        background: #dee2e6;
+    }
+
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
+
+
+        .summary-total span {
+            font-weight: 700;
+        }
+
+
+        .summary-total strong {
+            color: #0d6efd;
+            font-size: 23px;
+            font-weight: 800;
+            text-align: right;
+        }
+
+
+    /* =========================================
+           SUBMIT
+        ========================================= */
+
+    .booking-submit {
+        width: 100%;
+        min-height: 54px;
+        margin-top: 20px;
+        border-radius: 12px !important;
+        font-size: 15px;
+        font-weight: 700;
+        transition: .2s ease;
+    }
+
+
+        .booking-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, .2);
+        }
+
+
+    /* =========================================
+           SECURITY
+        ========================================= */
+
+    .booking-security {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 15px;
+        color: #6c757d;
+        font-size: 11px;
+    }
+
+
+        .booking-security i {
+            color: #198754;
+            font-size: 15px;
+        }
+
+
+    /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+    @@media (max-width: 991.98px) {
+
+        .booking-form-card {
+            position: static;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+
+        .booking-header h1 {
+            font-size: 28px;
+        }
+
+
+        .booking-tour-image-wrapper {
+            height: 250px;
+        }
+
+
+        .booking-tour-content {
+            padding: 22px;
+        }
+
+
+            .booking-tour-content h2 {
+                font-size: 22px;
+            }
+
+
+        .booking-tour-info {
+            grid-template-columns: 1fr;
+        }
+
+
+        .booking-form-card {
+            padding: 22px;
+        }
+
+
+        .summary-total strong {
+            font-size: 20px;
+        }
+    }
+
+</style>

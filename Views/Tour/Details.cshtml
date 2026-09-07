@@ -1,0 +1,947 @@
+﻿@model TravelAI.Models.Tour
+
+@{
+    ViewData["Title"] = Model.Name;
+
+    var imageUrl = string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1400&q=85"
+        : Model.ImageUrl;
+
+    var hasDiscount =
+        Model.SalePrice.HasValue &&
+        Model.SalePrice.Value < Model.Price;
+
+    var currentPrice = Model.SalePrice ?? Model.Price;
+
+    var discountPercent = hasDiscount
+        ? (int)Math.Round(
+            (1 - Model.SalePrice!.Value / Model.Price) * 100)
+        : 0;
+}
+
+<div class="tour-details-page">
+
+    <!-- ==================== HERO IMAGE ==================== -->
+    <section class="tour-detail-hero">
+
+        <img src="@imageUrl"
+             alt="@Model.Name"
+             class="tour-detail-hero-image" />
+
+        <div class="tour-detail-overlay"></div>
+
+        <div class="container tour-detail-hero-content">
+
+            <a asp-controller="Tour"
+               asp-action="Index"
+               class="tour-back-link">
+                <i class="bi bi-arrow-left"></i>
+                Quay lại danh sách tour
+            </a>
+
+            <div class="tour-hero-bottom">
+
+                <div>
+
+                    @if (Model.Destination != null)
+                    {
+                        <div class="tour-hero-destination">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            @Model.Destination.Name
+                        </div>
+                    }
+
+                    <h1 class="tour-hero-title">
+                        @Model.Name
+                    </h1>
+
+                    <div class="tour-hero-rating">
+
+                        <span class="rating-stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Round(Model.Rating))
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        </span>
+
+                        <strong>
+                            @Model.Rating.ToString("0.0")
+                        </strong>
+
+                        <span>
+                            (@Model.ReviewCount đánh giá)
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="container py-5">
+
+        <div class="row g-4">
+
+            <!-- ==================== LEFT ==================== -->
+            <div class="col-lg-8">
+
+                <!-- TOUR INFORMATION -->
+                <div class="card tour-detail-card">
+
+                    <div class="card-body p-4 p-lg-5">
+
+                        <div class="section-heading">
+                            <span class="section-icon">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+
+                            <div>
+                                <h3>
+                                    Thông tin tour
+                                </h3>
+
+                                <p>
+                                    Những thông tin nổi bật về hành trình
+                                </p>
+                            </div>
+                        </div>
+
+
+                        <div class="tour-info-grid">
+
+                            <!-- Departure -->
+                            <div class="tour-info-box">
+
+                                <div class="tour-info-icon">
+                                    <i class="bi bi-geo-alt"></i>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Điểm khởi hành
+                                    </span>
+
+                                    <strong>
+                                        @Model.DepartureLocation
+                                    </strong>
+                                </div>
+
+                            </div>
+
+
+                            <!-- Departure date -->
+                            <div class="tour-info-box">
+
+                                <div class="tour-info-icon">
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Ngày khởi hành
+                                    </span>
+
+                                    <strong>
+                                        @Model.DepartureDate.ToString("dd/MM/yyyy")
+                                    </strong>
+                                </div>
+
+                            </div>
+
+
+                            <!-- Duration -->
+                            <div class="tour-info-box">
+
+                                <div class="tour-info-icon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Thời gian
+                                    </span>
+
+                                    <strong>
+                                        @Model.Duration ngày
+                                    </strong>
+                                </div>
+
+                            </div>
+
+
+                            <!-- Available -->
+                            <div class="tour-info-box">
+
+                                <div class="tour-info-icon">
+                                    <i class="bi bi-people"></i>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Số chỗ còn lại
+                                    </span>
+
+                                    <strong>
+                                        @Model.AvailablePeople / @Model.MaxPeople
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+                <div class="card tour-detail-card mt-4">
+
+                    <div class="card-body p-4 p-lg-5">
+
+                        <div class="section-heading">
+
+                            <span class="section-icon">
+                                <i class="bi bi-file-text"></i>
+                            </span>
+
+                            <div>
+                                <h3>
+                                    Giới thiệu tour
+                                </h3>
+
+                                <p>
+                                    Khám phá hành trình cùng TravelAI
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div class="tour-description">
+
+                            @if (!string.IsNullOrWhiteSpace(Model.Description))
+                            {
+                                <p>
+                                    @Model.Description
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="text-muted">
+                                    Thông tin chi tiết về tour đang được cập nhật.
+                                </p>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOUR POLICY -->
+                <div class="card tour-detail-card mt-4">
+
+                    <div class="card-body p-4 p-lg-5">
+
+                        <div class="section-heading">
+
+                            <span class="section-icon">
+                                <i class="bi bi-shield-check"></i>
+                            </span>
+
+                            <div>
+                                <h3>
+                                    Thông tin cần biết
+                                </h3>
+
+                                <p>
+                                    Một số lưu ý khi đặt tour
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="tour-policy-list">
+
+                            <div class="policy-item">
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                <div>
+                                    <strong>
+                                        Đặt tour nhanh chóng
+                                    </strong>
+
+                                    <span>
+                                        Xác nhận thông tin đặt tour trực tuyến.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="policy-item">
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                <div>
+                                    <strong>
+                                        Giá tour minh bạch
+                                    </strong>
+
+                                    <span>
+                                        Giá hiển thị là giá cho một người.
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="policy-item">
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                <div>
+                                    <strong>
+                                        Số lượng chỗ có hạn
+                                    </strong>
+
+                                    <span>
+                                        Vui lòng đặt sớm để đảm bảo còn chỗ.
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================== RIGHT ==================== -->
+            <div class="col-lg-4">
+
+                <div class="tour-booking-card">
+
+                    <!-- Price -->
+                    <div class="booking-price-area">
+
+                        <span class="booking-price-label">
+                            Giá tour
+                        </span>
+
+                        @if (hasDiscount)
+                        {
+                            <div class="d-flex align-items-center gap-2 mb-1">
+
+                                <span class="booking-old-price">
+                                    @Model.Price.ToString("N0") đ
+                                </span>
+
+                                <span class="discount-badge">
+                                    -@discountPercent%
+                                </span>
+
+                            </div>
+                        }
+
+                        <div class="booking-price">
+                            @currentPrice.ToString("N0") đ
+                        </div>
+
+                        <span class="booking-price-unit">
+                            / người
+                        </span>
+
+                    </div>
+
+
+                    <hr />
+
+
+                    <!-- Availability -->
+                    <div class="booking-availability">
+
+                        <div class="availability-header">
+
+                            <span>
+                                <i class="bi bi-people me-2"></i>
+                                Tình trạng chỗ
+                            </span>
+
+                            <strong>
+                                @Model.AvailablePeople chỗ
+                            </strong>
+
+                        </div>
+
+
+                        @{
+                            var availabilityPercent =
+                                Model.MaxPeople > 0
+                                    ? (Model.AvailablePeople * 100 / Model.MaxPeople)
+                                    : 0;
+                        }
+
+                        <div class="progress availability-progress">
+
+                            <div class="progress-bar"
+                                 role="progressbar"
+                                 style="width:@availabilityPercent%">
+                            </div>
+
+                        </div>
+
+                        <small class="text-muted">
+                            Còn @Model.AvailablePeople trên
+                            @Model.MaxPeople chỗ
+                        </small>
+
+                    </div>
+
+
+                    <!-- Booking -->
+                    <div class="mt-4">
+
+                        @if (Model.AvailablePeople > 0)
+                        {
+                            <a asp-controller="Booking"
+                               asp-action="Create"
+                               asp-route-tourId="@Model.Id"
+                               class="btn btn-primary btn-lg w-100 booking-button">
+
+                                <i class="bi bi-calendar-check me-2"></i>
+                                Đặt tour ngay
+
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-lg w-100 booking-button"
+                                    disabled>
+
+                                <i class="bi bi-x-circle me-2"></i>
+                                Tour đã hết chỗ
+
+                            </button>
+                        }
+
+                    </div>
+
+
+                    <div class="booking-note">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        <span>
+                            Đặt tour trực tuyến nhanh chóng và thuận tiện.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AI SUPPORT -->
+                <div class="ai-support-card mt-4">
+
+                    <div class="ai-support-icon">
+                        <i class="bi bi-stars"></i>
+                    </div>
+
+                    <div>
+
+                        <h5>
+                            TravelAI có thể giúp bạn
+                        </h5>
+
+                        <p>
+                            Tư vấn hành trình phù hợp với ngân sách,
+                            thời gian và sở thích của bạn.
+                        </p>
+
+                        <a asp-controller="AI"
+                           asp-action="Index"
+                           class="btn btn-outline-primary btn-sm rounded-pill">
+
+                            <i class="bi bi-robot me-1"></i>
+                            Hỏi TravelAI
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    /* ================================
+           PAGE
+        ================================= */
+
+    .tour-details-page {
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+
+
+    /* ================================
+           HERO
+        ================================= */
+
+    .tour-detail-hero {
+        position: relative;
+        height: 500px;
+        overflow: hidden;
+    }
+
+    .tour-detail-hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .tour-detail-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( to top, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.15) 65%, rgba(0, 0, 0, 0.05) );
+    }
+
+    .tour-detail-hero-content {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-top: 30px;
+        padding-bottom: 45px;
+    }
+
+
+    /* ================================
+           BACK BUTTON
+        ================================= */
+
+    .tour-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        padding: 10px 16px;
+        color: white;
+        text-decoration: none;
+        background: rgba(0, 0, 0, 0.28);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        backdrop-filter: blur(8px);
+        transition: all .2s ease;
+    }
+
+        .tour-back-link:hover {
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            transform: translateX(-3px);
+        }
+
+
+    /* ================================
+           HERO CONTENT
+        ================================= */
+
+    .tour-hero-bottom {
+        color: white;
+    }
+
+    .tour-hero-destination {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 12px;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .tour-hero-title {
+        max-width: 900px;
+        margin-bottom: 16px;
+        font-size: clamp(30px, 4vw, 48px);
+        font-weight: 800;
+        line-height: 1.15;
+    }
+
+    .tour-hero-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .rating-stars {
+        letter-spacing: 2px;
+    }
+
+        .rating-stars i {
+            margin-right: 2px;
+        }
+
+
+    /* ================================
+           CARDS
+        ================================= */
+
+    .tour-detail-card {
+        border: 0;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+    }
+
+
+    /* ================================
+           SECTION HEADING
+        ================================= */
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .section-icon {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: rgba(13, 110, 253, .1);
+        color: #0d6efd;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .section-heading h3 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .section-heading p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+
+    /* ================================
+           INFORMATION GRID
+        ================================= */
+
+    .tour-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .tour-info-box {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px;
+        background: #f8fafc;
+        border: 1px solid #eef2f7;
+        border-radius: 15px;
+    }
+
+    .tour-info-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 12px;
+        color: #0d6efd;
+        font-size: 19px;
+        box-shadow: 0 3px 10px rgba(15, 23, 42, .05);
+    }
+
+    .tour-info-box span {
+        display: block;
+        margin-bottom: 4px;
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+    .tour-info-box strong {
+        display: block;
+        font-size: 15px;
+    }
+
+
+    /* ================================
+           DESCRIPTION
+        ================================= */
+
+    .tour-description {
+        color: #4b5563;
+        line-height: 1.9;
+        font-size: 15px;
+    }
+
+        .tour-description p {
+            margin-bottom: 0;
+        }
+
+
+    /* ================================
+           POLICY
+        ================================= */
+
+    .tour-policy-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .policy-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+        .policy-item > i {
+            color: #198754;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .policy-item strong {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 15px;
+        }
+
+        .policy-item span {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+
+    /* ================================
+           BOOKING CARD
+        ================================= */
+
+    .tour-booking-card {
+        position: sticky;
+        top: 90px;
+        padding: 28px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+    }
+
+    .booking-price-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .booking-old-price {
+        color: #9ca3af;
+        text-decoration: line-through;
+        font-size: 14px;
+    }
+
+    .discount-badge {
+        padding: 4px 9px;
+        background: #dc3545;
+        color: white;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .booking-price {
+        color: #0d6efd;
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .booking-price-unit {
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+
+    /* ================================
+           AVAILABILITY
+        ================================= */
+
+    .availability-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+        .availability-header strong {
+            color: #198754;
+        }
+
+    .availability-progress {
+        height: 8px;
+        margin-bottom: 8px;
+        border-radius: 999px;
+        background: #e9ecef;
+    }
+
+        .availability-progress .progress-bar {
+            border-radius: 999px;
+            background: #198754;
+        }
+
+
+    /* ================================
+           BOOKING BUTTON
+        ================================= */
+
+    .booking-button {
+        min-height: 54px;
+        font-weight: 700;
+        border-radius: 12px !important;
+    }
+
+    .booking-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 18px;
+        color: #6c757d;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+        .booking-note i {
+            color: #198754;
+            font-size: 16px;
+        }
+
+
+    /* ================================
+           AI SUPPORT
+        ================================= */
+
+    .ai-support-card {
+        display: flex;
+        gap: 14px;
+        padding: 20px;
+        background: linear-gradient( 135deg, #f0f7ff, #ffffff );
+        border: 1px solid #dbeafe;
+        border-radius: 20px;
+    }
+
+    .ai-support-icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 14px;
+        background: #0d6efd;
+        color: white;
+        font-size: 20px;
+    }
+
+    .ai-support-card h5 {
+        margin-bottom: 6px;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .ai-support-card p {
+        margin-bottom: 12px;
+        color: #6c757d;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+
+    /* ================================
+           RESPONSIVE
+        ================================= */
+
+    @@media (max-width: 991.98px) {
+
+        .tour-detail-hero {
+            height: 440px;
+        }
+
+        .tour-booking-card {
+            position: static;
+        }
+    }
+
+
+    @@media (max-width: 767.98px) {
+
+        .tour-detail-hero {
+            height: 420px;
+        }
+
+        .tour-detail-hero-content {
+            padding-top: 20px;
+            padding-bottom: 30px;
+        }
+
+        .tour-hero-title {
+            font-size: 30px;
+        }
+
+        .tour-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tour-detail-card .card-body {
+            padding: 24px !important;
+        }
+
+        .tour-booking-card {
+            padding: 22px;
+        }
+    }
+
+</style>

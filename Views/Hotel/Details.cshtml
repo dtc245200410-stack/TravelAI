@@ -1,0 +1,372 @@
+﻿@model TravelAI.Models.Hotel
+
+@{
+    ViewData["Title"] = Model.Name;
+
+    var imageUrl = string.IsNullOrWhiteSpace(Model.ImageUrl)
+        ? "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"
+        : Model.ImageUrl;
+}
+
+<div class="container py-5">
+
+    <!-- ================= BREADCRUMB ================= -->
+
+    <div class="mb-4">
+
+        <a asp-controller="Hotel"
+           asp-action="Index"
+           class="text-decoration-none text-muted">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Quay lại danh sách khách sạn
+
+        </a>
+
+    </div>
+
+
+    <!-- ================= HOTEL HEADER ================= -->
+
+    <div class="row g-4 mb-5">
+
+        <!-- IMAGE -->
+
+        <div class="col-lg-7">
+
+            <div class="rounded-4 overflow-hidden shadow-sm">
+
+                <img src="@imageUrl"
+                     alt="@Model.Name"
+                     class="w-100"
+                     style="height:430px; object-fit:cover;" />
+
+            </div>
+
+        </div>
+
+
+        <!-- INFORMATION -->
+
+        <div class="col-lg-5">
+
+            <div class="ps-lg-3">
+
+                <!-- RATING -->
+
+                <div class="mb-2">
+
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Math.Round(Model.Rating))
+                        {
+                            <i class="bi bi-star-fill text-warning"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-star text-warning"></i>
+                        }
+                    }
+
+                    <span class="fw-semibold ms-2">
+                        @Model.Rating.ToString("0.0")
+                    </span>
+
+                    <span class="text-muted">
+                        (@Model.ReviewCount đánh giá)
+                    </span>
+
+                </div>
+
+
+                <!-- HOTEL NAME -->
+
+                <h1 class="fw-bold mb-3">
+                    @Model.Name
+                </h1>
+
+
+                <!-- ADDRESS -->
+
+                <div class="text-muted mb-4">
+
+                    <i class="bi bi-geo-alt me-2"></i>
+
+                    @Model.Address
+
+                    <br />
+
+                    <span class="ms-4">
+                        @Model.City, @Model.Province
+                    </span>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p class="text-muted mb-4">
+                        @Model.Description
+                    </p>
+                }
+
+
+                <!-- HOTEL INFO -->
+
+                <div class="row g-3 mb-4">
+
+                    <!-- RATING -->
+
+                    <div class="col-6">
+
+                        <div class="bg-light rounded-3 p-3">
+
+                            <div class="text-muted small">
+                                Đánh giá
+                            </div>
+
+                            <div class="fw-bold">
+                                @Model.Rating.ToString("0.0") / 5
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- REVIEW COUNT -->
+
+                    <div class="col-6">
+
+                        <div class="bg-light rounded-3 p-3">
+
+                            <div class="text-muted small">
+                                Số đánh giá
+                            </div>
+
+                            <div class="fw-bold">
+                                @Model.ReviewCount
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= ROOMS ================= -->
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold mb-2">
+            Các loại phòng
+        </h2>
+
+        <p class="text-muted">
+            Lựa chọn phòng phù hợp với nhu cầu của bạn.
+        </p>
+
+    </div>
+
+
+    @if (Model.Rooms != null && Model.Rooms.Any())
+    {
+        <div class="row g-4">
+
+            @foreach (var room in Model.Rooms)
+            {
+                var roomImage = string.IsNullOrWhiteSpace(room.ImageUrl)
+                    ? imageUrl
+                    : room.ImageUrl;
+
+                <div class="col-lg-6">
+
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+
+                        <div class="row g-0">
+
+                            <!-- ================= ROOM IMAGE ================= -->
+
+                            <div class="col-md-5">
+
+                                <img src="@roomImage"
+                                     alt="@room.RoomName"
+                                     class="w-100 h-100"
+                                     style="min-height:230px; object-fit:cover;" />
+
+                            </div>
+
+
+                            <!-- ================= ROOM INFO ================= -->
+
+                            <div class="col-md-7">
+
+                                <div class="card-body p-4 h-100 d-flex flex-column">
+
+                                    <!-- ROOM NAME -->
+
+                                    <h5 class="fw-bold mb-2">
+                                        @room.RoomName
+                                    </h5>
+
+
+                                    <!-- ROOM TYPE -->
+                                    @if (!string.IsNullOrWhiteSpace(room.RoomType))
+                                    {
+                                        <div class="text-muted small mb-2">
+
+                                            <i class="bi bi-door-open me-1"></i>
+
+                                            @room.RoomType
+
+                                        </div>
+                                    }
+
+
+                                    <!-- MAX GUESTS -->
+
+                                    <div class="text-muted small mb-2">
+
+                                        <i class="bi bi-people me-1"></i>
+
+                                        Tối đa @room.MaxGuests khách
+
+                                    </div>
+
+
+                                    <!-- ROOM DESCRIPTION -->
+                                    @if (!string.IsNullOrWhiteSpace(room.Description))
+                                    {
+                                        <p class="text-muted small mb-3">
+
+                                            @{
+                                                var roomDescription = room.Description;
+
+                                                if (roomDescription.Length > 100)
+                                                {
+                                                    roomDescription =
+                                                        roomDescription.Substring(0, 100) + "...";
+                                                }
+                                            }
+
+                                            @roomDescription
+
+                                        </p>
+                                    }
+
+
+                                    <!-- PRICE + AVAILABILITY + BOOKING -->
+
+                                    <div class="mt-auto">
+
+                                        <!-- PRICE -->
+
+                                        <div class="mb-2">
+
+                                            <span class="text-muted small">
+                                                Giá từ
+                                            </span>
+
+                                            <div class="fs-5 fw-bold text-primary">
+
+                                                @room.PricePerNight.ToString("N0")
+                                                đ
+
+                                                <span class="text-muted fs-6 fw-normal">
+                                                    / đêm
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- AVAILABLE ROOMS -->
+
+                                        <div class="small text-muted">
+
+                                            @if (room.AvailableQuantity > 0)
+                                            {
+                                                <i class="bi bi-check-circle me-1 text-success"></i>
+
+                                                <span>
+                                                    Còn @room.AvailableQuantity phòng
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-x-circle me-1 text-danger"></i>
+
+                                                <span>
+                                                    Hết phòng
+                                                </span>
+                                            }
+
+                                        </div>
+
+
+                                        <!-- BOOKING BUTTON -->
+                                        @if (room.AvailableQuantity > 0)
+                                        {
+                                            <a asp-controller="Hotel"
+                                               asp-action="Create"
+                                               asp-route-hotelId="@Model.Id"
+                                               asp-route-roomId="@room.Id"
+                                               class="btn btn-primary w-100 rounded-3 mt-3">
+
+                                                <i class="bi bi-calendar-check me-1"></i>
+
+                                                Đặt phòng
+
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-secondary w-100 rounded-3 mt-3"
+                                                    disabled>
+
+                                                <i class="bi bi-x-circle me-1"></i>
+
+                                                Hết phòng
+
+                                            </button>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <!-- ================= NO ROOMS ================= -->
+
+        <div class="alert alert-light border rounded-4 p-4">
+
+            <i class="bi bi-info-circle me-2"></i>
+
+            Hiện chưa có thông tin phòng cho khách sạn này.
+
+        </div>
+    }
+
+</div>
