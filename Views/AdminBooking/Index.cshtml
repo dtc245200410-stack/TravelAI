@@ -1,0 +1,839 @@
+﻿@model IEnumerable<TravelAI.Models.Booking>
+
+@{
+    ViewData["Title"] = "Quản lý Booking";
+
+    var bookings = Model?.ToList()
+        ?? new List<TravelAI.Models.Booking>();
+
+    string? searchString = ViewBag.SearchString;
+    string selectedStatus = ViewBag.Status ?? "All";
+    string selectedPaymentStatus = ViewBag.PaymentStatus ?? "All";
+
+    int totalBookings = bookings.Count;
+    int pendingBookings = bookings.Count(x => x.Status == "Pending");
+    int confirmedBookings = bookings.Count(x => x.Status == "Confirmed");
+    int cancelledBookings = bookings.Count(x => x.Status == "Cancelled");
+}
+
+<style>
+    .booking-page {
+        padding: 30px;
+        background: #f8fafc;
+        min-height: calc(100vh - 70px);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .page-title h2 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    .page-title p {
+        margin: 7px 0 0;
+        color: #6b7280;
+    }
+
+    .dashboard-btn {
+        text-decoration: none;
+        padding: 11px 18px;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #374151;
+        font-weight: 600;
+        box-shadow: 0 3px 12px rgba(0,0,0,.06);
+    }
+
+        .dashboard-btn:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 5px 18px rgba(0,0,0,.06);
+    }
+
+    .stat-label {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 27px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    .filter-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 5px 18px rgba(0,0,0,.06);
+        margin-bottom: 25px;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 7px;
+        color: #374151;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px 13px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #111827;
+        outline: none;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.10);
+        }
+
+    .btn-search {
+        border: none;
+        padding: 11px 20px;
+        border-radius: 10px;
+        background: #2563eb;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .btn-search:hover {
+            background: #1d4ed8;
+        }
+
+    .booking-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 5px 18px rgba(0,0,0,.06);
+        overflow: hidden;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .booking-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1150px;
+    }
+
+        .booking-table th {
+            background: #f8fafc;
+            color: #4b5563;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 15px 12px;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .booking-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .booking-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+    .booking-code {
+        font-weight: 800;
+        color: #2563eb;
+    }
+
+    .customer-name {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .customer-email {
+        color: #6b7280;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+
+    .tour-name {
+        font-weight: 700;
+        color: #111827;
+        max-width: 230px;
+    }
+
+    .price {
+        font-weight: 800;
+        color: #dc2626;
+        white-space: nowrap;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .badge-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-confirmed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-paid {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .badge-unpaid {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .badge-other {
+        background: #ede9fe;
+        color: #6d28d9;
+    }
+
+    .action-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-width: 230px;
+    }
+
+    .action-btn {
+        border: none;
+        text-decoration: none;
+        padding: 7px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-details {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+        .btn-details:hover {
+            background: #bae6fd;
+            color: #075985;
+        }
+
+    .btn-confirm {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+        .btn-confirm:hover {
+            background: #bbf7d0;
+        }
+
+    .btn-paid {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+        .btn-paid:hover {
+            background: #bfdbfe;
+        }
+
+    .btn-cancel {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+        .btn-cancel:hover {
+            background: #fecaca;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6b7280;
+    }
+
+    .empty-state-icon {
+        font-size: 45px;
+        margin-bottom: 12px;
+    }
+
+    .message-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+        border-radius: 10px;
+        padding: 13px 16px;
+        margin-bottom: 18px;
+    }
+
+    .message-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        padding: 13px 16px;
+        margin-bottom: 18px;
+    }
+
+    .result-count {
+        padding: 15px 18px;
+        color: #6b7280;
+        font-size: 14px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+        .result-count strong {
+            color: #111827;
+        }
+
+    @@media (max-width: 1100px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr 1fr;
+        }
+
+            .filter-form .search-field {
+                grid-column: span 2;
+            }
+    }
+
+    @@media (max-width: 700px) {
+        .booking-page {
+            padding: 18px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            grid-template-columns: 1fr;
+        }
+
+            .filter-form .search-field {
+                grid-column: auto;
+            }
+
+        .btn-search {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="booking-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+        <div class="page-title">
+            <h2>📋 Quản lý Booking</h2>
+            <p>
+                Quản lý các đơn đặt tour của khách hàng.
+            </p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="dashboard-btn">
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- MESSAGE -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="message-success">
+            ✓ @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="message-error">
+            ⚠ @TempData["Error"]
+        </div>
+    }
+
+
+    <!-- STATISTICS -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Tổng Booking
+            </div>
+
+            <div class="stat-value">
+                @totalBookings
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Chờ xác nhận
+            </div>
+
+            <div class="stat-value">
+                @pendingBookings
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Đã xác nhận
+            </div>
+
+            <div class="stat-value">
+                @confirmedBookings
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Đã hủy
+            </div>
+
+            <div class="stat-value">
+                @cancelledBookings
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- FILTER -->
+    <div class="filter-card">
+
+        <form asp-controller="AdminBooking"
+              asp-action="Index"
+              method="get"
+              class="filter-form">
+
+            <!-- SEARCH -->
+            <div class="form-group search-field">
+
+                <label>
+                    Tìm kiếm Booking
+                </label>
+
+                <input type="text"
+                       name="searchString"
+                       value="@searchString"
+                       class="form-control"
+                       placeholder="Mã Booking, tên khách, email hoặc tên tour..." />
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div class="form-group">
+
+                <label>
+                    Trạng thái Booking
+                </label>
+
+                <select name="status"
+                        class="form-select">
+
+                    <option value="All"
+                            selected="@(selectedStatus == "All")">
+                        Tất cả
+                    </option>
+
+                    <option value="Pending"
+                            selected="@(selectedStatus == "Pending")">
+                        Chờ xác nhận
+                    </option>
+
+                    <option value="Confirmed"
+                            selected="@(selectedStatus == "Confirmed")">
+                        Đã xác nhận
+                    </option>
+
+                    <option value="Cancelled"
+                            selected="@(selectedStatus == "Cancelled")">
+                        Đã hủy
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PAYMENT STATUS -->
+            <div class="form-group">
+
+                <label>
+                    Thanh toán
+                </label>
+
+                <select name="paymentStatus"
+                        class="form-select">
+
+                    <option value="All"
+                            selected="@(selectedPaymentStatus == "All")">
+                        Tất cả
+                    </option>
+
+                    <option value="Paid"
+                            selected="@(selectedPaymentStatus == "Paid")">
+                        Đã thanh toán
+                    </option>
+
+                    <option value="Unpaid"
+                            selected="@(selectedPaymentStatus == "Unpaid")">
+                        Chưa thanh toán
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- SEARCH BUTTON -->
+            <div class="form-group">
+
+                <button type="submit"
+                        class="btn-search">
+                    🔍 Tìm kiếm
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- BOOKING TABLE -->
+    <div class="booking-card">
+
+        <div class="result-count">
+            Hiển thị
+            <strong>@totalBookings</strong>
+            Booking
+        </div>
+
+        @if (bookings.Any())
+        {
+            <div class="table-wrapper">
+
+                <table class="booking-table">
+
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã Booking</th>
+                            <th>Khách hàng</th>
+                            <th>Tour</th>
+                            <th>Số người</th>
+                            <th>Tổng tiền</th>
+                            <th>Ngày đặt</th>
+                            <th>Trạng thái</th>
+                            <th>Thanh toán</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            int stt = 1;
+                        }
+
+                        @foreach (var booking in bookings)
+                        {
+                            <tr>
+
+                                <!-- STT -->
+                                <td>
+                                    @stt
+                                </td>
+
+
+                                <!-- BOOKING CODE -->
+                                <td>
+                                    <div class="booking-code">
+                                        @booking.BookingCode
+                                    </div>
+                                </td>
+
+
+                                <!-- CUSTOMER -->
+                                <td>
+
+                                    <div class="customer-name">
+                                        @(booking.User?.FullName ?? "Không xác định")
+                                    </div>
+
+                                    @if (booking.User != null)
+                                    {
+                                        <div class="customer-email">
+                                            @booking.User.Email
+                                        </div>
+                                    }
+
+                                </td>
+
+
+                                <!-- TOUR -->
+                                <td>
+
+                                    <div class="tour-name">
+                                        @(booking.Tour?.Name ?? "Tour không tồn tại")
+                                    </div>
+
+                                </td>
+
+
+                                <!-- NUMBER OF PEOPLE -->
+                                <td>
+                                    @booking.NumberOfPeople người
+                                </td>
+
+
+                                <!-- TOTAL PRICE -->
+                                <td>
+                                    <span class="price">
+                                        @booking.TotalPrice.ToString("N0") ₫
+                                    </span>
+                                </td>
+
+
+                                <!-- BOOKING DATE -->
+                                <td>
+                                    @booking.BookingDate.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+
+                                <!-- STATUS -->
+                                <td>
+
+                                    @if (booking.Status == "Pending")
+                                    {
+                                        <span class="badge badge-pending">
+                                            Chờ xác nhận
+                                        </span>
+                                    }
+                                    else if (booking.Status == "Confirmed")
+                                    {
+                                        <span class="badge badge-confirmed">
+                                            Đã xác nhận
+                                        </span>
+                                    }
+                                    else if (booking.Status == "Cancelled")
+                                    {
+                                        <span class="badge badge-cancelled">
+                                            Đã hủy
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-other">
+                                            @booking.Status
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- PAYMENT STATUS -->
+                                <td>
+
+                                    @if (booking.PaymentStatus == "Paid")
+                                    {
+                                        <span class="badge badge-paid">
+                                            Đã thanh toán
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-unpaid">
+                                            Chưa thanh toán
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+                                <td>
+
+                                    <div class="action-group">
+
+                                        <!-- DETAILS -->
+                                        <a asp-action="Details"
+                                           asp-route-id="@booking.Id"
+                                           class="action-btn btn-details">
+                                            👁 Chi tiết
+                                        </a>
+
+
+                                        <!-- CONFIRM -->
+                                        @if (booking.Status == "Pending")
+                                        {
+                                            <form asp-action="Confirm"
+                                                  asp-route-id="@booking.Id"
+                                                  method="post"
+                                                  style="margin:0;">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-btn btn-confirm"
+                                                        onclick="return confirm('Bạn có chắc chắn muốn xác nhận Booking này không?');">
+                                                    ✓ Xác nhận
+                                                </button>
+
+                                            </form>
+                                        }
+
+
+                                        <!-- MARK AS PAID -->
+                                        @if (booking.PaymentStatus != "Paid" &&
+                                             booking.Status != "Cancelled")
+                                        {
+                                            <form asp-action="MarkAsPaid"
+                                                  asp-route-id="@booking.Id"
+                                                  method="post"
+                                                  style="margin:0;">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-btn btn-paid"
+                                                        onclick="return confirm('Xác nhận Booking này đã thanh toán?');">
+                                                    💳 Đã thanh toán
+                                                </button>
+
+                                            </form>
+                                        }
+
+
+                                        <!-- CANCEL -->
+                                        @if (booking.Status != "Cancelled")
+                                        {
+                                            <form asp-action="Cancel"
+                                                  asp-route-id="@booking.Id"
+                                                  method="post"
+                                                  style="margin:0;">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="action-btn btn-cancel"
+                                                        onclick="return confirm('Bạn có chắc chắn muốn hủy Booking này không?');">
+                                                    ✕ Hủy
+                                                </button>
+
+                                            </form>
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            stt++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+
+                <div class="empty-state-icon">
+                    📭
+                </div>
+
+                <h3>
+                    Không tìm thấy Booking
+                </h3>
+
+                <p>
+                    Không có Booking nào phù hợp với điều kiện tìm kiếm.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+</div>

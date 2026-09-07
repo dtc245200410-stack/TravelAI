@@ -8,11 +8,43 @@ namespace TravelAI.Data
     {
         public static async Task SeedAsync(TravelDbContext context)
         {
+            var passwordHasher = new PasswordHasher<User>();
+
+            // =====================================================
+            // ADMIN MẪU
+            // =====================================================
+
+            var admin = await context.Users
+                .FirstOrDefaultAsync(u => u.Email == "admin@travelai.com");
+
+            if (admin == null)
+            {
+                admin = new User
+                {
+                    FullName = "TravelAI Administrator",
+                    Email = "admin@travelai.com",
+                    Phone = "0900000000",
+                    Role = "Admin",
+                    CreatedAt = DateTime.Now
+                };
+
+                admin.PasswordHash = passwordHasher.HashPassword(
+                    admin,
+                    "Admin@123456"
+                );
+
+                await context.Users.AddAsync(admin);
+                await context.SaveChangesAsync();
+            }
+            else if (admin.Role != "Admin")
+            {
+                admin.Role = "Admin";
+
+                await context.SaveChangesAsync();
+            }
             // =====================================================
             // 0. USER MẪU
             // =====================================================
-
-            var passwordHasher = new PasswordHasher<User>();
 
             var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Email == "user@travelai.com");

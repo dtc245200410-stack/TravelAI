@@ -1,0 +1,608 @@
+﻿@model IEnumerable<TravelAI.Models.Hotel>
+
+@{
+    ViewData["Title"] = "Quản lý khách sạn";
+
+    var searchString = ViewBag.SearchString as string;
+    var status = ViewBag.Status as string ?? "All";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- ================= HEADER ================= -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-building text-primary"></i>
+                Quản lý khách sạn
+            </h2>
+
+            <p class="text-muted mb-0">
+                Quản lý danh sách khách sạn trong hệ thống
+            </p>
+        </div>
+
+        <a asp-controller="AdminHotel"
+           asp-action="Create"
+           class="btn btn-primary px-4">
+
+            <i class="bi bi-plus-lg"></i>
+            Thêm khách sạn
+
+        </a>
+
+    </div>
+
+
+    <!-- ================= ALERT ================= -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm"
+             role="alert">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- ================= SEARCH + FILTER ================= -->
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <form asp-controller="AdminHotel"
+                  asp-action="Index"
+                  method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- Search -->
+                    <div class="col-lg-6">
+
+                        <label class="form-label fw-semibold">
+                            Tìm kiếm
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+
+                            <input type="text"
+                                   name="searchString"
+                                   value="@searchString"
+                                   class="form-control"
+                                   placeholder="Tên khách sạn, địa chỉ, thành phố..." />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Status -->
+                    <div class="col-lg-3">
+
+                        <label class="form-label fw-semibold">
+                            Trạng thái
+                        </label>
+
+                        <select name="status"
+                                class="form-select">
+
+                            <option value="All"
+                                    selected="@(status == "All")">
+                                Tất cả
+                            </option>
+
+                            <option value="Active"
+                                    selected="@(status == "Active")">
+                                Đang hoạt động
+                            </option>
+
+                            <option value="Inactive"
+                                    selected="@(status == "Inactive")">
+                                Tạm ngưng
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Buttons -->
+                    <div class="col-lg-3">
+
+                        <div class="d-flex gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary flex-fill">
+
+                                <i class="bi bi-search"></i>
+                                Tìm kiếm
+
+                            </button>
+
+                            <a asp-controller="AdminHotel"
+                               asp-action="Index"
+                               class="btn btn-outline-secondary">
+
+                                <i class="bi bi-arrow-clockwise"></i>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= HOTEL TABLE ================= -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white border-0 py-3">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0 fw-bold">
+                    Danh sách khách sạn
+                </h5>
+
+                <span class="badge bg-primary-subtle text-primary">
+                    @Model.Count() khách sạn
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+
+                    <div class="mb-3">
+
+                        <i class="bi bi-building"
+                           style="font-size: 60px; color: #adb5bd;">
+                        </i>
+
+                    </div>
+
+                    <h5 class="fw-semibold">
+                        Không tìm thấy khách sạn
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        Chưa có khách sạn phù hợp với điều kiện tìm kiếm.
+                    </p>
+
+                    <a asp-controller="AdminHotel"
+                       asp-action="Create"
+                       class="btn btn-primary">
+
+                        <i class="bi bi-plus-lg"></i>
+                        Thêm khách sạn
+
+                    </a>
+
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th style="width: 60px;">
+                                    STT
+                                </th>
+
+                                <th style="width: 90px;">
+                                    Hình ảnh
+                                </th>
+
+                                <th>
+                                    Khách sạn
+                                </th>
+
+                                <th>
+                                    Địa điểm
+                                </th>
+
+                                <th class="text-center">
+                                    Đánh giá
+                                </th>
+
+                                <th class="text-center">
+                                    Phòng
+                                </th>
+
+                                <th class="text-center">
+                                    Trạng thái
+                                </th>
+
+                                <th class="text-center"
+                                    style="width: 190px;">
+                                    Thao tác
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @{
+                                int stt = 1;
+                            }
+
+                            @foreach (var hotel in Model)
+                            {
+                                <tr>
+
+                                    <!-- STT -->
+                                    <td class="fw-semibold">
+                                        @stt
+                                    </td>
+
+
+                                    <!-- IMAGE -->
+                                    <td>
+
+                                        @if (!string.IsNullOrWhiteSpace(hotel.ImageUrl))
+                                        {
+                                            <img src="@hotel.ImageUrl"
+                                                 alt="@hotel.Name"
+                                                 style="
+                                            width:70px;
+                                            height:50px;
+                                            object-fit:cover;
+                                            border-radius:8px;
+                                            " />
+                                        }
+                                        else
+                                        {
+                                            <div style="
+                                                width:70px;
+                                                height:50px;
+                                                background:#f1f3f5;
+                                                border-radius:8px;
+                                                display:flex;
+                                                align-items:center;
+                                                justify-content:center;
+                                                ">
+
+                                                <i class="bi bi-image text-muted"></i>
+
+                                            </div>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- HOTEL NAME -->
+                                    <td>
+
+                                        <div class="fw-bold">
+                                            @hotel.Name
+                                        </div>
+
+                                        @if (!string.IsNullOrWhiteSpace(hotel.Slug))
+                                        {
+                                            <small class="text-muted">
+                                                /@hotel.Slug
+                                            </small>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- LOCATION -->
+                                    <td>
+
+                                        <div>
+                                            <i class="bi bi-geo-alt text-danger"></i>
+
+                                            @hotel.Address
+                                        </div>
+
+                                        @if (!string.IsNullOrWhiteSpace(hotel.City) ||
+                                             !string.IsNullOrWhiteSpace(hotel.Province))
+                                        {
+                                            <small class="text-muted">
+
+                                                @hotel.City
+
+                                                @if (!string.IsNullOrWhiteSpace(hotel.City) &&
+                                                     !string.IsNullOrWhiteSpace(hotel.Province))
+                                                {
+                                                    <span>, </span>
+                                                }
+
+                                                @hotel.Province
+
+                                            </small>
+                                        }
+
+                                        @if (hotel.Destination != null)
+                                        {
+                                            <div class="mt-1">
+
+                                                <span class="badge bg-info-subtle text-info-emphasis">
+
+                                                    <i class="bi bi-pin-map"></i>
+
+                                                    @hotel.Destination.Name
+
+                                                </span>
+
+                                            </div>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- RATING -->
+                                    <td class="text-center">
+
+                                        <div class="fw-semibold">
+
+                                            <i class="bi bi-star-fill text-warning"></i>
+
+                                            @hotel.Rating.ToString("0.0")
+
+                                        </div>
+
+                                        <small class="text-muted">
+
+                                            @hotel.ReviewCount đánh giá
+
+                                        </small>
+
+                                    </td>
+
+
+                                    <!-- ROOM COUNT -->
+                                    <td class="text-center">
+
+                                        <span class="badge bg-secondary-subtle text-secondary-emphasis px-3 py-2">
+
+                                            <i class="bi bi-door-open"></i>
+
+                                            @(hotel.Rooms?.Count ?? 0)
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- STATUS -->
+                                    <td class="text-center">
+
+                                        @if (hotel.Status == "Active")
+                                        {
+                                            <span class="badge bg-success-subtle text-success">
+
+                                                <i class="bi bi-check-circle"></i>
+
+                                                Đang hoạt động
+
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger-subtle text-danger">
+
+                                                <i class="bi bi-pause-circle"></i>
+
+                                                Tạm ngưng
+
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- ACTIONS -->
+                                    <td>
+
+                                        <div class="d-flex justify-content-center gap-1">
+
+                                            <!-- Details -->
+                                            <a asp-controller="AdminHotel"
+                                               asp-action="Details"
+                                               asp-route-id="@hotel.Id"
+                                               class="btn btn-sm btn-outline-info"
+                                               title="Xem chi tiết">
+
+                                                <i class="bi bi-eye"></i>
+
+                                            </a>
+
+
+                                            <!-- Edit -->
+                                            <a asp-controller="AdminHotel"
+                                               asp-action="Edit"
+                                               asp-route-id="@hotel.Id"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Chỉnh sửa">
+
+                                                <i class="bi bi-pencil"></i>
+
+                                            </a>
+
+
+                                            <!-- Delete -->
+                                            <a asp-controller="AdminHotel"
+                                               asp-action="Delete"
+                                               asp-route-id="@hotel.Id"
+                                               class="btn btn-sm btn-outline-danger"
+                                               title="Xóa">
+
+                                                <i class="bi bi-trash"></i>
+
+                                            </a>
+
+
+                                            <!-- Change status -->
+                                            @if (hotel.Status == "Active")
+                                            {
+                                                <form asp-controller="AdminHotel"
+                                                      asp-action="ChangeStatus"
+                                                      method="post"
+                                                      class="d-inline">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <input type="hidden"
+                                                           name="id"
+                                                           value="@hotel.Id" />
+
+                                                    <input type="hidden"
+                                                           name="status"
+                                                           value="Inactive" />
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-warning"
+                                                            title="Tạm ngưng"
+                                                            onclick="return confirm('Bạn có chắc muốn tạm ngưng khách sạn này?');">
+
+                                                        <i class="bi bi-pause"></i>
+
+                                                    </button>
+
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <form asp-controller="AdminHotel"
+                                                      asp-action="ChangeStatus"
+                                                      method="post"
+                                                      class="d-inline">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <input type="hidden"
+                                                           name="id"
+                                                           value="@hotel.Id" />
+
+                                                    <input type="hidden"
+                                                           name="status"
+                                                           value="Active" />
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-success"
+                                                            title="Kích hoạt"
+                                                            onclick="return confirm('Bạn có chắc muốn kích hoạt khách sạn này?');">
+
+                                                        <i class="bi bi-play"></i>
+
+                                                    </button>
+
+                                                </form>
+                                            }
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                                stt++;
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= CUSTOM STYLE ================= -->
+
+<style>
+
+    .card {
+        border-radius: 14px;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 14px 12px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge {
+        font-weight: 500;
+    }
+
+    .btn {
+        border-radius: 8px;
+    }
+
+    .input-group-text {
+        border-right: 0;
+    }
+
+    .input-group .form-control {
+        border-left: 0;
+    }
+
+        .input-group .form-control:focus {
+            border-left: 0;
+            box-shadow: none;
+        }
+
+</style>

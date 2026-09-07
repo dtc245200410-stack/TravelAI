@@ -1,0 +1,802 @@
+﻿@model TravelAI.Models.Tour
+
+@{
+    ViewData["Title"] = "Chi tiết Tour";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-info-circle me-2"></i>
+                Chi tiết Tour
+            </h2>
+
+            <p class="text-muted mb-0">
+                Thông tin chi tiết của tour #@Model.Id
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a asp-controller="AdminTour"
+               asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-primary">
+
+                <i class="bi bi-pencil me-2"></i>
+                Chỉnh sửa
+
+            </a>
+
+            <a asp-controller="AdminTour"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+
+                <i class="bi bi-arrow-left me-2"></i>
+                Quay lại
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- =========================
+             CỘT TRÁI
+        ========================== -->
+
+        <div class="col-lg-8">
+
+            <!-- HÌNH ẢNH + TÊN TOUR -->
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl"
+                         alt="@Model.Name"
+                         class="card-img-top"
+                         style="height:320px;
+                    object-fit:cover;" />
+                }
+                else
+                {
+                    <div class="bg-light d-flex
+                        align-items-center
+                        justify-content-center"
+                         style="height:320px;">
+
+                        <div class="text-center text-muted">
+
+                            <i class="bi bi-image display-3"></i>
+
+                            <div class="mt-2">
+                                Chưa có hình ảnh
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between
+                        align-items-start mb-3">
+
+                        <div>
+
+                            <h3 class="fw-bold mb-2">
+                                @Model.Name
+                            </h3>
+
+                            <div class="text-muted">
+
+                                <i class="bi bi-geo-alt me-1"></i>
+
+                                @(Model.Destination?.Name ?? "Chưa xác định")
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- STATUS -->
+                        @if (Model.Status == "Active")
+                        {
+                            <span class="badge bg-success fs-6 px-3 py-2">
+
+                                <i class="bi bi-check-circle me-1"></i>
+
+                                Đang hoạt động
+
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary fs-6 px-3 py-2">
+
+                                <i class="bi bi-pause-circle me-1"></i>
+
+                                Tạm ngưng
+
+                            </span>
+                        }
+
+                    </div>
+
+
+                    <!-- SLUG -->
+                    @if (!string.IsNullOrWhiteSpace(Model.Slug))
+                    {
+                        <div class="mb-4">
+
+                            <span class="badge bg-light text-dark
+                                border">
+
+                                <i class="bi bi-link-45deg me-1"></i>
+
+                                @Model.Slug
+
+                            </span>
+
+                        </div>
+                    }
+
+
+                    <!-- MÔ TẢ -->
+
+                    <div>
+
+                        <h5 class="fw-bold mb-3">
+                            Mô tả Tour
+                        </h5>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            <div class="text-secondary"
+                                 style="line-height:1.8;">
+
+                                @Html.Raw(
+                                    Model.Description
+                                        .Replace("\n", "<br />")
+                                )
+
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">
+                                Tour chưa có mô tả.
+                            </p>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 THÔNG TIN KHỞI HÀNH
+            ========================== -->
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="bi bi-calendar-event
+                        text-primary me-2"></i>
+
+                        Thông tin khởi hành
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <!-- ĐIỂM KHỞI HÀNH -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex">
+
+                                <div class="rounded-circle
+                                    bg-primary bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-geo-alt
+                                    text-primary"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Điểm khởi hành
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        @(string.IsNullOrWhiteSpace(
+                                            Model.DepartureLocation)
+                                            ? "Chưa xác định"
+                                            : Model.DepartureLocation)
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- NGÀY KHỞI HÀNH -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex">
+
+                                <div class="rounded-circle
+                                    bg-success bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-calendar-check
+                                    text-success"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Ngày khởi hành
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        @Model.DepartureDate.ToString(
+                                            "dd/MM/yyyy HH:mm")
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- THỜI LƯỢNG -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex">
+
+                                <div class="rounded-circle
+                                    bg-warning bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-clock
+                                    text-warning"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Thời lượng
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        @Model.Duration ngày
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ĐIỂM ĐẾN -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex">
+
+                                <div class="rounded-circle
+                                    bg-info bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-pin-map
+                                    text-info"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Điểm đến
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        @(Model.Destination?.Name
+                                            ?? "Chưa xác định")
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 THÔNG TIN ĐÁNH GIÁ
+            ========================== -->
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="bi bi-star-fill
+                        text-warning me-2"></i>
+
+                        Đánh giá khách hàng
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="row align-items-center">
+
+                        <!-- RATING -->
+
+                        <div class="col-md-4 text-center
+                            border-end">
+
+                            <div class="display-4 fw-bold">
+                                @Model.Rating.ToString("0.0")
+                            </div>
+
+                            <div class="text-warning fs-5">
+
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Round(Model.Rating))
+                                    {
+                                        <i class="bi bi-star-fill"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star"></i>
+                                    }
+                                }
+
+                            </div>
+
+                            <div class="text-muted mt-1">
+                                @Model.ReviewCount đánh giá
+                            </div>
+
+                        </div>
+
+
+                        <!-- REVIEW INFO -->
+
+                        <div class="col-md-8 ps-md-4">
+
+                            <div class="mb-3">
+
+                                <div class="d-flex
+                                    justify-content-between">
+
+                                    <span>
+                                        Điểm đánh giá
+                                    </span>
+
+                                    <strong>
+                                        @Model.Rating / 5
+                                    </strong>
+
+                                </div>
+
+                                <div class="progress mt-2"
+                                     style="height:8px;">
+
+                                    <div class="progress-bar"
+                                         role="progressbar"
+                                         style="width:@((Model.Rating / 5) * 100)%;">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="text-muted small">
+
+                                Điểm đánh giá và số lượng đánh giá
+                                được sử dụng để hiển thị mức độ
+                                yêu thích của khách hàng đối với tour.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             CỘT PHẢI
+        ========================== -->
+
+        <div class="col-lg-4">
+
+            <!-- GIÁ TOUR -->
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="bi bi-cash-coin
+                        text-success me-2"></i>
+
+                        Giá Tour
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    @if (Model.SalePrice.HasValue &&
+                         Model.SalePrice.Value > 0 &&
+                         Model.SalePrice.Value < Model.Price)
+                    {
+                        <div class="text-muted small">
+                            Giá gốc
+                        </div>
+
+                        <div class="text-decoration-line-through
+                            text-muted mb-2">
+
+                            @Model.Price.ToString("N0") VNĐ
+
+                        </div>
+
+                        <div class="text-muted small">
+                            Giá khuyến mãi
+                        </div>
+
+                        <div class="display-6 fw-bold text-danger">
+
+                            @Model.SalePrice.Value.ToString("N0") VNĐ
+
+                        </div>
+
+                        <div class="mt-2">
+
+                            @{
+                                var discount =
+                                    (1 - (Model.SalePrice.Value /
+                                          Model.Price)) * 100;
+                            }
+
+                            <span class="badge bg-danger">
+
+                                Giảm @discount.ToString("0")%
+
+                            </span>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-muted small">
+                            Giá Tour
+                        </div>
+
+                        <div class="display-6 fw-bold text-primary">
+
+                            @Model.Price.ToString("N0") VNĐ
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+
+            <!-- SỐ CHỖ -->
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="bi bi-people
+                        text-primary me-2"></i>
+
+                        Số chỗ
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="d-flex
+                        justify-content-between
+                        align-items-center mb-2">
+
+                        <span class="text-muted">
+                            Còn lại
+                        </span>
+
+                        <strong class="fs-5">
+                            @Model.AvailablePeople
+                        </strong>
+
+                    </div>
+
+                    <div class="progress mb-3"
+                         style="height:10px;">
+
+                        @{
+                            var percentAvailable =
+                                Model.MaxPeople > 0
+                                    ? (Model.AvailablePeople /
+                                       (double)Model.MaxPeople) * 100
+                                    : 0;
+                        }
+
+                        <div class="progress-bar"
+                             role="progressbar"
+                             style="width:@percentAvailable%;">
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex
+                        justify-content-between
+                        text-muted small">
+
+                        <span>
+                            Đã sử dụng
+                        </span>
+
+                        <span>
+                            @(Model.MaxPeople -
+                              Model.AvailablePeople)
+                        </span>
+
+                    </div>
+
+                    <div class="d-flex
+                        justify-content-between
+                        text-muted small mt-1">
+
+                        <span>
+                            Tổng số chỗ
+                        </span>
+
+                        <span>
+                            @Model.MaxPeople
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- THÔNG TIN HỆ THỐNG -->
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="bi bi-database
+                        text-secondary me-2"></i>
+
+                        Thông tin hệ thống
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Mã Tour
+                        </div>
+
+                        <div class="fw-semibold">
+                            #@Model.Id
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Ngày tạo
+                        </div>
+
+                        <div class="fw-semibold">
+
+                            @Model.CreatedAt.ToString(
+                                "dd/MM/yyyy HH:mm")
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="text-muted small">
+                            Trạng thái
+                        </div>
+
+                        @if (Model.Status == "Active")
+                        {
+                            <span class="badge bg-success mt-1">
+                                Đang hoạt động
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary mt-1">
+                                Tạm ngưng
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- THAO TÁC -->
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="bi bi-gear
+                        text-secondary me-2"></i>
+
+                        Thao tác
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <a asp-controller="AdminTour"
+                       asp-action="Edit"
+                       asp-route-id="@Model.Id"
+                       class="btn btn-primary w-100 mb-2">
+
+                        <i class="bi bi-pencil me-2"></i>
+
+                        Chỉnh sửa Tour
+
+                    </a>
+
+
+                    <form asp-controller="AdminTour"
+                          asp-action="ToggleStatus"
+                          asp-route-id="@Model.Id"
+                          method="post"
+                          class="mb-2">
+
+                        @Html.AntiForgeryToken()
+
+                        @if (Model.Status == "Active")
+                        {
+                            <button type="submit"
+                                    class="btn btn-outline-warning w-100"
+                                    onclick="return confirm('Bạn có chắc muốn tạm ngưng tour này?');">
+
+                                <i class="bi bi-pause-circle me-2"></i>
+
+                                Tạm ngưng Tour
+
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="submit"
+                                    class="btn btn-outline-success w-100"
+                                    onclick="return confirm('Bạn có chắc muốn kích hoạt tour này?');">
+
+                                <i class="bi bi-play-circle me-2"></i>
+
+                                Kích hoạt Tour
+
+                            </button>
+                        }
+
+                    </form>
+
+
+                    <a asp-controller="AdminTour"
+                       asp-action="Delete"
+                       asp-route-id="@Model.Id"
+                       class="btn btn-outline-danger w-100">
+
+                        <i class="bi bi-trash me-2"></i>
+
+                        Xóa Tour
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

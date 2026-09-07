@@ -1,0 +1,546 @@
+﻿@model TravelAI.Models.Hotel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa khách sạn";
+
+    var destinations = ViewBag.Destinations
+        as IEnumerable<TravelAI.Models.Destination>;
+}
+
+<div class="container-fluid py-4">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="mb-4">
+
+        <a asp-controller="AdminHotel"
+           asp-action="Index"
+           class="text-decoration-none text-muted">
+
+            <i class="bi bi-arrow-left"></i>
+            Quay lại danh sách khách sạn
+
+        </a>
+
+        <h2 class="fw-bold mt-3 mb-1">
+
+            <i class="bi bi-pencil-square text-primary"></i>
+
+            Chỉnh sửa khách sạn
+
+        </h2>
+
+        <p class="text-muted mb-0">
+            Cập nhật thông tin khách sạn trong hệ thống.
+        </p>
+
+    </div>
+
+
+    <!-- ================= FORM ================= -->
+
+    <form asp-controller="AdminHotel"
+          asp-action="Edit"
+          asp-route-id="@Model.Id"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               asp-for="Id" />
+
+        <div class="row g-4">
+
+            <!-- ================= LEFT ================= -->
+
+            <div class="col-lg-8">
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-info-circle text-primary me-1"></i>
+
+                            Thông tin khách sạn
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <!-- Validation -->
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+
+                        <!-- Tên khách sạn -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Name"
+                                   class="form-label fw-semibold">
+
+                                Tên khách sạn
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <input asp-for="Name"
+                                   class="form-control"
+                                   placeholder="Tên khách sạn" />
+
+                            <span asp-validation-for="Name"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Slug -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Slug"
+                                   class="form-label fw-semibold">
+
+                                Slug
+
+                            </label>
+
+                            <input asp-for="Slug"
+                                   class="form-control"
+                                   placeholder="vinpearl-resort-nha-trang" />
+
+                            <span asp-validation-for="Slug"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Địa chỉ -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Address"
+                                   class="form-label fw-semibold">
+
+                                Địa chỉ
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <input asp-for="Address"
+                                   class="form-control"
+                                   placeholder="Địa chỉ khách sạn" />
+
+                            <span asp-validation-for="Address"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+                        <!-- City + Province -->
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="City"
+                                       class="form-label fw-semibold">
+
+                                    Thành phố
+
+                                </label>
+
+                                <input asp-for="City"
+                                       class="form-control"
+                                       placeholder="Ví dụ: Nha Trang" />
+
+                                <span asp-validation-for="City"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="Province"
+                                       class="form-label fw-semibold">
+
+                                    Tỉnh
+
+                                </label>
+
+                                <input asp-for="Province"
+                                       class="form-control"
+                                       placeholder="Ví dụ: Khánh Hòa" />
+
+                                <span asp-validation-for="Province"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Destination -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="DestinationId"
+                                   class="form-label fw-semibold">
+
+                                Điểm đến
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <select asp-for="DestinationId"
+                                    class="form-select">
+
+                                <option value="">
+                                    -- Chọn điểm đến --
+                                </option>
+
+                                @if (destinations != null)
+                                {
+                                    foreach (var destination in destinations)
+                                    {
+                                        <option value="@destination.Id">
+
+                                            @destination.Name
+
+                                        </option>
+                                    }
+                                }
+
+                            </select>
+
+                            <span asp-validation-for="DestinationId"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Description -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Description"
+                                   class="form-label fw-semibold">
+
+                                Mô tả
+
+                            </label>
+
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="6"
+                                      placeholder="Mô tả khách sạn..."></textarea>
+
+                            <span asp-validation-for="Description"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Image URL -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="ImageUrl"
+                                   class="form-label fw-semibold">
+
+                                URL hình ảnh
+
+                            </label>
+
+                            <input asp-for="ImageUrl"
+                                   class="form-control"
+                                   placeholder="https://..." />
+
+                            <span asp-validation-for="ImageUrl"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Preview image -->
+                        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                        {
+                            <div class="mt-3">
+
+                                <label class="form-label fw-semibold">
+                                    Hình ảnh hiện tại
+                                </label>
+
+                                <div>
+
+                                    <img src="@Model.ImageUrl"
+                                         alt="@Model.Name"
+                                         class="hotel-preview" />
+
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= RIGHT ================= -->
+
+            <div class="col-lg-4">
+
+                <!-- Rating -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-star text-warning me-1"></i>
+
+                            Đánh giá
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <div class="mb-3">
+
+                            <label asp-for="Rating"
+                                   class="form-label fw-semibold">
+
+                                Điểm đánh giá
+
+                            </label>
+
+                            <input asp-for="Rating"
+                                   type="number"
+                                   class="form-control"
+                                   min="1"
+                                   max="5"
+                                   step="0.1" />
+
+                            <span asp-validation-for="Rating"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+                        <div class="mb-0">
+
+                            <label asp-for="ReviewCount"
+                                   class="form-label fw-semibold">
+
+                                Số lượt đánh giá
+
+                            </label>
+
+                            <input asp-for="ReviewCount"
+                                   type="number"
+                                   class="form-control"
+                                   min="0" />
+
+                            <span asp-validation-for="ReviewCount"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Status -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-toggle-on text-success me-1"></i>
+
+                            Trạng thái
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <label asp-for="Status"
+                               class="form-label fw-semibold">
+
+                            Trạng thái khách sạn
+
+                        </label>
+
+                        <select asp-for="Status"
+                                class="form-select">
+
+                            <option value="Active">
+                                Đang hoạt động
+                            </option>
+
+                            <option value="Inactive">
+                                Tạm ngưng
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Created At -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-calendar3 text-primary me-1"></i>
+
+                            Thông tin thời gian
+
+                        </h5>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <label asp-for="CreatedAt"
+                               class="form-label fw-semibold">
+
+                            Ngày tạo
+
+                        </label>
+
+                        <input asp-for="CreatedAt"
+                               type="datetime-local"
+                               class="form-control" />
+
+                    </div>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100 mb-2">
+
+                            <i class="bi bi-check-lg"></i>
+
+                            Lưu thay đổi
+
+                        </button>
+
+
+                        <a asp-controller="AdminHotel"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary w-100">
+
+                            <i class="bi bi-x-lg"></i>
+
+                            Hủy
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ================= STYLE ================= -->
+
+<style>
+
+    .card {
+        border-radius: 14px;
+    }
+
+    .card-header {
+        border-radius: 14px 14px 0 0 !important;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 8px;
+        padding: 10px 12px;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+        }
+
+    textarea.form-control {
+        resize: vertical;
+    }
+
+    .btn {
+        border-radius: 8px;
+        padding: 10px 16px;
+    }
+
+    .hotel-preview {
+        width: 100%;
+        max-height: 250px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 1px solid #dee2e6;
+    }
+
+</style>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

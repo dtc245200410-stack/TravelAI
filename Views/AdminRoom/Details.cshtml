@@ -1,0 +1,1054 @@
+﻿@model TravelAI.Models.Room
+
+@{
+    ViewData["Title"] = "Chi tiết phòng";
+}
+
+<div class="room-details-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+        <div>
+            <div class="breadcrumb">
+
+                <a asp-controller="Admin"
+                   asp-action="Index">
+                    Dashboard
+                </a>
+
+                <span>/</span>
+
+                <a asp-action="Index">
+                    Phòng
+                </a>
+
+                <span>/</span>
+
+                <span>Chi tiết</span>
+
+            </div>
+
+            <h1>
+                <i class="bi bi-door-open"></i>
+                Chi tiết phòng
+            </h1>
+
+            <p>
+                Thông tin chi tiết của phòng #@Model.Id
+            </p>
+        </div>
+
+        <div class="header-actions">
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn-edit">
+
+                <i class="bi bi-pencil-square"></i>
+                Chỉnh sửa
+
+            </a>
+
+            <a asp-action="Index"
+               class="btn-back">
+
+                <i class="bi bi-arrow-left"></i>
+                Quay lại
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN GRID -->
+    <div class="details-grid">
+
+        <!-- LEFT -->
+        <div class="left-column">
+
+            <!-- IMAGE CARD -->
+            <div class="card image-card">
+
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl"
+                         alt="@Model.RoomName"
+                         class="room-main-image"
+                         onerror="this.style.display='none'; document.getElementById('imageFallback').style.display='flex';" />
+
+                    <div id="imageFallback"
+                         class="image-fallback"
+                         style="display:none;">
+
+                        <i class="bi bi-image"></i>
+
+                        <span>
+                            Không thể tải hình ảnh
+                        </span>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="image-fallback">
+
+                        <i class="bi bi-image"></i>
+
+                        <span>
+                            Chưa có hình ảnh
+                        </span>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+            <div class="card">
+
+                <div class="card-title">
+
+                    <div class="title-icon">
+                        <i class="bi bi-text-paragraph"></i>
+                    </div>
+
+                    <div>
+                        <h2>Mô tả phòng</h2>
+                        <p>Thông tin giới thiệu</p>
+                    </div>
+
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <div class="description">
+                        @Model.Description
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-description">
+
+                        <i class="bi bi-info-circle"></i>
+
+                        <span>
+                            Phòng chưa có mô tả.
+                        </span>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+        <div class="right-column">
+
+            <!-- BASIC INFO -->
+            <div class="card">
+
+                <div class="card-title">
+
+                    <div class="title-icon">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+
+                    <div>
+                        <h2>Thông tin phòng</h2>
+                        <p>Thông tin cơ bản</p>
+                    </div>
+
+                </div>
+
+
+                <div class="info-list">
+
+                    <!-- NAME -->
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="bi bi-door-open"></i>
+                            Tên phòng
+                        </div>
+
+                        <div class="info-value strong">
+                            @Model.RoomName
+                        </div>
+
+                    </div>
+
+
+                    <!-- ID -->
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="bi bi-hash"></i>
+                            Mã phòng
+                        </div>
+
+                        <div class="info-value">
+                            #@Model.Id
+                        </div>
+
+                    </div>
+
+
+                    <!-- TYPE -->
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="bi bi-grid"></i>
+                            Loại phòng
+                        </div>
+
+                        <div class="info-value">
+
+                            @if (!string.IsNullOrWhiteSpace(Model.RoomType))
+                            {
+                                <span class="type-badge">
+                                    @Model.RoomType
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="muted">
+                                    Chưa cập nhật
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- HOTEL -->
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="bi bi-building"></i>
+                            Khách sạn
+                        </div>
+
+                        <div class="info-value">
+
+                            @if (Model.Hotel != null)
+                            {
+                                <a asp-controller="AdminHotel"
+                                   asp-action="Details"
+                                   asp-route-id="@Model.HotelId"
+                                   class="hotel-link">
+
+                                    @Model.Hotel.Name
+
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="muted">
+                                    Không xác định
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MAX GUESTS -->
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="bi bi-people"></i>
+                            Sức chứa
+                        </div>
+
+                        <div class="info-value strong">
+                            @Model.MaxGuests người
+                        </div>
+
+                    </div>
+
+
+                    <!-- PRICE -->
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <i class="bi bi-cash-stack"></i>
+                            Giá mỗi đêm
+                        </div>
+
+                        <div class="info-value price">
+                            @Model.PricePerNight.ToString("N0")
+                            <small>VNĐ</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUANTITY -->
+            <div class="card">
+
+                <div class="card-title">
+
+                    <div class="title-icon">
+                        <i class="bi bi-bar-chart"></i>
+                    </div>
+
+                    <div>
+                        <h2>Tình trạng phòng</h2>
+                        <p>Thông tin số lượng</p>
+                    </div>
+
+                </div>
+
+
+                <div class="quantity-grid">
+
+                    <!-- TOTAL -->
+                    <div class="quantity-box">
+
+                        <div class="quantity-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+
+                        <div>
+                            <span class="quantity-label">
+                                Tổng số phòng
+                            </span>
+
+                            <strong>
+                                @Model.Quantity
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- AVAILABLE -->
+                    <div class="quantity-box available-box">
+
+                        <div class="quantity-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+
+                        <div>
+                            <span class="quantity-label">
+                                Còn trống
+                            </span>
+
+                            <strong>
+                                @Model.AvailableQuantity
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- OCCUPIED -->
+                    <div class="quantity-box occupied-box">
+
+                        <div class="quantity-icon">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+
+                        <div>
+                            <span class="quantity-label">
+                                Đang sử dụng
+                            </span>
+
+                            <strong>
+                                @(Math.Max(
+                                    0,
+                                    Model.Quantity - Model.AvailableQuantity
+                                ))
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AVAILABILITY BAR -->
+                @{
+                    var availabilityPercent = Model.Quantity > 0
+                        ? (double)Model.AvailableQuantity / Model.Quantity * 100
+                        : 0;
+                }
+
+                <div class="availability-section">
+
+                    <div class="availability-header">
+
+                        <span>
+                            Tỷ lệ phòng còn trống
+                        </span>
+
+                        <strong>
+                            @availabilityPercent.ToString("0")%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div class="progress-value"
+                             style="width:@availabilityPercent.ToString(
+                                                             System.Globalization.CultureInfo.InvariantCulture
+                                                         )%;">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div class="card status-card">
+
+                <div class="card-title">
+
+                    <div class="title-icon">
+                        <i class="bi bi-toggle-on"></i>
+                    </div>
+
+                    <div>
+                        <h2>Trạng thái</h2>
+                        <p>Trạng thái hiện tại của phòng</p>
+                    </div>
+
+                </div>
+
+
+                @if (Model.Status == "Available")
+                {
+                    <div class="current-status active">
+
+                        <div class="status-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+
+                        <div>
+                            <strong>
+                                Đang hoạt động
+                            </strong>
+
+                            <span>
+                                Phòng đang được phép đặt.
+                            </span>
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="current-status inactive">
+
+                        <div class="status-icon">
+                            <i class="bi bi-pause-circle-fill"></i>
+                        </div>
+
+                        <div>
+                            <strong>
+                                Tạm ngưng
+                            </strong>
+
+                            <span>
+                                Phòng hiện không được phép đặt.
+                            </span>
+
+                        </div>
+
+                    </div>
+                }
+
+
+                <div class="status-actions">
+
+                    @if (Model.Status == "Available")
+                    {
+                        <form asp-action="ChangeStatus"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@Model.Id" />
+
+                            <input type="hidden"
+                                   name="status"
+                                   value="Unavailable" />
+
+                            <button type="submit"
+                                    class="btn-status pause"
+                                    onclick="return confirm('Bạn có chắc muốn tạm ngưng phòng này?');">
+
+                                <i class="bi bi-pause"></i>
+
+                                Tạm ngưng phòng
+
+                            </button>
+
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="ChangeStatus"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@Model.Id" />
+
+                            <input type="hidden"
+                                   name="status"
+                                   value="Available" />
+
+                            <button type="submit"
+                                    class="btn-status activate"
+                                    onclick="return confirm('Bạn có chắc muốn kích hoạt phòng này?');">
+
+                                <i class="bi bi-play"></i>
+
+                                Kích hoạt phòng
+
+                            </button>
+
+                        </form>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .room-details-page {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+
+
+    /* HEADER */
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        color: #9ca3af;
+        font-size: 14px;
+    }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+            .breadcrumb a:hover {
+                text-decoration: underline;
+            }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+        .page-header h1 i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+    .page-header p {
+        margin: 7px 0 0;
+        color: #7b8494;
+        font-size: 15px;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+
+    /* HEADER BUTTONS */
+
+    .btn-edit,
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    .btn-edit {
+        background: #667eea;
+        color: white;
+    }
+
+        .btn-edit:hover {
+            background: #5568d8;
+            color: white;
+        }
+
+    .btn-back {
+        background: white;
+        color: #4b5563;
+        border: 1px solid #dfe4ea;
+    }
+
+        .btn-back:hover {
+            background: #f8fafc;
+            color: #374151;
+        }
+
+
+    /* GRID */
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: minmax(320px, 0.9fr) minmax(500px, 1.1fr);
+        gap: 22px;
+        align-items: start;
+    }
+
+    .left-column,
+    .right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+
+    /* CARD */
+
+    .card {
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 5px 22px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px;
+        border-bottom: 1px solid #edf0f3;
+    }
+
+    .title-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: #eef2ff;
+        color: #667eea;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .card-title h2 {
+        margin: 0;
+        color: #1f2937;
+        font-size: 17px;
+    }
+
+    .card-title p {
+        margin: 3px 0 0;
+        color: #9ca3af;
+        font-size: 12px;
+    }
+
+
+    /* IMAGE */
+
+    .image-card {
+        min-height: 350px;
+    }
+
+    .room-main-image {
+        display: block;
+        width: 100%;
+        height: 390px;
+        object-fit: cover;
+    }
+
+    .image-fallback {
+        min-height: 350px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: #f8fafc;
+        color: #9ca3af;
+    }
+
+        .image-fallback i {
+            font-size: 50px;
+        }
+
+
+    /* DESCRIPTION */
+
+    .description {
+        padding: 22px;
+        color: #4b5563;
+        font-size: 14px;
+        line-height: 1.8;
+        white-space: pre-line;
+    }
+
+    .empty-description {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 25px;
+        color: #9ca3af;
+        font-size: 14px;
+    }
+
+
+    /* INFO */
+
+    .info-list {
+        padding: 5px 20px;
+    }
+
+    .info-row {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 20px;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f2f5;
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #8a94a6;
+        font-size: 13px;
+    }
+
+        .info-label i {
+            color: #667eea;
+            width: 16px;
+        }
+
+    .info-value {
+        color: #374151;
+        font-size: 14px;
+        text-align: right;
+    }
+
+        .info-value.strong {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .info-value.price {
+            color: #dc2626;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+            .info-value.price small {
+                font-size: 11px;
+                font-weight: 600;
+            }
+
+    .muted {
+        color: #9ca3af;
+    }
+
+    .type-badge {
+        display: inline-flex;
+        padding: 5px 9px;
+        background: #f3f4f6;
+        color: #4b5563;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .hotel-link {
+        color: #4f46e5;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .hotel-link:hover {
+            text-decoration: underline;
+        }
+
+
+    /* QUANTITY */
+
+    .quantity-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        padding: 20px;
+    }
+
+    .quantity-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #f8fafc;
+    }
+
+    .quantity-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #667eea;
+        flex-shrink: 0;
+    }
+
+    .available-box .quantity-icon {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .occupied-box .quantity-icon {
+        background: #fff7ed;
+        color: #ea580c;
+    }
+
+    .quantity-label {
+        display: block;
+        color: #9ca3af;
+        font-size: 11px;
+        margin-bottom: 3px;
+    }
+
+    .quantity-box strong {
+        color: #1f2937;
+        font-size: 19px;
+    }
+
+
+    /* PROGRESS */
+
+    .availability-section {
+        padding: 0 20px 22px;
+    }
+
+    .availability-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+        .availability-header strong {
+            color: #059669;
+        }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #edf0f3;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .progress-value {
+        height: 100%;
+        background: #10b981;
+        border-radius: 20px;
+        transition: width 0.3s;
+    }
+
+
+    /* STATUS */
+
+    .status-card {
+        padding-bottom: 20px;
+    }
+
+    .current-status {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin: 20px;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+        .current-status.active {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .current-status.inactive {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+    .status-icon {
+        font-size: 24px;
+    }
+
+    .current-status strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 3px;
+    }
+
+    .current-status span {
+        display: block;
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .status-actions {
+        padding: 0 20px;
+    }
+
+        .status-actions form {
+            margin: 0;
+        }
+
+    .btn-status {
+        width: 100%;
+        min-height: 42px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+    }
+
+        .btn-status.pause {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+            .btn-status.pause:hover {
+                background: #ffedd5;
+            }
+
+        .btn-status.activate {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+            .btn-status.activate:hover {
+                background: #d1fae5;
+            }
+
+
+    /* RESPONSIVE */
+
+    @@media (max-width: 1000px) {
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .room-main-image {
+            height: 320px;
+        }
+    }
+
+
+    @@media (max-width: 700px) {
+
+        .room-details-page {
+            padding: 18px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .btn-edit,
+        .btn-back {
+            flex: 1;
+        }
+
+        .quantity-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-row {
+            grid-template-columns: 1fr;
+            gap: 7px;
+        }
+
+        .info-value {
+            text-align: left;
+        }
+    }
+
+</style>

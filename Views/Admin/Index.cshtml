@@ -1,0 +1,923 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    .admin-page {
+        background: #f5f7fb;
+        min-height: calc(100vh - 70px);
+    }
+
+    .admin-header {
+        background: linear-gradient(135deg, #0d6efd, #2563eb);
+        color: white;
+        border-radius: 18px;
+        padding: 28px;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, .08);
+    }
+
+        .admin-header h2 {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .admin-header p {
+            margin: 0;
+            opacity: .9;
+        }
+
+    .management-card {
+        display: flex;
+        align-items: center;
+        position: relative;
+        min-height: 115px;
+        padding: 20px;
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e9ecef;
+        color: #212529;
+        transition: all .2s ease;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, .04);
+    }
+
+    a.management-card {
+        text-decoration: none;
+    }
+
+        a.management-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .10);
+            border-color: #0d6efd;
+        }
+
+    .management-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-right: 15px;
+    }
+
+    .management-content {
+        padding-right: 25px;
+    }
+
+        .management-content h6 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .management-content p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+    .management-arrow {
+        position: absolute;
+        right: 18px;
+        color: #adb5bd;
+        font-size: 18px;
+    }
+
+    .stat-card {
+        border: 0;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, .05);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+</style>
+
+<div class="admin-page py-4">
+
+    <div class="container-fluid">
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="admin-header">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h2>
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        Admin Dashboard
+                    </h2>
+
+                    <p>
+                        Quản lý và theo dõi toàn bộ hệ thống TravelAI
+                    </p>
+
+                </div>
+
+                <div class="d-none d-md-block">
+
+                    <i class="bi bi-airplane-engines"
+                       style="font-size:55px; opacity:.25;"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= QUẢN LÝ HỆ THỐNG ================= -->
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+            <div class="card-header bg-white border-0 pt-4 px-4">
+
+                <h5 class="fw-bold mb-1">
+
+                    <i class="bi bi-grid-3x3-gap text-primary me-2"></i>
+
+                    Quản lý hệ thống
+
+                </h5>
+
+                <p class="text-muted small mb-0">
+                    Chọn chức năng bạn muốn quản lý
+                </p>
+
+            </div>
+
+
+            <div class="card-body p-4">
+
+                <div class="row g-3">
+
+
+                    <!-- ================= TOUR ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminTour"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-primary-subtle text-primary">
+
+                                <i class="bi bi-map"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Tour</h6>
+
+                                <p>
+                                    Thêm, sửa, xóa và quản lý tour
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= HOTEL ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminHotel"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-success-subtle text-success">
+
+                                <i class="bi bi-building"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Hotel</h6>
+
+                                <p>
+                                    Thêm, sửa, xóa và quản lý khách sạn
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= ROOM ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminRoom"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-info-subtle text-info">
+
+                                <i class="bi bi-door-open"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Room</h6>
+
+                                <p>
+                                    Quản lý phòng khách sạn
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= BOOKING ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminBooking"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-warning-subtle text-warning">
+
+                                <i class="bi bi-calendar-check"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Booking</h6>
+
+                                <p>
+                                    Quản lý đơn đặt tour và phòng
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= USER ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminUser"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-danger-subtle text-danger">
+
+                                <i class="bi bi-people"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>User</h6>
+
+                                <p>
+                                    Quản lý tài khoản và phân quyền
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= PAYMENT ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminPayment"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-primary-subtle text-primary">
+
+                                <i class="bi bi-credit-card"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Payment</h6>
+
+                                <p>
+                                    Quản lý thanh toán
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= PROMOTION ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminPromotion"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-success-subtle text-success">
+
+                                <i class="bi bi-ticket-perforated"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Promotion</h6>
+
+                                <p>
+                                    Quản lý mã giảm giá
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= COMBO ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminCombo"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-info-subtle text-info">
+
+                                <i class="bi bi-box-seam"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Combo</h6>
+
+                                <p>
+                                    Quản lý combo dịch vụ
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= REVIEW ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminReview"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-warning-subtle text-warning">
+
+                                <i class="bi bi-star"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Review</h6>
+
+                                <p>
+                                    Quản lý đánh giá
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= AI ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminAI"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-danger-subtle text-danger">
+
+                                <i class="bi bi-robot"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>AI</h6>
+
+                                <p>
+                                    Quản lý tính năng AI
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= STATISTICS ================= -->
+
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+
+                        <a asp-controller="AdminStatistics"
+                           asp-action="Index"
+                           class="management-card">
+
+                            <div class="management-icon bg-secondary-subtle text-secondary">
+
+                                <i class="bi bi-bar-chart"></i>
+
+                            </div>
+
+                            <div class="management-content">
+
+                                <h6>Statistics</h6>
+
+                                <p>
+                                    Thống kê và báo cáo
+                                </p>
+
+                            </div>
+
+                            <i class="bi bi-chevron-right management-arrow"></i>
+
+                        </a>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= TỔNG QUAN ================= -->
+
+        <div class="mb-3">
+
+            <h5 class="fw-bold">
+
+                <i class="bi bi-graph-up text-primary me-2"></i>
+
+                Tổng quan hệ thống
+
+            </h5>
+
+        </div>
+
+
+        <!-- ================= STAT CARDS ================= -->
+
+        <div class="row g-4 mb-4">
+
+
+            <!-- USERS -->
+
+            <div class="col-xl-3 col-md-6">
+
+                <div class="card stat-card h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+
+                                <div class="text-muted small mb-1">
+                                    Người dùng
+                                </div>
+
+                                <h3 class="fw-bold mb-0">
+                                    @ViewBag.TotalUsers
+                                </h3>
+
+                            </div>
+
+                            <div class="stat-icon bg-primary-subtle text-primary">
+
+                                <i class="bi bi-people"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOURS -->
+
+            <div class="col-xl-3 col-md-6">
+
+                <div class="card stat-card h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+
+                                <div class="text-muted small mb-1">
+                                    Tour
+                                </div>
+
+                                <h3 class="fw-bold mb-0">
+                                    @ViewBag.TotalTours
+                                </h3>
+
+                            </div>
+
+                            <div class="stat-icon bg-success-subtle text-success">
+
+                                <i class="bi bi-map"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- HOTELS -->
+
+            <div class="col-xl-3 col-md-6">
+
+                <div class="card stat-card h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+
+                                <div class="text-muted small mb-1">
+                                    Khách sạn
+                                </div>
+
+                                <h3 class="fw-bold mb-0">
+                                    @ViewBag.TotalHotels
+                                </h3>
+
+                            </div>
+
+                            <div class="stat-icon bg-info-subtle text-info">
+
+                                <i class="bi bi-building"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ROOMS -->
+
+            <div class="col-xl-3 col-md-6">
+
+                <div class="card stat-card h-100">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+
+                                <div class="text-muted small mb-1">
+                                    Phòng
+                                </div>
+
+                                <h3 class="fw-bold mb-0">
+                                    @ViewBag.TotalRooms
+                                </h3>
+
+                            </div>
+
+                            <div class="stat-icon bg-warning-subtle text-warning">
+
+                                <i class="bi bi-door-open"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================= BOOKING ================= -->
+
+        <div class="row g-4 mb-4">
+
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Tổng Booking Tour
+                        </div>
+
+                        <h3 class="fw-bold mt-1">
+                            @ViewBag.TotalTourBookings
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Tổng Booking Hotel
+                        </div>
+
+                        <h3 class="fw-bold mt-1">
+                            @ViewBag.TotalHotelBookings
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Tổng tất cả Booking
+                        </div>
+
+                        <h3 class="fw-bold mt-1">
+                            @(
+                                Convert.ToInt32(ViewBag.TotalTourBookings)
+                                + Convert.ToInt32(ViewBag.TotalHotelBookings)
+                            )
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================= TRẠNG THÁI BOOKING ================= -->
+
+        <div class="row g-4 mb-4">
+
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Booking đang chờ
+                        </div>
+
+                        <h3 class="fw-bold text-warning mt-1">
+                            @ViewBag.PendingBookings
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Booking đã xác nhận
+                        </div>
+
+                        <h3 class="fw-bold text-success mt-1">
+                            @ViewBag.ConfirmedBookings
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Booking đã hủy
+                        </div>
+
+                        <h3 class="fw-bold text-danger mt-1">
+                            @ViewBag.CancelledBookings
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================= DOANH THU ================= -->
+
+        <div class="mb-3">
+
+            <h5 class="fw-bold">
+
+                <i class="bi bi-cash-stack text-success me-2"></i>
+
+                Doanh thu
+
+            </h5>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <!-- TOUR REVENUE -->
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Doanh thu Tour
+                        </div>
+
+                        <h3 class="fw-bold mt-1">
+                            @Convert.ToDecimal(ViewBag.TourRevenue).ToString("N0") ₫
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- HOTEL REVENUE -->
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Doanh thu Hotel
+                        </div>
+
+                        <h3 class="fw-bold mt-1">
+                            @Convert.ToDecimal(ViewBag.HotelRevenue).ToString("N0") ₫
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL REVENUE -->
+
+            <div class="col-lg-4">
+
+                <div class="card stat-card">
+
+                    <div class="card-body">
+
+                        <div class="text-muted small">
+                            Tổng doanh thu
+                        </div>
+
+                        <h3 class="fw-bold text-success mt-1">
+                            @Convert.ToDecimal(ViewBag.TotalRevenue).ToString("N0") ₫
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,426 @@
+﻿@model TravelAI.Models.Hotel
+
+@{
+    ViewData["Title"] = "Xóa khách sạn";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-trash3 text-danger"></i>
+                Xóa khách sạn
+            </h2>
+
+            <p class="text-muted mb-0">
+                Xác nhận xóa thông tin khách sạn khỏi hệ thống
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Quay lại
+        </a>
+    </div>
+
+    <!-- Warning -->
+    <div class="alert alert-danger border-0 shadow-sm">
+        <div class="d-flex align-items-start">
+
+            <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+
+            <div>
+                <h5 class="fw-bold mb-1">
+                    Bạn có chắc chắn muốn xóa khách sạn này?
+                </h5>
+
+                <p class="mb-0">
+                    Thao tác này có thể ảnh hưởng đến dữ liệu liên quan.
+                    Hãy kiểm tra thông tin trước khi xác nhận.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Hotel image -->
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl"
+                         alt="@Model.Name"
+                         class="card-img-top"
+                         style="height:280px; object-fit:cover;" />
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center bg-light"
+                         style="height:280px;">
+
+                        <div class="text-center text-muted">
+
+                            <i class="bi bi-building fs-1"></i>
+
+                            <div class="mt-2">
+                                Chưa có hình ảnh
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+                <div class="card-body">
+
+                    <h4 class="fw-bold mb-2">
+                        @Model.Name
+                    </h4>
+
+                    @if (Model.Rating > 0)
+                    {
+                        <div class="mb-2">
+
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Round(Model.Rating))
+                                {
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star text-muted"></i>
+                                }
+                            }
+
+                            <span class="ms-2 text-muted">
+                                @Model.Rating.ToString("0.0") / 5
+                            </span>
+
+                        </div>
+                    }
+
+                    <div class="text-muted">
+                        <i class="bi bi-geo-alt"></i>
+
+                        @Model.Address
+
+                        @if (!string.IsNullOrWhiteSpace(Model.City))
+                        {
+                            <span>, @Model.City</span>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.Province))
+                        {
+                            <span>, @Model.Province</span>
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Hotel information -->
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white py-3">
+
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-info-circle text-primary"></i>
+                        Thông tin khách sạn
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-3">
+
+                        <!-- Name -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Tên khách sạn
+                            </label>
+
+                            <div class="fw-semibold">
+                                @Model.Name
+                            </div>
+
+                        </div>
+
+
+                        <!-- Slug -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Slug
+                            </label>
+
+                            <div class="fw-semibold">
+                                @(string.IsNullOrWhiteSpace(Model.Slug)
+                                    ? "—"
+                                    : Model.Slug)
+                            </div>
+
+                        </div>
+
+
+                        <!-- Address -->
+                        <div class="col-md-12">
+
+                            <label class="text-muted small">
+                                Địa chỉ
+                            </label>
+
+                            <div class="fw-semibold">
+                                @Model.Address
+                            </div>
+
+                        </div>
+
+
+                        <!-- City -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Thành phố
+                            </label>
+
+                            <div class="fw-semibold">
+                                @(string.IsNullOrWhiteSpace(Model.City)
+                                    ? "—"
+                                    : Model.City)
+                            </div>
+
+                        </div>
+
+
+                        <!-- Province -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Tỉnh / khu vực
+                            </label>
+
+                            <div class="fw-semibold">
+                                @(string.IsNullOrWhiteSpace(Model.Province)
+                                    ? "—"
+                                    : Model.Province)
+                            </div>
+
+                        </div>
+
+
+                        <!-- Destination -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Điểm đến
+                            </label>
+
+                            <div class="fw-semibold">
+                                @(Model.Destination?.Name ?? "—")
+                            </div>
+
+                        </div>
+
+
+                        <!-- Status -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Trạng thái
+                            </label>
+
+                            <div>
+
+                                @if (Model.Status == "Active")
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i>
+                                        Đang hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-pause-circle"></i>
+                                        Tạm ngưng
+                                    </span>
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Rating -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Đánh giá
+                            </label>
+
+                            <div class="fw-semibold">
+                                @Model.Rating.ToString("0.0") / 5
+                            </div>
+
+                        </div>
+
+
+                        <!-- Review count -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Số lượt đánh giá
+                            </label>
+
+                            <div class="fw-semibold">
+                                @Model.ReviewCount
+                            </div>
+
+                        </div>
+
+
+                        <!-- Room count -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Số phòng
+                            </label>
+
+                            <div class="fw-semibold">
+                                @(Model.Rooms?.Count ?? 0) phòng
+                            </div>
+
+                        </div>
+
+
+                        <!-- Booking count -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Số Booking
+                            </label>
+
+                            <div class="fw-semibold">
+                                @(Model.HotelBookings?.Count ?? 0) Booking
+                            </div>
+
+                        </div>
+
+
+                        <!-- Created -->
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Ngày tạo
+                            </label>
+
+                            <div class="fw-semibold">
+                                @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+
+                        </div>
+
+
+                        <!-- Description -->
+                        <div class="col-12">
+
+                            <label class="text-muted small">
+                                Mô tả
+                            </label>
+
+                            <div class="p-3 bg-light rounded">
+
+                                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                                {
+                                    @Model.Description
+                                }
+                                else
+                                {
+                                    <span class="text-muted">
+                                        Chưa có mô tả.
+                                    </span>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Delete form -->
+            <div class="card border-0 shadow-sm mt-4">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <h6 class="fw-bold mb-1 text-danger">
+                                Xác nhận xóa
+                            </h6>
+
+                            <p class="text-muted mb-0">
+                                Nếu khách sạn đã có Booking hoặc còn phòng,
+                                hệ thống sẽ không cho phép xóa.
+                            </p>
+
+                        </div>
+
+                        <form asp-action="DeleteConfirmed"
+                              method="post">
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@Model.Id" />
+
+                            @Html.AntiForgeryToken()
+
+                            <a asp-action="Index"
+                               class="btn btn-outline-secondary me-2">
+                                <i class="bi bi-x-lg"></i>
+                                Hủy
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa khách sạn này không?');">
+
+                                <i class="bi bi-trash3"></i>
+                                Xác nhận xóa
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,764 @@
+﻿@model IEnumerable<TravelAI.Models.Tour>
+
+@{
+    ViewData["Title"] = "Quản lý Tour";
+
+    var searchString = ViewBag.SearchString as string;
+    var selectedStatus = ViewBag.SelectedStatus as string;
+
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 0;
+    int totalTours = ViewBag.TotalTours ?? 0;
+}
+
+<div class="container-fluid py-4">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-map me-2"></i>
+                Quản lý Tour
+            </h2>
+
+            <p class="text-muted mb-0">
+                Quản lý danh sách tour du lịch của hệ thống
+            </p>
+        </div>
+
+        <a asp-controller="AdminTour"
+           asp-action="Create"
+           class="btn btn-primary px-4">
+
+            <i class="bi bi-plus-lg me-2"></i>
+            Thêm Tour
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         THÔNG BÁO
+    ========================== -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm"
+             role="alert">
+
+            <i class="bi bi-check-circle-fill me-2"></i>
+
+            @TempData["SuccessMessage"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            @TempData["ErrorMessage"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- =========================
+         THỐNG KÊ
+    ========================== -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body d-flex align-items-center">
+
+                    <div class="rounded-circle bg-primary bg-opacity-10
+                        p-3 me-3">
+
+                        <i class="bi bi-map fs-3 text-primary"></i>
+
+                    </div>
+
+                    <div>
+                        <div class="text-muted small">
+                            Tổng số Tour
+                        </div>
+
+                        <div class="fs-3 fw-bold">
+                            @totalTours
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body d-flex align-items-center">
+
+                    <div class="rounded-circle bg-success bg-opacity-10
+                        p-3 me-3">
+
+                        <i class="bi bi-check-circle fs-3 text-success"></i>
+
+                    </div>
+
+                    <div>
+                        <div class="text-muted small">
+                            Tour đang hoạt động
+                        </div>
+
+                        <div class="fs-3 fw-bold text-success">
+
+                            @(Model?.Count(t => t.Status == "Active") ?? 0)
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body d-flex align-items-center">
+
+                    <div class="rounded-circle bg-secondary bg-opacity-10
+                        p-3 me-3">
+
+                        <i class="bi bi-pause-circle fs-3 text-secondary"></i>
+
+                    </div>
+
+                    <div>
+                        <div class="text-muted small">
+                            Tour tạm ngưng
+                        </div>
+
+                        <div class="fs-3 fw-bold text-secondary">
+
+                            @(Model?.Count(t => t.Status == "Inactive") ?? 0)
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         BỘ LỌC
+    ========================== -->
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <form asp-controller="AdminTour"
+                  asp-action="Index"
+                  method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- Tìm kiếm -->
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Tìm kiếm
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+
+                            <input type="text"
+                                   name="searchString"
+                                   value="@searchString"
+                                   class="form-control"
+                                   placeholder="Tên tour, điểm đến, nơi khởi hành..." />
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Trạng thái -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+                            Trạng thái
+                        </label>
+
+                        <select name="status"
+                                class="form-select">
+
+                            <option value="">
+                                Tất cả trạng thái
+                            </option>
+
+                            <option value="Active"
+                                    selected="@(selectedStatus == "Active")">
+
+                                Đang hoạt động
+
+                            </option>
+
+                            <option value="Inactive"
+                                    selected="@(selectedStatus == "Inactive")">
+
+                                Tạm ngưng
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Button -->
+
+                    <div class="col-md-3">
+
+                        <div class="d-flex gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary flex-grow-1">
+
+                                <i class="bi bi-search me-1"></i>
+                                Tìm kiếm
+
+                            </button>
+
+                            <a asp-controller="AdminTour"
+                               asp-action="Index"
+                               class="btn btn-outline-secondary">
+
+                                <i class="bi bi-arrow-clockwise"></i>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         BẢNG TOUR
+    ========================== -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white border-0 py-3">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0 fw-bold">
+                    Danh sách Tour
+                </h5>
+
+                <span class="text-muted small">
+                    Trang @currentPage / @(totalPages == 0 ? 1 : totalPages)
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th class="text-center"
+                                style="width:60px;">
+                                STT
+                            </th>
+
+                            <th style="min-width:280px;">
+                                Tour
+                            </th>
+
+                            <th>
+                                Điểm đến
+                            </th>
+
+                            <th>
+                                Khởi hành
+                            </th>
+
+                            <th class="text-end">
+                                Giá
+                            </th>
+
+                            <th class="text-center">
+                                Số chỗ
+                            </th>
+
+                            <th class="text-center">
+                                Trạng thái
+                            </th>
+
+                            <th class="text-center"
+                                style="width:180px;">
+                                Thao tác
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            int stt = ((currentPage - 1) * 10) + 1;
+
+                            foreach (var tour in Model)
+                            {
+                                <tr>
+
+                                    <!-- STT -->
+
+                                    <td class="text-center text-muted">
+                                        @stt
+                                    </td>
+
+
+                                    <!-- TOUR -->
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            @if (!string.IsNullOrWhiteSpace(tour.ImageUrl))
+                                            {
+                                                <img src="@tour.ImageUrl"
+                                                     alt="@tour.Name"
+                                                     class="rounded me-3"
+                                                     style="width:70px;
+                                                height:50px;
+                                                object-fit:cover;" />
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded bg-light
+                                                    d-flex align-items-center
+                                                    justify-content-center
+                                                    me-3"
+                                                     style="width:70px;
+                                                    height:50px;">
+
+                                                    <i class="bi bi-image
+                                                    text-muted"></i>
+
+                                                </div>
+                                            }
+
+                                            <div>
+
+                                                <div class="fw-semibold">
+                                                    @tour.Name
+                                                </div>
+
+                                                <small class="text-muted">
+
+                                                    @if (tour.Duration > 0)
+                                                    {
+                                                        <span>
+                                                            @tour.Duration ngày
+                                                        </span>
+                                                    }
+
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- ĐIỂM ĐẾN -->
+
+                                    <td>
+
+                                        @if (tour.Destination != null)
+                                        {
+                                            <span>
+                                                <i class="bi bi-geo-alt
+                                                text-primary me-1"></i>
+
+                                                @tour.Destination.Name
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                Chưa xác định
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- KHỞI HÀNH -->
+
+                                    <td>
+
+                                        <div>
+                                            @tour.DepartureLocation
+                                        </div>
+
+                                        <small class="text-muted">
+
+                                            @tour.DepartureDate.ToString(
+                                                "dd/MM/yyyy HH:mm")
+
+                                        </small>
+
+                                    </td>
+
+
+                                    <!-- GIÁ -->
+
+                                    <td class="text-end">
+
+                                        @if (tour.SalePrice.HasValue &&
+                                             tour.SalePrice.Value > 0 &&
+                                             tour.SalePrice.Value < tour.Price)
+                                        {
+                                            <div class="fw-bold text-danger">
+
+                                                @tour.SalePrice.Value.ToString(
+                                                    "N0") đ
+
+                                            </div>
+
+                                            <small class="text-muted text-decoration-line-through">
+
+                                                @tour.Price.ToString("N0") đ
+
+                                            </small>
+                                        }
+                                        else
+                                        {
+                                            <div class="fw-bold">
+
+                                                @tour.Price.ToString("N0") đ
+
+                                            </div>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- SỐ CHỖ -->
+
+                                    <td class="text-center">
+
+                                        <div class="fw-semibold">
+                                            @tour.AvailablePeople
+                                        </div>
+
+                                        <small class="text-muted">
+                                            / @tour.MaxPeople
+                                        </small>
+
+                                    </td>
+
+
+                                    <!-- TRẠNG THÁI -->
+
+                                    <td class="text-center">
+
+                                        @if (tour.Status == "Active")
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Hoạt động
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-pause-circle me-1"></i>
+                                                Tạm ngưng
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- THAO TÁC -->
+
+                                    <td>
+
+                                        <div class="d-flex
+                                            justify-content-center
+                                            gap-1">
+
+                                            <!-- Chi tiết -->
+
+                                            <a asp-controller="AdminTour"
+                                               asp-action="Details"
+                                               asp-route-id="@tour.Id"
+                                               class="btn btn-sm btn-outline-info"
+                                               title="Chi tiết">
+
+                                                <i class="bi bi-eye"></i>
+
+                                            </a>
+
+
+                                            <!-- Sửa -->
+
+                                            <a asp-controller="AdminTour"
+                                               asp-action="Edit"
+                                               asp-route-id="@tour.Id"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Sửa">
+
+                                                <i class="bi bi-pencil"></i>
+
+                                            </a>
+
+
+                                            <!-- Trạng thái -->
+
+                                            <form asp-controller="AdminTour"
+                                                  asp-action="ToggleStatus"
+                                                  asp-route-id="@tour.Id"
+                                                  method="post"
+                                                  class="d-inline">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-warning"
+                                                        title="Đổi trạng thái"
+                                                        onclick="return confirm('Bạn có chắc muốn thay đổi trạng thái tour này?');">
+
+                                                    @if (tour.Status == "Active")
+                                                    {
+                                                        <i class="bi bi-pause"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="bi bi-play"></i>
+                                                    }
+
+                                                </button>
+
+                                            </form>
+
+
+                                            <!-- Xóa -->
+
+                                            <a asp-controller="AdminTour"
+                                               asp-action="Delete"
+                                               asp-route-id="@tour.Id"
+                                               class="btn btn-sm btn-outline-danger"
+                                               title="Xóa">
+
+                                                <i class="bi bi-trash"></i>
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                                stt++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="8"
+                                    class="text-center py-5">
+
+                                    <div class="mb-3">
+
+                                        <i class="bi bi-inbox
+                                        display-4
+                                        text-muted"></i>
+
+                                    </div>
+
+                                    <h5>
+                                        Không tìm thấy tour
+                                    </h5>
+
+                                    <p class="text-muted mb-3">
+                                        Chưa có tour nào phù hợp với điều kiện tìm kiếm.
+                                    </p>
+
+                                    <a asp-controller="AdminTour"
+                                       asp-action="Create"
+                                       class="btn btn-primary">
+
+                                        <i class="bi bi-plus-lg me-1"></i>
+                                        Thêm Tour đầu tiên
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             PHÂN TRANG
+        ========================== -->
+        @if (totalPages > 1)
+        {
+            <div class="card-footer bg-white border-0 py-3">
+
+                <nav aria-label="Phân trang">
+
+                    <ul class="pagination justify-content-center mb-0">
+
+                        <!-- Previous -->
+
+                        <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+
+                            <a class="page-link"
+                               asp-controller="AdminTour"
+                               asp-action="Index"
+                               asp-route-page="@(currentPage - 1)"
+                               asp-route-searchString="@searchString"
+                               asp-route-status="@selectedStatus">
+
+                                <i class="bi bi-chevron-left"></i>
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- Pages -->
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            if (i == 1 ||
+                                i == totalPages ||
+                                Math.Abs(i - currentPage) <= 2)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+
+                                    <a class="page-link"
+                                       asp-controller="AdminTour"
+                                       asp-action="Index"
+                                       asp-route-page="@i"
+                                       asp-route-searchString="@searchString"
+                                       asp-route-status="@selectedStatus">
+
+                                        @i
+
+                                    </a>
+
+                                </li>
+                            }
+                            else if (i == currentPage - 3 ||
+                                     i == currentPage + 3)
+                            {
+                                <li class="page-item disabled">
+
+                                    <span class="page-link">
+                                        ...
+                                    </span>
+
+                                </li>
+                            }
+                        }
+
+
+                        <!-- Next -->
+
+                        <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+
+                            <a class="page-link"
+                               asp-controller="AdminTour"
+                               asp-action="Index"
+                               asp-route-page="@(currentPage + 1)"
+                               asp-route-searchString="@searchString"
+                               asp-route-status="@selectedStatus">
+
+                                <i class="bi bi-chevron-right"></i>
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+            </div>
+        }
+
+    </div>
+
+</div>

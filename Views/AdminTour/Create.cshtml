@@ -1,0 +1,729 @@
+﻿@model TravelAI.Models.Tour
+
+@{
+    ViewData["Title"] = "Thêm Tour";
+    var destinations = ViewBag.Destinations as IEnumerable<TravelAI.Models.Destination>;
+}
+
+<div class="container-fluid py-4">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-plus-circle me-2"></i>
+                Thêm Tour mới
+            </h2>
+
+            <p class="text-muted mb-0">
+                Tạo một tour du lịch mới cho hệ thống
+            </p>
+        </div>
+
+        <a asp-controller="AdminTour"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-2"></i>
+            Quay lại
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         VALIDATION
+    ========================== -->
+
+    <div asp-validation-summary="ModelOnly"
+         class="alert alert-danger"
+         role="alert">
+    </div>
+
+
+    <!-- =========================
+         FORM
+    ========================== -->
+
+    <form asp-controller="AdminTour"
+          asp-action="Create"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <div class="row g-4">
+
+            <!-- =========================
+                 CỘT TRÁI
+            ========================== -->
+
+            <div class="col-lg-8">
+
+                <!-- THÔNG TIN CƠ BẢN -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+                            <i class="bi bi-info-circle me-2 text-primary"></i>
+                            Thông tin cơ bản
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- Tên Tour -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Name"
+                                   class="form-label fw-semibold">
+
+                                Tên Tour
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <input asp-for="Name"
+                                   class="form-control"
+                                   placeholder="Ví dụ: Tour Hà Nội - Hạ Long 3 ngày 2 đêm" />
+
+                            <span asp-validation-for="Name"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Slug -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Slug"
+                                   class="form-label fw-semibold">
+
+                                Slug
+
+                            </label>
+
+                            <input asp-for="Slug"
+                                   class="form-control"
+                                   placeholder="Tự động tạo nếu để trống" />
+
+                            <div class="form-text">
+                                Có thể để trống, hệ thống sẽ tự động tạo slug từ tên tour.
+                            </div>
+
+                            <span asp-validation-for="Slug"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Mô tả -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Description"
+                                   class="form-label fw-semibold">
+
+                                Mô tả Tour
+
+                            </label>
+
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="6"
+                                      placeholder="Nhập mô tả chi tiết về tour...">
+                            </textarea>
+
+                            <span asp-validation-for="Description"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LỊCH TRÌNH -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-calendar-event me-2 text-primary"></i>
+
+                            Thông tin khởi hành
+
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <!-- Điểm khởi hành -->
+
+                            <div class="col-md-6">
+
+                                <label asp-for="DepartureLocation"
+                                       class="form-label fw-semibold">
+
+                                    Điểm khởi hành
+
+                                </label>
+
+                                <input asp-for="DepartureLocation"
+                                       class="form-control"
+                                       placeholder="Ví dụ: Hà Nội" />
+
+                                <span asp-validation-for="DepartureLocation"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+
+                            <!-- Ngày khởi hành -->
+
+                            <div class="col-md-6">
+
+                                <label asp-for="DepartureDate"
+                                       class="form-label fw-semibold">
+
+                                    Ngày khởi hành
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <input asp-for="DepartureDate"
+                                       type="datetime-local"
+                                       class="form-control" />
+
+                                <span asp-validation-for="DepartureDate"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+
+                            <!-- Thời lượng -->
+
+                            <div class="col-md-6">
+
+                                <label asp-for="Duration"
+                                       class="form-label fw-semibold">
+
+                                    Thời lượng
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input asp-for="Duration"
+                                           type="number"
+                                           min="1"
+                                           max="365"
+                                           class="form-control"
+                                           placeholder="3" />
+
+                                    <span class="input-group-text">
+                                        ngày
+                                    </span>
+
+                                </div>
+
+                                <span asp-validation-for="Duration"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+
+                            <!-- Điểm đến -->
+
+                            <div class="col-md-6">
+
+                                <label asp-for="DestinationId"
+                                       class="form-label fw-semibold">
+
+                                    Điểm đến
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <select asp-for="DestinationId"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Chọn điểm đến --
+                                    </option>
+
+                                    @if (destinations != null)
+                                    {
+                                        foreach (var destination in destinations)
+                                        {
+                                            <option value="@destination.Id">
+                                                @destination.Name
+                                            </option>
+                                        }
+                                    }
+
+                                </select>
+
+                                <span asp-validation-for="DestinationId"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GIÁ & SỐ CHỖ -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-cash-coin me-2 text-success"></i>
+
+                            Giá & số lượng
+
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <!-- Giá gốc -->
+
+                            <div class="col-md-6">
+
+                                <label asp-for="Price"
+                                       class="form-label fw-semibold">
+
+                                    Giá gốc
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input asp-for="Price"
+                                           type="number"
+                                           min="0"
+                                           step="1000"
+                                           class="form-control"
+                                           placeholder="5000000" />
+
+                                    <span class="input-group-text">
+                                        VNĐ
+                                    </span>
+
+                                </div>
+
+                                <span asp-validation-for="Price"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+
+                            <!-- Giá khuyến mãi -->
+
+                            <div class="col-md-6">
+
+                                <label asp-for="SalePrice"
+                                       class="form-label fw-semibold">
+
+                                    Giá khuyến mãi
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input asp-for="SalePrice"
+                                           type="number"
+                                           min="0"
+                                           step="1000"
+                                           class="form-control"
+                                           placeholder="4500000" />
+
+                                    <span class="input-group-text">
+                                        VNĐ
+                                    </span>
+
+                                </div>
+
+                                <span asp-validation-for="SalePrice"
+                                      class="text-danger small">
+                                </span>
+
+                                <div class="form-text">
+                                    Không bắt buộc. Phải nhỏ hơn hoặc bằng giá gốc.
+                                </div>
+
+                            </div>
+
+
+                            <!-- Số người tối đa -->
+
+                            <div class="col-md-6">
+
+                                <label asp-for="MaxPeople"
+                                       class="form-label fw-semibold">
+
+                                    Số người tối đa
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input asp-for="MaxPeople"
+                                           type="number"
+                                           min="1"
+                                           max="10000"
+                                           class="form-control"
+                                           placeholder="30" />
+
+                                    <span class="input-group-text">
+                                        người
+                                    </span>
+
+                                </div>
+
+                                <span asp-validation-for="MaxPeople"
+                                      class="text-danger small">
+                                </span>
+
+                            </div>
+
+
+                            <!-- Số chỗ còn lại -->
+
+                            <div class="col-md-6">
+
+                                <label asp-for="AvailablePeople"
+                                       class="form-label fw-semibold">
+
+                                    Số chỗ còn lại
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input asp-for="AvailablePeople"
+                                           type="number"
+                                           min="0"
+                                           max="10000"
+                                           class="form-control"
+                                           placeholder="Để 0 để tự động bằng số chỗ tối đa" />
+
+                                    <span class="input-group-text">
+                                        người
+                                    </span>
+
+                                </div>
+
+                                <span asp-validation-for="AvailablePeople"
+                                      class="text-danger small">
+                                </span>
+
+                                <div class="form-text">
+                                    Nếu nhập 0, hệ thống sẽ tự động đặt bằng số người tối đa.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 CỘT PHẢI
+            ========================== -->
+
+            <div class="col-lg-4">
+
+                <!-- HÌNH ẢNH -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-image me-2 text-primary"></i>
+
+                            Hình ảnh
+
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <label asp-for="ImageUrl"
+                               class="form-label fw-semibold">
+
+                            URL hình ảnh
+
+                        </label>
+
+                        <input asp-for="ImageUrl"
+                               class="form-control"
+                               placeholder="https://..." />
+
+                        <span asp-validation-for="ImageUrl"
+                              class="text-danger small">
+                        </span>
+
+                        <div class="form-text mb-3">
+                            Nhập URL hình ảnh đại diện cho tour.
+                        </div>
+
+
+                        <!-- Preview -->
+
+                        <div id="imagePreviewContainer"
+                             class="d-none">
+
+                            <label class="form-label fw-semibold">
+                                Xem trước
+                            </label>
+
+                            <img id="imagePreview"
+                                 src=""
+                                 alt="Preview"
+                                 class="img-fluid rounded"
+                                 style="width:100%;
+                            height:200px;
+                            object-fit:cover;" />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TRẠNG THÁI -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-toggle-on me-2 text-success"></i>
+
+                            Trạng thái
+
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <label asp-for="Status"
+                               class="form-label fw-semibold">
+
+                            Trạng thái Tour
+
+                        </label>
+
+                        <select asp-for="Status"
+                                class="form-select">
+
+                            <option value="Active">
+                                Đang hoạt động
+                            </option>
+
+                            <option value="Inactive">
+                                Tạm ngưng
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="Status"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ĐÁNH GIÁ -->
+
+                <div class="card border-0 shadow-sm mb-4">
+
+                    <div class="card-header bg-white border-0 py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-star me-2 text-warning"></i>
+
+                            Đánh giá
+
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="text-muted small mb-3">
+                            Các thông tin này sẽ được cập nhật tự động
+                            khi khách hàng đánh giá tour.
+                        </div>
+
+                        <div class="row g-3">
+
+                            <div class="col-6">
+
+                                <label class="form-label">
+                                    Rating
+                                </label>
+
+                                <input asp-for="Rating"
+                                       type="number"
+                                       min="0"
+                                       max="5"
+                                       step="0.1"
+                                       value="0"
+                                       class="form-control" />
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <label class="form-label">
+                                    Số đánh giá
+                                </label>
+
+                                <input asp-for="ReviewCount"
+                                       type="number"
+                                       min="0"
+                                       value="0"
+                                       class="form-control" />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <button type="submit"
+                                class="btn btn-primary w-100 py-2 mb-2">
+
+                            <i class="bi bi-check-lg me-2"></i>
+                            Lưu Tour
+
+                        </button>
+
+                        <a asp-controller="AdminTour"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary w-100">
+
+                            Hủy
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        // ==============================
+        // PREVIEW ẢNH
+        // ==============================
+
+        const imageInput = document.getElementById("ImageUrl");
+        const imagePreview = document.getElementById("imagePreview");
+        const imagePreviewContainer =
+            document.getElementById("imagePreviewContainer");
+
+        function updateImagePreview() {
+
+            const url = imageInput.value.trim();
+
+            if (url === "") {
+
+                imagePreviewContainer.classList.add("d-none");
+                imagePreview.src = "";
+
+                return;
+            }
+
+            imagePreview.src = url;
+
+            imagePreviewContainer.classList.remove("d-none");
+        }
+
+
+        imageInput.addEventListener("input", updateImagePreview);
+
+
+        imagePreview.addEventListener("error", function() {
+
+            imagePreviewContainer.classList.add("d-none");
+
+        });
+
+    </script>
+}

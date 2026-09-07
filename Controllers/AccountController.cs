@@ -43,13 +43,25 @@ namespace TravelAI.Controllers
             }
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(u => u.Email == email.Trim());
 
             if (user == null)
             {
                 ViewBag.Error = "Email hoặc mật khẩu không chính xác.";
                 return View();
             }
+
+            // ================= KIỂM TRA TÀI KHOẢN =================
+
+            if (user.Status == "Locked")
+            {
+                ViewBag.Error =
+                    "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.";
+
+                return View();
+            }
+
+            // ================= KIỂM TRA MẬT KHẨU =================
 
             var result = _passwordHasher.VerifyHashedPassword(
                 user,
@@ -62,21 +74,37 @@ namespace TravelAI.Controllers
                 return View();
             }
 
+            // ================= TẠO CLAIM =================
+
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(
+                    ClaimTypes.NameIdentifier,
+                    user.Id.ToString()),
+
+                new Claim(
+                    ClaimTypes.Name,
+                    user.FullName),
+
+                new Claim(
+                    ClaimTypes.Email,
+                    user.Email),
+
+                new Claim(
+                    ClaimTypes.Role,
+                    user.Role)
             };
 
             var claimsIdentity = new ClaimsIdentity(
                 claims,
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
+            // ================= THỜI GIAN ĐĂNG NHẬP =================
+
             var authProperties = new AuthenticationProperties
             {
                 IsPersistent = rememberMe,
+
                 ExpiresUtc = rememberMe
                     ? DateTimeOffset.UtcNow.AddDays(7)
                     : DateTimeOffset.UtcNow.AddHours(2)
@@ -86,6 +114,8 @@ namespace TravelAI.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
+
+            // ================= ĐĂNG NHẬP THÀNH CÔNG =================
 
             return RedirectToAction("Index", "Home");
         }
@@ -97,7 +127,6 @@ namespace TravelAI.Controllers
         {
             return View();
         }
-        // ================= ĐĂNG KÝ =================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -120,47 +149,57 @@ namespace TravelAI.Controllers
             // Kiểm tra mật khẩu
             if (password.Length < 6)
             {
-                ViewBag.Error = "Mật khẩu phải có ít nhất 6 ký tự.";
+                ViewBag.Error =
+                    "Mật khẩu phải có ít nhất 6 ký tự.";
+
                 return View();
             }
 
             // Kiểm tra xác nhận mật khẩu
             if (password != confirmPassword)
             {
-                ViewBag.Error = "Mật khẩu xác nhận không khớp.";
+                ViewBag.Error =
+                    "Mật khẩu xác nhận không khớp.";
+
                 return View();
             }
 
             // Kiểm tra email đã tồn tại
             var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(
+                    u => u.Email == email.Trim());
 
             if (existingUser != null)
             {
-                ViewBag.Error = "Email này đã được đăng ký.";
+                ViewBag.Error =
+                    "Email này đã được đăng ký.";
+
                 return View();
             }
 
-            // Tạo User mới
+            // ================= TẠO USER MỚI =================
+
             var user = new User
             {
                 FullName = fullName.Trim(),
                 Email = email.Trim(),
                 Role = "Customer",
+                Status = "Active",
                 CreatedAt = DateTime.Now
             };
 
             // Hash mật khẩu
-            user.PasswordHash = _passwordHasher.HashPassword(
-                user,
-                password);
+            user.PasswordHash =
+                _passwordHasher.HashPassword(
+                    user,
+                    password);
 
-            // Lưu vào database
+            // Lưu database
             _context.Users.Add(user);
 
             await _context.SaveChangesAsync();
 
-            // Đăng ký thành công → chuyển sang đăng nhập
+            // Đăng ký thành công
             TempData["Success"] =
                 "Đăng ký tài khoản thành công. Vui lòng đăng nhập.";
 
@@ -175,7 +214,17 @@ namespace TravelAI.Controllers
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(
+                "Index",
+                "Home");
+        }
+
+        // ================= ACCESS DENIED =================
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

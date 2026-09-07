@@ -29,6 +29,10 @@ namespace TravelAI.Models
         [StringLength(20)]
         public string Role { get; set; } = "Customer";
 
+        [Required]
+        [StringLength(20)]
+        public string Status { get; set; } = "Active";
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Quan hệ

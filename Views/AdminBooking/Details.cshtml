@@ -1,0 +1,828 @@
+﻿@model TravelAI.Models.Booking
+
+@{
+    ViewData["Title"] = "Chi tiết Booking";
+}
+
+<style>
+    .booking-details-page {
+        padding: 30px;
+        background: #f8fafc;
+        min-height: calc(100vh - 70px);
+    }
+
+    .details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+        .details-header h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .details-header p {
+            margin: 7px 0 0;
+            color: #6b7280;
+        }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-back,
+    .btn-dashboard {
+        text-decoration: none;
+        padding: 10px 17px;
+        border-radius: 10px;
+        font-weight: 700;
+        background: #ffffff;
+        color: #374151;
+        box-shadow: 0 3px 12px rgba(0,0,0,.06);
+    }
+
+        .btn-back:hover,
+        .btn-dashboard:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+    .booking-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 22px;
+    }
+
+    .card-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 5px 18px rgba(0,0,0,.06);
+        overflow: hidden;
+        margin-bottom: 22px;
+    }
+
+    .card-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 17px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    .card-body {
+        padding: 22px;
+    }
+
+    .booking-code-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 18px;
+        background: #eff6ff;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .booking-code-label {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .booking-code {
+        font-size: 24px;
+        font-weight: 900;
+        color: #2563eb;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 13px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+    .info-label {
+        color: #6b7280;
+        font-weight: 600;
+    }
+
+    .info-value {
+        color: #111827;
+        font-weight: 700;
+        text-align: right;
+    }
+
+    .tour-box {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .tour-image {
+        width: 95px;
+        height: 75px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #f3f4f6;
+        flex-shrink: 0;
+    }
+
+    .tour-name {
+        font-weight: 800;
+        color: #111827;
+        line-height: 1.4;
+    }
+
+    .tour-id {
+        color: #6b7280;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .customer-box {
+        padding: 16px;
+        background: #f8fafc;
+        border-radius: 12px;
+    }
+
+    .customer-name {
+        font-size: 18px;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 7px;
+    }
+
+    .customer-info {
+        color: #6b7280;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    .price-box {
+        background: #fef2f2;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .price-label {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 7px;
+    }
+
+    .total-price {
+        color: #dc2626;
+        font-size: 30px;
+        font-weight: 900;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .badge-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-confirmed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-paid {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .badge-unpaid {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .note-box {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 16px;
+        color: #4b5563;
+        line-height: 1.7;
+        white-space: pre-line;
+    }
+
+    .action-area {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .action-area form {
+            margin: 0;
+        }
+
+    .action-btn {
+        width: 100%;
+        border: none;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .btn-confirm {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+        .btn-confirm:hover {
+            background: #bbf7d0;
+        }
+
+    .btn-paid {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+        .btn-paid:hover {
+            background: #bfdbfe;
+        }
+
+    .btn-cancel-booking {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+        .btn-cancel-booking:hover {
+            background: #fecaca;
+        }
+
+    .cancelled-box {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        padding: 15px;
+        color: #991b1b;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .confirmed-box {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
+        padding: 15px;
+        color: #166534;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .paid-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        padding: 15px;
+        color: #1d4ed8;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    @@media (max-width: 900px) {
+        .booking-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 650px) {
+        .booking-details-page {
+            padding: 18px;
+        }
+
+        .details-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .btn-back,
+        .btn-dashboard {
+            flex: 1;
+            text-align: center;
+        }
+
+        .info-row {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-value {
+            text-align: left;
+        }
+
+        .booking-code-box {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .tour-box {
+            align-items: flex-start;
+        }
+
+        .tour-image {
+            width: 80px;
+            height: 65px;
+        }
+    }
+</style>
+
+
+<div class="booking-details-page">
+
+    <!-- HEADER -->
+    <div class="details-header">
+
+        <div>
+            <h2>📄 Chi tiết Booking</h2>
+
+            <p>
+                Xem đầy đủ thông tin đơn đặt tour.
+            </p>
+        </div>
+
+        <div class="header-actions">
+
+            <a asp-action="Index"
+               class="btn-back">
+                ← Danh sách Booking
+            </a>
+
+            <a asp-controller="Admin"
+               asp-action="Index"
+               class="btn-dashboard">
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="booking-grid">
+
+        <!-- ================================= -->
+        <!-- LEFT COLUMN -->
+        <!-- ================================= -->
+
+        <div>
+
+            <!-- BOOKING INFORMATION -->
+            <div class="card-box">
+
+                <div class="card-header">
+                    📋 Thông tin Booking
+                </div>
+
+                <div class="card-body">
+
+                    <div class="booking-code-box">
+
+                        <div>
+
+                            <div class="booking-code-label">
+                                Mã Booking
+                            </div>
+
+                            <div class="booking-code">
+                                @Model.BookingCode
+                            </div>
+
+                        </div>
+
+                        <div>
+
+                            @if (Model.Status == "Pending")
+                            {
+                                <span class="badge badge-pending">
+                                    Chờ xác nhận
+                                </span>
+                            }
+                            else if (Model.Status == "Confirmed")
+                            {
+                                <span class="badge badge-confirmed">
+                                    Đã xác nhận
+                                </span>
+                            }
+                            else if (Model.Status == "Cancelled")
+                            {
+                                <span class="badge badge-cancelled">
+                                    Đã hủy
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-pending">
+                                    @Model.Status
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Ngày đặt
+                        </span>
+
+                        <span class="info-value">
+                            @Model.BookingDate.ToString("dd/MM/yyyy HH:mm")
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Số người
+                        </span>
+
+                        <span class="info-value">
+                            @Model.NumberOfPeople người
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Phương thức thanh toán
+                        </span>
+
+                        <span class="info-value">
+                            @(string.IsNullOrWhiteSpace(Model.PaymentMethod)
+                                ? "Chưa xác định"
+                                : Model.PaymentMethod)
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            Trạng thái thanh toán
+                        </span>
+
+                        <span class="info-value">
+
+                            @if (Model.PaymentStatus == "Paid")
+                            {
+                                <span class="badge badge-paid">
+                                    Đã thanh toán
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-unpaid">
+                                    Chưa thanh toán
+                                </span>
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    @if (Model.CancelledAt.HasValue)
+                    {
+                        <div class="info-row">
+
+                            <span class="info-label">
+                                Thời gian hủy
+                            </span>
+
+                            <span class="info-value">
+                                @Model.CancelledAt.Value.ToString("dd/MM/yyyy HH:mm")
+                            </span>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+
+            <!-- CUSTOMER -->
+            <div class="card-box">
+
+                <div class="card-header">
+                    👤 Thông tin khách hàng
+                </div>
+
+                <div class="card-body">
+
+                    <div class="customer-box">
+
+                        <div class="customer-name">
+                            @(Model.User?.FullName ?? "Không xác định")
+                        </div>
+
+                        @if (Model.User != null)
+                        {
+                            <div class="customer-info">
+                                📧 @Model.User.Email
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TOUR -->
+            <div class="card-box">
+
+                <div class="card-header">
+                    🗺️ Thông tin Tour
+                </div>
+
+                <div class="card-body">
+
+                    @if (Model.Tour != null)
+                    {
+                        var tourImage = string.IsNullOrWhiteSpace(Model.Tour.ImageUrl)
+                            ? "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80"
+                            : Model.Tour.ImageUrl;
+
+                        <div class="tour-box">
+
+                            <img src="@tourImage"
+                                 alt="@Model.Tour.Name"
+                                 class="tour-image" />
+
+                            <div>
+
+                                <div class="tour-name">
+                                    @Model.Tour.Name
+                                </div>
+
+                                <div class="tour-id">
+                                    Mã tour: #@Model.Tour.Id
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="note-box">
+                            Tour không tồn tại hoặc đã bị xóa.
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+
+            <!-- NOTE -->
+            @if (!string.IsNullOrWhiteSpace(Model.Note))
+            {
+                <div class="card-box">
+
+                    <div class="card-header">
+                        📝 Ghi chú
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="note-box">
+                            @Model.Note
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+
+        <!-- ================================= -->
+        <!-- RIGHT COLUMN -->
+        <!-- ================================= -->
+
+        <div>
+
+            <!-- TOTAL PRICE -->
+            <div class="card-box">
+
+                <div class="card-header">
+                    💰 Tổng thanh toán
+                </div>
+
+                <div class="card-body">
+
+                    <div class="price-box">
+
+                        <div class="price-label">
+                            Tổng giá trị Booking
+                        </div>
+
+                        <div class="total-price">
+                            @Model.TotalPrice.ToString("N0") ₫
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div class="card-box">
+
+                <div class="card-header">
+                    ⚙️ Thao tác quản lý
+                </div>
+
+                <div class="card-body">
+
+                    <div class="action-area">
+
+                        @if (Model.Status == "Pending")
+                        {
+                            <form asp-action="Confirm"
+                                  asp-route-id="@Model.Id"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="action-btn btn-confirm"
+                                        onclick="return confirm('Bạn có chắc chắn muốn xác nhận Booking này không?');">
+
+                                    ✓ Xác nhận Booking
+
+                                </button>
+
+                            </form>
+                        }
+                        else if (Model.Status == "Confirmed")
+                        {
+                            <div class="confirmed-box">
+                                ✓ Booking đã được xác nhận
+                            </div>
+                        }
+
+
+                        @if (Model.PaymentStatus != "Paid" &&
+                             Model.Status != "Cancelled")
+                        {
+                            <form asp-action="MarkAsPaid"
+                                  asp-route-id="@Model.Id"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="action-btn btn-paid"
+                                        onclick="return confirm('Xác nhận Booking này đã thanh toán?');">
+
+                                    💳 Đánh dấu đã thanh toán
+
+                                </button>
+
+                            </form>
+                        }
+                        else if (Model.PaymentStatus == "Paid")
+                        {
+                            <div class="paid-box">
+                                ✓ Booking đã thanh toán
+                            </div>
+                        }
+
+
+                        @if (Model.Status != "Cancelled")
+                        {
+                            <form asp-action="Cancel"
+                                  asp-route-id="@Model.Id"
+                                  method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="action-btn btn-cancel-booking"
+                                        onclick="return confirm('Bạn có chắc chắn muốn hủy Booking này không?');">
+
+                                    ✕ Hủy Booking
+
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="cancelled-box">
+                                ✕ Booking đã bị hủy
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BOOKING ID -->
+            <div class="card-box">
+
+                <div class="card-header">
+                    🔎 Thông tin hệ thống
+                </div>
+
+                <div class="card-body">
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            ID Booking
+                        </span>
+
+                        <span class="info-value">
+                            #@Model.Id
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            ID khách hàng
+                        </span>
+
+                        <span class="info-value">
+                            #@(Model.UserId)
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-row">
+
+                        <span class="info-label">
+                            ID Tour
+                        </span>
+
+                        <span class="info-value">
+                            #@(Model.TourId)
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -155,6 +155,18 @@
                             </a>
 
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true &&
+                            User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Admin"
+                                   asp-action="Index">
+                            <i class="bi bi-speedometer2"></i>
+                                Admin
+                                </a>
+                            </li>
+                        }
 
                     </ul>
 

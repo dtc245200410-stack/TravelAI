@@ -1,0 +1,501 @@
+﻿@model TravelAI.Models.Tour
+
+@{
+    ViewData["Title"] = "Xóa Tour";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1 text-danger">
+                <i class="bi bi-trash3 me-2"></i>
+                Xóa Tour
+            </h2>
+
+            <p class="text-muted mb-0">
+                Xác nhận xóa tour khỏi hệ thống
+            </p>
+        </div>
+
+        <a asp-controller="AdminTour"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-2"></i>
+            Quay lại
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         CẢNH BÁO
+    ========================== -->
+
+    <div class="alert alert-danger border-0 shadow-sm mb-4">
+
+        <div class="d-flex align-items-start">
+
+            <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+
+            <div>
+
+                <h5 class="alert-heading fw-bold">
+                    Bạn có chắc chắn muốn xóa tour này?
+                </h5>
+
+                <p class="mb-0">
+                    Hành động này có thể xóa dữ liệu tour khỏi hệ thống
+                    và không thể hoàn tác.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- =========================
+             THÔNG TIN TOUR
+        ========================== -->
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm">
+
+                <!-- ẢNH -->
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl"
+                         alt="@Model.Name"
+                         class="card-img-top"
+                         style="height:300px;
+                    object-fit:cover;" />
+                }
+                else
+                {
+                    <div class="bg-light d-flex
+                        justify-content-center
+                        align-items-center"
+                         style="height:300px;">
+
+                        <div class="text-center text-muted">
+
+                            <i class="bi bi-image display-3"></i>
+
+                            <div class="mt-2">
+                                Chưa có hình ảnh
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+
+                <div class="card-body p-4">
+
+                    <!-- TÊN -->
+
+                    <div class="mb-4">
+
+                        <div class="text-muted small mb-1">
+                            Tên Tour
+                        </div>
+
+                        <h3 class="fw-bold mb-0">
+                            @Model.Name
+                        </h3>
+
+                    </div>
+
+
+                    <!-- THÔNG TIN -->
+
+                    <div class="row g-4">
+
+                        <!-- ID -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="rounded-circle
+                                    bg-primary bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-hash
+                                    text-primary"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Mã Tour
+                                    </div>
+
+                                    <div class="fw-semibold">
+                                        #@Model.Id
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ĐIỂM ĐẾN -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="rounded-circle
+                                    bg-info bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-geo-alt
+                                    text-info"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Điểm đến
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        @(Model.Destination?.Name
+                                            ?? "Chưa xác định")
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- KHỞI HÀNH -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="rounded-circle
+                                    bg-success bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-calendar-event
+                                    text-success"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Ngày khởi hành
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        @Model.DepartureDate.ToString(
+                                            "dd/MM/yyyy HH:mm")
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- GIÁ -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="rounded-circle
+                                    bg-warning bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-cash-coin
+                                    text-warning"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Giá Tour
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        @if (Model.SalePrice.HasValue &&
+                                             Model.SalePrice.Value > 0 &&
+                                             Model.SalePrice.Value < Model.Price)
+                                        {
+                                            @Model.SalePrice.Value.ToString("N0")
+                                            <span> VNĐ</span>
+                                        }
+                                        else
+                                        {
+                                            @Model.Price.ToString("N0")
+                                            <span> VNĐ</span>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SỐ CHỖ -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="rounded-circle
+                                    bg-secondary bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-people
+                                    text-secondary"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Số chỗ
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        @Model.AvailablePeople /
+                                        @Model.MaxPeople người
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- TRẠNG THÁI -->
+
+                        <div class="col-md-6">
+
+                            <div class="d-flex align-items-center">
+
+                                <div class="rounded-circle
+                                    bg-success bg-opacity-10
+                                    p-3 me-3">
+
+                                    <i class="bi bi-toggle-on
+                                    text-success"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-muted small">
+                                        Trạng thái
+                                    </div>
+
+                                    <div>
+
+                                        @if (Model.Status == "Active")
+                                        {
+                                            <span class="badge bg-success">
+                                                Đang hoạt động
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                Tạm ngưng
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MÔ TẢ -->
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <hr class="my-4" />
+
+                        <div>
+
+                            <h5 class="fw-bold mb-3">
+                                Mô tả
+                            </h5>
+
+                            <p class="text-secondary mb-0"
+                               style="line-height:1.8;">
+
+                                @Model.Description
+
+                            </p>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             CỘT PHẢI
+        ========================== -->
+
+        <div class="col-lg-4">
+
+            <!-- THÔNG TIN CẢNH BÁO -->
+
+            <div class="card border-0 shadow-sm mb-4">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0 text-danger">
+
+                        <i class="bi bi-exclamation-circle me-2"></i>
+
+                        Lưu ý
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="d-flex mb-3">
+
+                        <i class="bi bi-check-circle-fill
+                        text-success me-2 mt-1"></i>
+
+                        <span class="small">
+                            Tour chưa có Booking sẽ có thể được xóa.
+                        </span>
+
+                    </div>
+
+
+                    <div class="d-flex mb-3">
+
+                        <i class="bi bi-x-circle-fill
+                        text-danger me-2 mt-1"></i>
+
+                        <span class="small">
+                            Tour đã có Booking sẽ không được phép xóa.
+                        </span>
+
+                    </div>
+
+
+                    <div class="d-flex">
+
+                        <i class="bi bi-info-circle-fill
+                        text-primary me-2 mt-1"></i>
+
+                        <span class="small">
+                            Nếu không muốn Tour xuất hiện trên website,
+                            nên chuyển trạng thái sang
+                            <strong>Tạm ngưng</strong>.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 XÁC NHẬN
+            ========================== -->
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white border-0 py-3">
+
+                    <h5 class="fw-bold mb-0">
+                        Xác nhận thao tác
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form asp-controller="AdminTour"
+                          asp-action="Delete"
+                          asp-route-id="@Model.Id"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="btn btn-danger w-100 py-2 mb-2"
+                                onclick="return confirm('Bạn chắc chắn muốn xóa tour @Model.Name?');">
+
+                            <i class="bi bi-trash3 me-2"></i>
+
+                            Xác nhận xóa
+
+                        </button>
+
+                        <a asp-controller="AdminTour"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary w-100">
+
+                            Hủy bỏ
+
+                        </a>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
