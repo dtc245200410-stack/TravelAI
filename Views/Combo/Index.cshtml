@@ -1,0 +1,179 @@
+﻿@using TravelAI.Models
+@model IEnumerable<Combo>
+
+@{
+    ViewData["Title"] = "Combo du lịch";
+}
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold">
+            Combo du lịch
+        </h1>
+
+        <p class="text-muted">
+            Khám phá những combo du lịch hấp dẫn từ TravelAI
+        </p>
+
+    </div>
+
+
+    <!-- DANH SÁCH COMBO -->
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+
+            @foreach (var combo in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="card h-100 border-0 shadow-sm overflow-hidden">
+
+                        <!-- ẢNH -->
+                        @if (!string.IsNullOrWhiteSpace(combo.ImageUrl))
+                        {
+                            <img src="@combo.ImageUrl"
+                                 class="card-img-top"
+                                 alt="@combo.Name"
+                                 style="height:220px; object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                 style="height:220px;">
+
+                                <i class="bi bi-image fs-1 text-muted"></i>
+
+                            </div>
+                        }
+
+
+                        <!-- NỘI DUNG -->
+
+                        <div class="card-body d-flex flex-column">
+
+                            <h5 class="card-title fw-bold">
+                                @combo.Name
+                            </h5>
+
+
+                            @if (!string.IsNullOrWhiteSpace(combo.Destination))
+                            {
+                                <div class="text-muted mb-2">
+
+                                    <i class="bi bi-geo-alt"></i>
+
+                                    @combo.Destination
+
+                                </div>
+                            }
+
+
+                            <p class="text-muted small">
+
+                                @if (!string.IsNullOrWhiteSpace(combo.Description))
+                                {
+                                    @combo.Description
+                                }
+                                else
+                                {
+                                    <span>
+                                        Combo du lịch hấp dẫn dành cho bạn.
+                                    </span>
+                                }
+
+                            </p>
+
+
+                            <div class="mb-3">
+
+                                <span class="text-muted">
+                                    <i class="bi bi-calendar3"></i>
+                                    @combo.Duration ngày
+                                </span>
+
+                                <span class="ms-3 text-muted">
+                                    <i class="bi bi-people"></i>
+                                    Còn @combo.AvailablePeople chỗ
+                                </span>
+
+                            </div>
+
+
+                            <!-- GIÁ -->
+
+                            <div class="mb-3">
+
+                                @if (combo.SalePrice.HasValue &&
+                                     combo.SalePrice.Value < combo.Price)
+                                {
+                                    <div>
+
+                                        <small class="text-muted text-decoration-line-through">
+
+                                            @combo.Price.ToString("N0") ₫
+
+                                        </small>
+
+                                    </div>
+
+                                    <span class="fs-4 fw-bold text-danger">
+
+                                        @combo.SalePrice.Value.ToString("N0") ₫
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="fs-4 fw-bold text-danger">
+
+                                        @combo.Price.ToString("N0") ₫
+
+                                    </span>
+                                }
+
+                            </div>
+
+
+                            <!-- NÚT CHI TIẾT -->
+
+                            <a asp-controller="Combo"
+                               asp-action="Details"
+                               asp-route-id="@combo.Id"
+                               class="btn btn-primary mt-auto">
+
+                                <i class="bi bi-eye"></i>
+                                Xem chi tiết
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+
+            <i class="bi bi-box-seam fs-1 text-muted"></i>
+
+            <h4 class="mt-3">
+                Chưa có Combo
+            </h4>
+
+            <p class="text-muted">
+                Hiện tại chưa có combo nào đang hoạt động.
+            </p>
+
+        </div>
+    }
+
+</div>

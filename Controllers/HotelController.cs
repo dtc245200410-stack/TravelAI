@@ -394,6 +394,7 @@ namespace TravelAI.Controllers
                 return BadRequest("Đơn phòng này đã được hủy.");
             }
 
+            // Hoàn lại số phòng
             if (booking.Room != null)
             {
                 booking.Room.AvailableQuantity += booking.NumberOfRooms;
@@ -404,8 +405,25 @@ namespace TravelAI.Controllers
                 }
             }
 
+            // Hủy đơn
             booking.Status = "Cancelled";
             booking.CancelledAt = DateTime.Now;
+
+            // Nếu đơn đã thanh toán thì đánh dấu giao dịch là Cancelled
+            if (booking.PaymentStatus == "Paid")
+            {
+                var payment = await _context.Payments
+                    .FirstOrDefaultAsync(p =>
+                        p.HotelBookingId == booking.Id &&
+                        p.Status == "Paid");
+
+                if (payment != null)
+                {
+                    payment.Status = "Cancelled";
+                }
+
+                booking.PaymentStatus = "Cancelled";
+            }
 
             await _context.SaveChangesAsync();
 

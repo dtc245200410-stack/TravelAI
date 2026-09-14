@@ -1,0 +1,355 @@
+﻿@model IEnumerable<TravelAI.Models.Review>
+
+@{
+    ViewData["Title"] = "Quản lý đánh giá";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-star-fill text-warning me-2"></i>
+                Quản lý đánh giá
+            </h2>
+
+            <p class="text-muted mb-0">
+                Xem và quản lý đánh giá của khách hàng
+            </p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Về Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- THỐNG KÊ -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Tổng đánh giá
+                    </div>
+
+                    <h3 class="fw-bold mb-0">
+                        @Model.Count()
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Đã duyệt
+                    </div>
+
+                    <h3 class="fw-bold text-success mb-0">
+                        @Model.Count(r => r.Status == "Approved")
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Chờ duyệt
+                    </div>
+
+                    <h3 class="fw-bold text-warning mb-0">
+                        @Model.Count(r => r.Status == "Pending")
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="text-muted small">
+                        Đang ẩn
+                    </div>
+
+                    <h3 class="fw-bold text-secondary mb-0">
+                        @Model.Count(r => r.Status == "Hidden")
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BẢNG REVIEW -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th class="ps-4">
+                                ID
+                            </th>
+
+                            <th>
+                                Khách hàng
+                            </th>
+
+                            <th>
+                                Dịch vụ
+                            </th>
+
+                            <th>
+                                Đánh giá
+                            </th>
+
+                            <th>
+                                Nội dung
+                            </th>
+
+                            <th>
+                                Ngày
+                            </th>
+
+                            <th>
+                                Trạng thái
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.Any())
+                        {
+                            foreach (var review in Model)
+                            {
+                                <tr>
+
+                                    <!-- ID -->
+                                    <td class="ps-4 fw-semibold">
+                                        #@review.Id
+                                    </td>
+
+
+                                    <!-- USER -->
+                                    <td>
+
+                                        @if (review.User != null)
+                                        {
+                                            <div class="fw-semibold">
+                                                @review.User.FullName
+                                            </div>
+
+                                            <small class="text-muted">
+                                                @review.User.Email
+                                            </small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                Không xác định
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- TOUR / HOTEL -->
+                                    <td>
+
+                                        @if (review.Tour != null)
+                                        {
+                                            <span class="badge bg-primary-subtle text-primary">
+                                                <i class="bi bi-map me-1"></i>
+                                                @review.Tour.Name
+                                            </span>
+                                        }
+                                        else if (review.Hotel != null)
+                                        {
+                                            <span class="badge bg-info-subtle text-info-emphasis">
+                                                <i class="bi bi-building me-1"></i>
+                                                @review.Hotel.Name
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                Không xác định
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- RATING -->
+                                    <td>
+
+                                        <div class="text-warning">
+
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= review.Rating)
+                                                {
+                                                    <i class="bi bi-star-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star"></i>
+                                                }
+                                            }
+
+                                        </div>
+
+                                        <small class="text-muted">
+                                            @review.Rating / 5
+                                        </small>
+
+                                    </td>
+
+
+                                    <!-- COMMENT -->
+                                    <td style="max-width: 300px;">
+
+                                        @if (!string.IsNullOrWhiteSpace(review.Comment))
+                                        {
+                                            <span>
+                                                @review.Comment
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fst-italic">
+                                                Không có nội dung
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- DATE -->
+                                    <td>
+
+                                        <small>
+                                            @review.CreatedAt.ToString("dd/MM/yyyy")
+                                        </small>
+
+                                        <br />
+
+                                        <small class="text-muted">
+                                            @review.CreatedAt.ToString("HH:mm")
+                                        </small>
+
+                                    </td>
+
+
+                                    <!-- STATUS -->
+                                    <td>
+
+                                        @if (review.Status == "Approved")
+                                        {
+                                            <span class="badge bg-success">
+                                                Đã duyệt
+                                            </span>
+                                        }
+                                        else if (review.Status == "Pending")
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                Chờ duyệt
+                                            </span>
+                                        }
+                                        else if (review.Status == "Hidden")
+                                        {
+                                            <span class="badge bg-secondary">
+                                                Đang ẩn
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-dark">
+                                                @review.Status
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="7"
+                                    class="text-center py-5">
+
+                                    <i class="bi bi-chat-square-text fs-1 text-muted"></i>
+
+                                    <p class="text-muted mt-3 mb-0">
+                                        Chưa có đánh giá nào.
+                                    </p>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

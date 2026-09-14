@@ -197,6 +197,18 @@
                             ← Xem thêm tour
                         </a>
 
+                        @if (Model.PaymentStatus != "Paid" &&
+                             Model.Status != "Cancelled")
+                        {
+                            <a asp-controller="Payment"
+                               asp-action="Create"
+                               asp-route-bookingId="@Model.Id"
+                               class="btn btn-success flex-fill">
+                                <i class="bi bi-credit-card"></i>
+                                Thanh toán
+                            </a>
+                        }
+
                         <a asp-controller="Home"
                            asp-action="Index"
                            class="btn btn-primary flex-fill">

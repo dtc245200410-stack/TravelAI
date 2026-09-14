@@ -1,0 +1,618 @@
+﻿@using TravelAI.Models
+@model IEnumerable<Payment>
+
+@{
+    ViewData["Title"] = "Quản lý thanh toán";
+
+    var payments = Model?.ToList() ?? new List<Payment>();
+
+    var totalPayments = payments.Count;
+    var paidPayments = payments.Count(p => p.Status == "Paid");
+    var pendingPayments = payments.Count(p => p.Status == "Pending");
+    var cancelledPayments = payments.Count(p => p.Status == "Cancelled");
+
+    var totalAmount = payments
+        .Where(p => p.Status == "Paid")
+        .Sum(p => p.Amount);
+}
+
+<style>
+    .payment-page {
+        padding: 30px;
+        background: #f5f7fb;
+        min-height: calc(100vh - 70px);
+    }
+
+    .payment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+        .payment-header h2 {
+            margin: 0;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .payment-header p {
+            margin: 6px 0 0;
+            color: #6b7280;
+        }
+
+    .back-button {
+        text-decoration: none;
+        background: white;
+        color: #374151;
+        padding: 10px 18px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        font-weight: 600;
+    }
+
+        .back-button:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #eef0f4;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+    }
+
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        background: #eef2ff;
+        color: #4f46e5;
+        margin-bottom: 12px;
+    }
+
+    .stat-card h6 {
+        margin: 0 0 5px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .stat-card h3 {
+        margin: 0;
+        color: #111827;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .stat-card small {
+        display: block;
+        margin-top: 5px;
+        color: #9ca3af;
+    }
+
+    .payment-table-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #eef0f4;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+        overflow: hidden;
+    }
+
+    .table-header {
+        padding: 20px 22px;
+        border-bottom: 1px solid #eef0f4;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .table-header h5 {
+            margin: 0;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .payment-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+    }
+
+        .payment-table th {
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 14px 16px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .payment-table td {
+            padding: 16px;
+            border-top: 1px solid #f0f1f3;
+            vertical-align: middle;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .payment-table tbody tr:hover {
+            background: #fafbff;
+        }
+
+    .payment-code {
+        font-weight: 700;
+        color: #4f46e5;
+    }
+
+    .amount {
+        font-weight: 700;
+        color: #111827;
+        white-space: nowrap;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-paid {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .status-pending {
+        background: #fff7ed;
+        color: #ea580c;
+    }
+
+    .status-cancelled {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .status-other {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .action-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 7px 11px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .confirm-btn {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+        .confirm-btn:hover {
+            background: #d1fae5;
+        }
+
+    .cancel-btn {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+        .cancel-btn:hover {
+            background: #fee2e2;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+
+        .empty-state i {
+            font-size: 45px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+    .success-message {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    @@media (max-width: 1100px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .payment-page {
+            padding: 15px;
+        }
+
+        .payment-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="payment-page">
+
+    <!-- HEADER -->
+    <div class="payment-header">
+
+        <div>
+            <h2>
+                <i class="bi bi-credit-card"></i>
+                Quản lý thanh toán
+            </h2>
+
+            <p>
+                Theo dõi và xử lý các giao dịch thanh toán
+            </p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="back-button">
+
+            <i class="bi bi-arrow-left"></i>
+            Quay lại Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- THÔNG BÁO -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="success-message">
+            <i class="bi bi-check-circle"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+
+    <!-- THỐNG KÊ -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="bi bi-receipt"></i>
+            </div>
+
+            <h6>Tổng giao dịch</h6>
+
+            <h3>@totalPayments</h3>
+
+            <small>Tất cả thanh toán</small>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="bi bi-check-circle"></i>
+            </div>
+
+            <h6>Đã thanh toán</h6>
+
+            <h3>@paidPayments</h3>
+
+            <small>Giao dịch thành công</small>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+
+            <h6>Đang chờ</h6>
+
+            <h3>@pendingPayments</h3>
+
+            <small>Chờ xác nhận</small>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+
+            <h6>Doanh thu</h6>
+
+            <h3>@totalAmount.ToString("N0") ₫</h3>
+
+            <small>Từ giao dịch đã thanh toán</small>
+
+        </div>
+
+    </div>
+
+
+    <!-- BẢNG THANH TOÁN -->
+    <div class="payment-table-card">
+
+        <div class="table-header">
+
+            <h5>
+                <i class="bi bi-list-ul"></i>
+                Danh sách giao dịch
+            </h5>
+
+            <span class="text-muted">
+                @totalPayments giao dịch
+            </span>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            @if (!payments.Any())
+            {
+                <div class="empty-state">
+
+                    <i class="bi bi-credit-card-2-front"></i>
+
+                    <div>Chưa có giao dịch thanh toán nào.</div>
+
+                </div>
+            }
+            else
+            {
+                <table class="payment-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Mã thanh toán</th>
+                            <th>Người dùng</th>
+                            <th>Loại</th>
+                            <th>Số tiền</th>
+                            <th>Phương thức</th>
+                            <th>Ngày thanh toán</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var payment in payments)
+                        {
+                            <tr>
+
+                                <!-- MÃ -->
+                                <td>
+                                    <span class="payment-code">
+                                        @payment.PaymentCode
+                                    </span>
+                                </td>
+
+
+                                <!-- NGƯỜI DÙNG -->
+                                <td>
+
+                                    @if (payment.User != null)
+                                    {
+                                        <strong>
+                                            @payment.User.FullName
+                                        </strong>
+
+                                        <br />
+
+                                        <small class="text-muted">
+                                            @payment.User.Email
+                                        </small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            Không xác định
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- LOẠI -->
+                                <td>
+
+                                    @if (payment.BookingId.HasValue)
+                                    {
+                                        <span>Tour</span>
+                                    }
+                                    else if (payment.HotelBookingId.HasValue)
+                                    {
+                                        <span>Khách sạn</span>
+                                    }
+                                    else if (payment.ComboId.HasValue)
+                                    {
+                                        <span>Combo</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Khác</span>
+                                    }
+
+                                </td>
+
+
+                                <!-- SỐ TIỀN -->
+                                <td>
+                                    <span class="amount">
+                                        @payment.Amount.ToString("N0") ₫
+                                    </span>
+                                </td>
+
+
+                                <!-- PHƯƠNG THỨC -->
+                                <td>
+                                    @payment.PaymentMethod
+                                </td>
+
+
+                                <!-- NGÀY -->
+                                <td>
+                                    @payment.PaymentDate.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+
+                                <!-- TRẠNG THÁI -->
+                                <td>
+
+                                    @if (payment.Status == "Paid")
+                                    {
+                                        <span class="status-badge status-paid">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Đã thanh toán
+                                        </span>
+                                    }
+                                    else if (payment.Status == "Pending")
+                                    {
+                                        <span class="status-badge status-pending">
+                                            <i class="bi bi-clock me-1"></i>
+                                            Đang chờ
+                                        </span>
+                                    }
+                                    else if (payment.Status == "Cancelled")
+                                    {
+                                        <span class="status-badge status-cancelled">
+                                            <i class="bi bi-x-circle me-1"></i>
+                                            Đã hủy
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-other">
+                                            @payment.Status
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- THAO TÁC -->
+                                <td>
+
+                                    @if (payment.Status == "Pending")
+                                    {
+                                        <div class="action-buttons">
+
+                                            <form asp-controller="AdminPayment"
+                                                  asp-action="Confirm"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@payment.Id" />
+
+                                                <button type="submit"
+                                                        class="action-btn confirm-btn"
+                                                        onclick="return confirm('Bạn có chắc muốn xác nhận thanh toán này?');">
+
+                                                    <i class="bi bi-check-lg"></i>
+                                                    Xác nhận
+
+                                                </button>
+
+                                            </form>
+
+
+                                            <form asp-controller="AdminPayment"
+                                                  asp-action="Cancel"
+                                                  method="post">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@payment.Id" />
+
+                                                <button type="submit"
+                                                        class="action-btn cancel-btn"
+                                                        onclick="return confirm('Bạn có chắc muốn hủy giao dịch này?');">
+
+                                                    <i class="bi bi-x-lg"></i>
+                                                    Hủy
+
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            —
+                                        </span>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            }
+
+        </div>
+
+    </div>
+
+</div>

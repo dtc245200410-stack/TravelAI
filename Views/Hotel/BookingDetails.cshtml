@@ -413,7 +413,20 @@
             Đơn của tôi
 
         </a>
+        @if (Model.PaymentStatus != "Paid" &&
+             Model.Status != "Cancelled")
+        {
+            <a asp-controller="Payment"
+               asp-action="CreateHotel"
+               asp-route-hotelBookingId="@Model.Id"
+               class="btn btn-success btn-lg rounded-3 px-4">
 
+                <i class="bi bi-credit-card me-2"></i>
+
+                Thanh toán
+
+            </a>
+        }
 
         @if (Model.Status != "Cancelled")
         {

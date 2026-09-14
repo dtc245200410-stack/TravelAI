@@ -1,0 +1,304 @@
+﻿@model TravelAI.Models.HotelBooking
+
+@{
+    ViewData["Title"] = "Thanh toán đặt phòng";
+
+    var hotelImage = string.IsNullOrWhiteSpace(Model.Hotel?.ImageUrl)
+        ? "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80"
+        : Model.Hotel.ImageUrl;
+
+    var totalNights =
+        (Model.CheckOutDate.Date - Model.CheckInDate.Date).Days;
+}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-9">
+
+            <div class="text-center mb-4">
+
+                <div class="display-4 mb-3">
+                    💳
+                </div>
+
+                <h1 class="fw-bold">
+                    Thanh toán đặt phòng
+                </h1>
+
+                <p class="text-muted">
+                    Vui lòng kiểm tra thông tin và chọn phương thức thanh toán.
+                </p>
+
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+                <div class="card-header bg-primary text-white p-4">
+
+                    <div class="small opacity-75">
+                        MÃ ĐẶT PHÒNG
+                    </div>
+
+                    <h4 class="fw-bold mb-0">
+                        @Model.BookingCode
+                    </h4>
+
+                </div>
+
+                <div class="card-body p-4 p-lg-5">
+
+                    <!-- THÔNG TIN KHÁCH SẠN -->
+
+                    <h4 class="fw-bold mb-4">
+                        🏨 Thông tin đặt phòng
+                    </h4>
+
+                    <div class="row g-4 mb-4">
+
+                        <div class="col-md-4">
+
+                            <img src="@hotelImage"
+                                 alt="@Model.Hotel?.Name"
+                                 class="img-fluid rounded-4"
+                                 style="width:100%; height:200px; object-fit:cover;" />
+
+                        </div>
+
+                        <div class="col-md-8">
+
+                            <h4 class="fw-bold">
+                                @Model.Hotel?.Name
+                            </h4>
+
+                            <div class="text-muted mt-3">
+
+                                <div class="mb-2">
+                                    📍
+                                    <strong>Địa chỉ:</strong>
+                                    @Model.Hotel?.Address
+                                </div>
+
+                                <div class="mb-2">
+                                    🛏️
+                                    <strong>Phòng:</strong>
+                                    @Model.Room?.RoomName
+                                </div>
+
+                                <div class="mb-2">
+                                    📅
+                                    <strong>Nhận phòng:</strong>
+                                    @Model.CheckInDate.ToString("dd/MM/yyyy")
+                                </div>
+
+                                <div class="mb-2">
+                                    📅
+                                    <strong>Trả phòng:</strong>
+                                    @Model.CheckOutDate.ToString("dd/MM/yyyy")
+                                </div>
+
+                                <div class="mb-2">
+                                    🌙
+                                    <strong>Số đêm:</strong>
+                                    @totalNights
+                                </div>
+
+                                <div>
+                                    👥
+                                    <strong>Số khách:</strong>
+                                    @Model.NumberOfGuests
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <!-- CHI TIẾT GIÁ -->
+
+                    <h4 class="fw-bold mb-4">
+                        💰 Chi tiết thanh toán
+                    </h4>
+
+                    <div class="d-flex justify-content-between mb-3">
+
+                        <span class="text-muted">
+                            Số phòng
+                        </span>
+
+                        <strong>
+                            @Model.NumberOfRooms phòng
+                        </strong>
+
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+
+                        <span class="text-muted">
+                            Số đêm
+                        </span>
+
+                        <strong>
+                            @totalNights đêm
+                        </strong>
+
+                    </div>
+
+                    <div class="border-top pt-3 mt-3">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <span class="fw-semibold fs-5">
+                                Tổng tiền
+                            </span>
+
+                            <span class="text-danger fw-bold fs-2">
+                                @Model.TotalPrice.ToString("N0") đ
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <!-- PHƯƠNG THỨC THANH TOÁN -->
+
+                    <form asp-controller="Payment"
+                          asp-action="CreateHotel"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="hotelBookingId"
+                               value="@Model.Id" />
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-bold">
+                                Phương thức thanh toán
+                            </label>
+
+                            <div class="row g-3">
+
+                                <div class="col-md-4">
+
+                                    <label class="border rounded-3 p-3 w-100 h-100"
+                                           style="cursor:pointer;">
+
+                                        <input type="radio"
+                                               name="paymentMethod"
+                                               value="Cash"
+                                               class="form-check-input me-2"
+                                               required />
+
+                                        <strong>💵 Tiền mặt</strong>
+
+                                        <div class="small text-muted mt-2">
+                                            Thanh toán trực tiếp
+                                        </div>
+
+                                    </label>
+
+                                </div>
+
+                                <div class="col-md-4">
+
+                                    <label class="border rounded-3 p-3 w-100 h-100"
+                                           style="cursor:pointer;">
+
+                                        <input type="radio"
+                                               name="paymentMethod"
+                                               value="BankTransfer"
+                                               class="form-check-input me-2" />
+
+                                        <strong>🏦 Chuyển khoản</strong>
+
+                                        <div class="small text-muted mt-2">
+                                            Chuyển khoản ngân hàng
+                                        </div>
+
+                                    </label>
+
+                                </div>
+
+                                <div class="col-md-4">
+
+                                    <label class="border rounded-3 p-3 w-100 h-100"
+                                           style="cursor:pointer;">
+
+                                        <input type="radio"
+                                               name="paymentMethod"
+                                               value="VNPay"
+                                               class="form-check-input me-2" />
+
+                                        <strong>💳 VNPay</strong>
+
+                                        <div class="small text-muted mt-2">
+                                            Thanh toán điện tử
+                                        </div>
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- GHI CHÚ -->
+
+                        <div class="mb-4">
+
+                            <label for="note"
+                                   class="form-label fw-bold">
+                                Ghi chú
+                            </label>
+
+                            <textarea id="note"
+                                      name="note"
+                                      class="form-control"
+                                      rows="3"
+                                      maxlength="500"
+                                      placeholder="Nhập ghi chú nếu cần..."></textarea>
+
+                        </div>
+
+                        <!-- BUTTON -->
+
+                        <div class="d-flex flex-column flex-md-row gap-3">
+
+                            <a asp-controller="Hotel"
+                               asp-action="BookingDetails"
+                               asp-route-id="@Model.Id"
+                               class="btn btn-outline-secondary btn-lg flex-fill">
+
+                                ← Quay lại
+
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-success btn-lg flex-fill">
+
+                                💳 Xác nhận thanh toán
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
