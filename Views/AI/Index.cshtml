@@ -1,0 +1,325 @@
+﻿@{
+    ViewData["Title"] = "Travel AI";
+}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-9">
+
+            <!-- HEADER -->
+            <div class="text-center mb-4">
+
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center
+                        rounded-circle bg-primary text-white"
+                         style="width:70px;height:70px;">
+
+                        <i class="bi bi-stars fs-2"></i>
+
+                    </div>
+                </div>
+
+                <h1 class="fw-bold">
+                    Travel AI
+                </h1>
+
+                <p class="text-muted mb-0">
+                    Trợ lý du lịch thông minh của TravelAI
+                </p>
+
+            </div>
+
+
+            <!-- CHAT BOX -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+                <!-- CHAT HEADER -->
+                <div class="p-4 bg-primary text-white">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="bg-white text-primary rounded-circle
+                            d-flex align-items-center justify-content-center"
+                             style="width:45px;height:45px;">
+
+                            <i class="bi bi-stars fs-5"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h5 class="mb-1 fw-bold">
+                                Travel AI Assistant
+                            </h5>
+
+                            <small class="opacity-75">
+                                Hãy cho tôi biết bạn muốn đi đâu
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MESSAGES -->
+                <div id="chatMessages"
+                     class="p-4"
+                     style="height:450px; overflow-y:auto; background:#f8f9fa;">
+
+                    <!-- AI MESSAGE -->
+                    <div class="d-flex gap-3 mb-4">
+
+                        <div class="bg-primary text-white rounded-circle
+                            d-flex align-items-center justify-content-center flex-shrink-0"
+                             style="width:40px;height:40px;">
+
+                            <i class="bi bi-stars"></i>
+
+                        </div>
+
+                        <div class="bg-white shadow-sm rounded-4 p-3"
+                             style="max-width:75%;">
+
+                            <div class="fw-semibold mb-1">
+                                Travel AI
+                            </div>
+
+                            <div>
+                                Xin chào! 👋
+                                Tôi là Travel AI của TravelAI.
+                                <br /><br />
+                                Bạn có thể cho tôi biết:
+
+                                <ul class="mb-0 mt-2">
+                                    <li>Bạn muốn đi đâu?</li>
+                                    <li>Đi trong bao nhiêu ngày?</li>
+                                    <li>Có bao nhiêu người?</li>
+                                    <li>Ngân sách khoảng bao nhiêu?</li>
+                                </ul>
+
+                                Tôi sẽ giúp bạn tìm lựa chọn phù hợp.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INPUT -->
+                <div class="p-3 border-top bg-white">
+
+                    <form id="chatForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="input-group">
+
+                            <input type="text"
+                                   id="messageInput"
+                                   class="form-control form-control-lg border-0 bg-light"
+                                   placeholder="Ví dụ: Tôi có 6 triệu, muốn đi Đà Nẵng 3 ngày 2 đêm..."
+                                   autocomplete="off" />
+
+                            <button type="submit"
+                                    class="btn btn-primary px-4">
+
+                                <i class="bi bi-send-fill me-1"></i>
+                                Gửi
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUGGESTIONS -->
+            <div class="mt-4">
+
+                <p class="fw-semibold mb-3">
+                    <i class="bi bi-lightbulb me-1"></i>
+                    Bạn có thể hỏi AI:
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    <button type="button"
+                            class="btn btn-outline-primary rounded-pill suggestion-btn">
+
+                        Gợi ý chuyến đi Đà Nẵng 3 ngày
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-outline-primary rounded-pill suggestion-btn">
+
+                        Tôi có 5 triệu nên đi đâu?
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-outline-primary rounded-pill suggestion-btn">
+
+                        Gợi ý khách sạn ở Đà Lạt
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-outline-primary rounded-pill suggestion-btn">
+
+                        Lập lịch trình Phú Quốc 4 ngày
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+    <script>
+        const chatForm = document.getElementById("chatForm");
+        const messageInput = document.getElementById("messageInput");
+        const chatMessages = document.getElementById("chatMessages");
+
+        function addMessage(message, isUser) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "d-flex gap-3 mb-4";
+
+            if (isUser) {
+                wrapper.classList.add("justify-content-end");
+            }
+
+            const avatar = document.createElement("div");
+
+            avatar.className = isUser
+                ? "bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                : "bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0";
+
+            avatar.style.width = "40px";
+            avatar.style.height = "40px";
+
+            avatar.innerHTML = isUser
+                ? '<i class="bi bi-person"></i>'
+                : '<i class="bi bi-stars"></i>';
+
+            const messageBox = document.createElement("div");
+
+            messageBox.className = isUser
+                ? "bg-primary text-white shadow-sm rounded-4 p-3"
+                : "bg-white shadow-sm rounded-4 p-3";
+
+            messageBox.style.maxWidth = "75%";
+
+            const title = document.createElement("div");
+            title.className = "fw-semibold mb-1";
+            title.textContent = isUser ? "Bạn" : "Travel AI";
+
+            const content = document.createElement("div");
+
+            // Không dùng innerHTML cho nội dung người dùng nhập
+            content.textContent = message;
+
+            messageBox.appendChild(title);
+            messageBox.appendChild(content);
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(messageBox);
+
+            chatMessages.appendChild(wrapper);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatForm.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const message = messageInput.value.trim();
+
+            if (!message) {
+                return;
+            }
+
+            // Hiển thị câu hỏi của người dùng
+            addMessage(message, true);
+
+            // Xóa ô nhập
+            messageInput.value = "";
+
+            // Khóa nút trong lúc gửi
+            const sendButton = chatForm.querySelector("button[type='submit']");
+            sendButton.disabled = true;
+
+            const originalButtonText = sendButton.innerHTML;
+
+            sendButton.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-1"></span>Đang gửi...';
+
+            try {
+                const token = document.querySelector(
+                    'input[name="__RequestVerificationToken"]'
+                ).value;
+
+                const formData = new URLSearchParams();
+
+                formData.append("message", message);
+                formData.append("__RequestVerificationToken", token);
+
+                const response = await fetch("/AI/Chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.message || "Không thể kết nối với Travel AI."
+                    );
+                }
+
+                // Hiển thị câu trả lời thật từ AIController
+                addMessage(data.message, false);
+            }
+            catch (error) {
+                console.error(error);
+
+                addMessage(
+                    "Xin lỗi, hiện tại tôi không thể xử lý yêu cầu. Vui lòng thử lại.",
+                    false
+                );
+            }
+            finally {
+                sendButton.disabled = false;
+                sendButton.innerHTML = originalButtonText;
+                messageInput.focus();
+            }
+        });
+
+        document.querySelectorAll(".suggestion-btn")
+            .forEach(function(button) {
+                button.addEventListener("click", function() {
+                    messageInput.value = button.innerText.trim();
+                    messageInput.focus();
+                });
+            });
+    </script>
+}
