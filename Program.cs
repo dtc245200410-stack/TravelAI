@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using TravelAI.Services;
 using Microsoft.EntityFrameworkCore;
 using TravelAI.Data;
 
@@ -26,6 +27,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // ================= MVC =================
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<OpenAIService>();
+
+builder.Services.AddScoped<OllamaService>();
 
 var app = builder.Build();
 

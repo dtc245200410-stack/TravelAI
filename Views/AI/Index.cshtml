@@ -1,188 +1,584 @@
-﻿@{
-    ViewData["Title"] = "Travel AI";
+﻿@model TravelAI.ViewModels.AIChatViewModel
+
+@{
+    ViewData["Title"] = "Trợ lý du lịch AI";
 }
 
-<div class="container py-5">
+<style>
+    /* ==============================
+           TRANG AI
+           ============================== */
 
-    <div class="row justify-content-center">
+    .ai-page {
+        background: #f5f7fb;
+        min-height: calc(100vh - 70px);
+        padding: 25px 0;
+    }
 
-        <div class="col-lg-9">
+    .ai-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
 
-            <!-- HEADER -->
-            <div class="text-center mb-4">
+    .ai-layout {
+        display: flex;
+        min-height: 700px;
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
 
-                <div class="mb-3">
-                    <div class="d-inline-flex align-items-center justify-content-center
-                        rounded-circle bg-primary text-white"
-                         style="width:70px;height:70px;">
 
-                        <i class="bi bi-stars fs-2"></i>
+    /* ==============================
+           SIDEBAR
+           ============================== */
 
-                    </div>
+    .ai-sidebar {
+        width: 270px;
+        flex-shrink: 0;
+        background: #f8fafc;
+        border-right: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 19px;
+        color: #111827;
+    }
+
+    .new-chat-btn {
+        display: block;
+        margin: 15px;
+        padding: 12px 15px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        background: white;
+        color: #1f2937;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+        cursor: pointer;
+    }
+
+        .new-chat-btn:hover {
+            background: #eef5ff;
+            border-color: #0d6efd;
+            color: #0d6efd;
+        }
+
+    .history-title {
+        padding: 5px 15px 10px;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .conversation-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 10px 15px;
+    }
+
+    .conversation-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 12px;
+        margin-bottom: 4px;
+        border-radius: 9px;
+        color: #374151;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .conversation-item:hover {
+            background: #eaf2ff;
+            color: #0d6efd;
+        }
+
+        .conversation-item.active {
+            background: #dbeafe;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+
+    .conversation-icon {
+        flex-shrink: 0;
+    }
+
+    .conversation-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .empty-history {
+        padding: 15px;
+        color: #9ca3af;
+        font-size: 14px;
+    }
+
+
+    /* ==============================
+           KHU VỰC CHAT
+           ============================== */
+
+    .ai-main {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ai-header {
+        background: linear-gradient(135deg, #0d6efd, #2563eb);
+        color: white;
+        padding: 22px 25px;
+    }
+
+        .ai-header h2 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 23px;
+        }
+
+        .ai-header p {
+            margin: 7px 0 0;
+            opacity: 0.9;
+        }
+
+
+    /* ==============================
+           CHAT BOX
+           ============================== */
+
+    .chat-box {
+        flex: 1;
+        background: white;
+        min-height: 500px;
+        max-height: 600px;
+        overflow-y: auto;
+        padding: 25px;
+    }
+
+    .message {
+        display: flex;
+        margin-bottom: 18px;
+    }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.ai {
+            justify-content: flex-start;
+        }
+
+    .message-content {
+        max-width: 75%;
+        padding: 13px 17px;
+        border-radius: 16px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .message.user .message-content {
+        background: #0d6efd;
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .message.ai .message-content {
+        background: #f1f5f9;
+        color: #1f2937;
+        border-bottom-left-radius: 4px;
+    }
+
+
+    /* ==============================
+           LINK CỦA AI
+           ============================== */
+
+    .ai-link {
+        display: inline-block;
+        margin: 4px 0;
+        padding: 5px 10px;
+        background: #0d6efd;
+        color: white !important;
+        border-radius: 7px;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .ai-link:hover {
+            background: #0b5ed7;
+            color: white !important;
+            text-decoration: none;
+        }
+
+
+    /* ==============================
+           WELCOME
+           ============================== */
+
+    .welcome-message {
+        text-align: center;
+        padding: 70px 20px;
+    }
+
+    .welcome-icon {
+        font-size: 55px;
+    }
+
+    .welcome-message h4 {
+        margin-top: 15px;
+    }
+
+    .suggestion {
+        margin-top: 25px;
+    }
+
+        .suggestion button {
+            margin: 4px;
+            border-radius: 20px;
+        }
+
+
+    /* ==============================
+           AI ĐANG SUY NGHĨ
+           ============================== */
+
+    .typing {
+        display: none;
+        color: #6b7280;
+        font-style: italic;
+        margin-bottom: 15px;
+    }
+
+
+    /* ==============================
+           Ô NHẬP
+           ============================== */
+
+    .chat-input {
+        background: white;
+        border-top: 1px solid #e5e7eb;
+        padding: 18px;
+    }
+
+        .chat-input textarea {
+            resize: none;
+        }
+
+
+    /* ==============================
+           MOBILE
+           ============================== */
+
+    @@media (max-width: 768px) {
+
+        .ai-page {
+            padding: 10px 0;
+        }
+
+        .ai-layout {
+            flex-direction: column;
+            border-radius: 12px;
+        }
+
+        .ai-sidebar {
+            width: 100%;
+            max-height: 250px;
+        }
+
+        .conversation-list {
+            max-height: 120px;
+        }
+
+        .chat-box {
+            min-height: 450px;
+        }
+
+        .message-content {
+            max-width: 90%;
+        }
+    }
+</style>
+
+
+<div class="ai-page">
+
+    <div class="container-fluid ai-container">
+
+        <div class="ai-layout">
+
+            <!-- =====================================
+                 SIDEBAR
+                 ===================================== -->
+
+            <aside class="ai-sidebar">
+
+                <div class="sidebar-header">
+                    <strong>
+                        🤖 Travel AI
+                    </strong>
                 </div>
 
-                <h1 class="fw-bold">
-                    Travel AI
-                </h1>
 
-                <p class="text-muted mb-0">
-                    Trợ lý du lịch thông minh của TravelAI
-                </p>
+                <!-- ĐOẠN CHAT MỚI -->
 
-            </div>
+                <a href="#"
+                   id="newChatButton"
+                   class="new-chat-btn">
+
+                    ＋ Đoạn chat mới
+
+                </a>
 
 
-            <!-- CHAT BOX -->
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="history-title">
 
-                <!-- CHAT HEADER -->
-                <div class="p-4 bg-primary text-white">
-
-                    <div class="d-flex align-items-center gap-3">
-
-                        <div class="bg-white text-primary rounded-circle
-                            d-flex align-items-center justify-content-center"
-                             style="width:45px;height:45px;">
-
-                            <i class="bi bi-stars fs-5"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h5 class="mb-1 fw-bold">
-                                Travel AI Assistant
-                            </h5>
-
-                            <small class="opacity-75">
-                                Hãy cho tôi biết bạn muốn đi đâu
-                            </small>
-
-                        </div>
-
-                    </div>
+                    Lịch sử trò chuyện
 
                 </div>
 
 
-                <!-- MESSAGES -->
-                <div id="chatMessages"
-                     class="p-4"
-                     style="height:450px; overflow-y:auto; background:#f8f9fa;">
+                <!-- DANH SÁCH LỊCH SỬ -->
 
-                    <!-- AI MESSAGE -->
-                    <div class="d-flex gap-3 mb-4">
+                <div class="conversation-list">
 
-                        <div class="bg-primary text-white rounded-circle
-                            d-flex align-items-center justify-content-center flex-shrink-0"
-                             style="width:40px;height:40px;">
+                    @if (Model.Conversations != null &&
+                         Model.Conversations.Any())
+                    {
+                        foreach (var conversation in Model.Conversations)
+                        {
+                            var activeClass =
+                                Model.CurrentConversation?.Id == conversation.Id
+                                    ? "active"
+                                    : "";
 
-                            <i class="bi bi-stars"></i>
+                            <a href="@Url.Action(
+                                                               "Index",
+                                                               "AI",
+                                                               new { conversationId = conversation.Id }
+                                                           )"
+                               class="conversation-item @activeClass">
+
+                                <span class="conversation-icon">
+                                    💬
+                                </span>
+
+                                <span class="conversation-title">
+
+                                    @(string.IsNullOrWhiteSpace(conversation.Title)
+                                        ? "Cuộc trò chuyện"
+                                        : conversation.Title)
+
+                                </span>
+
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-history">
+
+                            Chưa có cuộc trò chuyện nào.
 
                         </div>
+                    }
 
-                        <div class="bg-white shadow-sm rounded-4 p-3"
-                             style="max-width:75%;">
+                </div>
 
-                            <div class="fw-semibold mb-1">
-                                Travel AI
+            </aside>
+
+
+            <!-- =====================================
+                 KHU VỰC CHAT
+                 ===================================== -->
+
+            <main class="ai-main">
+
+
+                <!-- HEADER -->
+
+                <div class="ai-header">
+
+                    <h2>
+                        🤖 Trợ lý du lịch AI
+                    </h2>
+
+                    <p>
+                        Hãy hỏi tôi về tour, khách sạn,
+                        điểm đến và lịch trình du lịch.
+                    </p>
+
+                </div>
+
+
+                <!-- =================================
+                     KHUNG TIN NHẮN
+                     ================================= -->
+
+                <div id="chatBox"
+                     class="chat-box">
+
+
+                    @if (Model.CurrentConversation?.Messages != null &&
+                         Model.CurrentConversation.Messages.Any())
+                    {
+                        foreach (var message in Model.CurrentConversation.Messages
+                            .OrderBy(x => x.CreatedAt))
+                        {
+                            if (message.Role == "User")
+                            {
+                                <div class="message user">
+
+                                    <div class="message-content"
+                                         data-role="User">
+
+                                        @message.Content
+
+                                    </div>
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="message ai">
+
+                                    <div class="message-content"
+                                         data-role="AI">
+
+                                        @message.Content
+
+                                    </div>
+
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <!-- WELCOME -->
+
+                        <div id="welcomeMessage"
+                             class="welcome-message">
+
+                            <div class="welcome-icon">
+                                🤖
                             </div>
 
-                            <div>
-                                Xin chào! 👋
-                                Tôi là Travel AI của TravelAI.
-                                <br /><br />
-                                Bạn có thể cho tôi biết:
+                            <h4>
+                                Xin chào! Tôi là trợ lý du lịch AI.
+                            </h4>
 
-                                <ul class="mb-0 mt-2">
-                                    <li>Bạn muốn đi đâu?</li>
-                                    <li>Đi trong bao nhiêu ngày?</li>
-                                    <li>Có bao nhiêu người?</li>
-                                    <li>Ngân sách khoảng bao nhiêu?</li>
-                                </ul>
+                            <p class="text-muted">
 
-                                Tôi sẽ giúp bạn tìm lựa chọn phù hợp.
+                                Tôi có thể giúp bạn tìm tour,
+                                khách sạn và lên kế hoạch du lịch.
+
+                            </p>
+
+
+                            <div class="suggestion">
+
+
+                                <button type="button"
+                                        class="btn btn-outline-primary suggestion-btn"
+                                        data-question="Tôi muốn đi Đà Nẵng, hãy gợi ý tour phù hợp">
+
+                                    🏖️ Tour Đà Nẵng
+
+                                </button>
+
+
+                                <button type="button"
+                                        class="btn btn-outline-primary suggestion-btn"
+                                        data-question="Gợi ý khách sạn tốt ở Đà Nẵng">
+
+                                    🏨 Khách sạn Đà Nẵng
+
+                                </button>
+
+
+                                <button type="button"
+                                        class="btn btn-outline-primary suggestion-btn"
+                                        data-question="Tôi muốn đi Phú Quốc, hãy tư vấn cho tôi">
+
+                                    🌴 Du lịch Phú Quốc
+
+                                </button>
+
+
+                                <button type="button"
+                                        class="btn btn-outline-primary suggestion-btn"
+                                        data-question="Tôi có 5 triệu đồng, hãy tư vấn chuyến du lịch phù hợp">
+
+                                    💰 Du lịch dưới 5 triệu
+
+                                </button>
+
+
                             </div>
 
                         </div>
+                    }
+
+
+                    <!-- AI ĐANG SUY NGHĨ -->
+
+                    <div id="typing"
+                         class="typing">
+
+                        🤖 AI đang suy nghĩ...
 
                     </div>
 
                 </div>
 
 
-                <!-- INPUT -->
-                <div class="p-3 border-top bg-white">
+                <!-- =================================
+                     Ô NHẬP
+                     ================================= -->
 
-                    <form id="chatForm">
-                        @Html.AntiForgeryToken()
+                <div class="chat-input">
 
-                        <div class="input-group">
+                    <div class="input-group">
 
-                            <input type="text"
-                                   id="messageInput"
-                                   class="form-control form-control-lg border-0 bg-light"
-                                   placeholder="Ví dụ: Tôi có 6 triệu, muốn đi Đà Nẵng 3 ngày 2 đêm..."
-                                   autocomplete="off" />
-
-                            <button type="submit"
-                                    class="btn btn-primary px-4">
-
-                                <i class="bi bi-send-fill me-1"></i>
-                                Gửi
-
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                </div>
-
-            </div>
+                        <textarea id="messageInput"
+                                  class="form-control"
+                                  rows="2"
+                                  placeholder="Ví dụ: Tôi muốn đi Đà Nẵng 3 ngày, ngân sách 5 triệu..."></textarea>
 
 
-            <!-- SUGGESTIONS -->
-            <div class="mt-4">
+                        <button id="sendButton"
+                                type="button"
+                                class="btn btn-primary px-4">
 
-                <p class="fw-semibold mb-3">
-                    <i class="bi bi-lightbulb me-1"></i>
-                    Bạn có thể hỏi AI:
-                </p>
+                            <i class="bi bi-send"></i>
 
-                <div class="d-flex flex-wrap gap-2">
+                            Gửi
 
-                    <button type="button"
-                            class="btn btn-outline-primary rounded-pill suggestion-btn">
+                        </button>
 
-                        Gợi ý chuyến đi Đà Nẵng 3 ngày
+                    </div>
 
-                    </button>
 
-                    <button type="button"
-                            class="btn btn-outline-primary rounded-pill suggestion-btn">
+                    <div class="text-muted small mt-2">
 
-                        Tôi có 5 triệu nên đi đâu?
+                        💡 Bạn có thể hỏi tiếp dựa trên câu trả lời trước đó.
 
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-outline-primary rounded-pill suggestion-btn">
-
-                        Gợi ý khách sạn ở Đà Lạt
-
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-outline-primary rounded-pill suggestion-btn">
-
-                        Lập lịch trình Phú Quốc 4 ngày
-
-                    </button>
+                    </div>
 
                 </div>
 
-            </div>
+            </main>
 
         </div>
 
@@ -191,135 +587,633 @@
 </div>
 
 
-@section Scripts {
-    <script>
-        const chatForm = document.getElementById("chatForm");
-        const messageInput = document.getElementById("messageInput");
-        const chatMessages = document.getElementById("chatMessages");
+<script>
 
-        function addMessage(message, isUser) {
-            const wrapper = document.createElement("div");
-            wrapper.className = "d-flex gap-3 mb-4";
+    /* ==========================================
+       ELEMENT
+       ========================================== */
 
-            if (isUser) {
-                wrapper.classList.add("justify-content-end");
-            }
+    const messageInput =
+        document.getElementById("messageInput");
 
-            const avatar = document.createElement("div");
+    const sendButton =
+        document.getElementById("sendButton");
 
-            avatar.className = isUser
-                ? "bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                : "bg-primary text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0";
+    const chatBox =
+        document.getElementById("chatBox");
 
-            avatar.style.width = "40px";
-            avatar.style.height = "40px";
+    const typing =
+        document.getElementById("typing");
 
-            avatar.innerHTML = isUser
-                ? '<i class="bi bi-person"></i>'
-                : '<i class="bi bi-stars"></i>';
+    const newChatButton =
+        document.getElementById("newChatButton");
 
-            const messageBox = document.createElement("div");
 
-            messageBox.className = isUser
-                ? "bg-primary text-white shadow-sm rounded-4 p-3"
-                : "bg-white shadow-sm rounded-4 p-3";
+    /* ==========================================
+       CONVERSATION
+       ========================================== */
 
-            messageBox.style.maxWidth = "75%";
+    let conversationId =
+        @(Model.CurrentConversation?.Id ?? 0);
 
-            const title = document.createElement("div");
-            title.className = "fw-semibold mb-1";
-            title.textContent = isUser ? "Bạn" : "Travel AI";
 
-            const content = document.createElement("div");
+    /* ==========================================
+       CUỘN XUỐNG CUỐI
+       ========================================== */
 
-            // Không dùng innerHTML cho nội dung người dùng nhập
-            content.textContent = message;
+    function scrollToBottom() {
 
-            messageBox.appendChild(title);
-            messageBox.appendChild(content);
-
-            wrapper.appendChild(avatar);
-            wrapper.appendChild(messageBox);
-
-            chatMessages.appendChild(wrapper);
-
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (!chatBox) {
+            return;
         }
 
-        chatForm.addEventListener("submit", async function(event) {
-            event.preventDefault();
+        chatBox.scrollTop =
+            chatBox.scrollHeight;
+    }
 
-            const message = messageInput.value.trim();
 
-            if (!message) {
-                return;
+    /* ==========================================
+       HIỂN THỊ LINK CỦA AI
+       ========================================== */
+
+    function renderAIContent(element, content) {
+
+        element.innerHTML = "";
+
+
+        /*
+         * Hỗ trợ:
+         *
+         * 1. Markdown
+         *
+         * [Tên tour](https://localhost:7090/Tour/Details/1)
+         *
+         *
+         * 2. URL trực tiếp
+         *
+         * https://localhost:7090/Tour/Details/1
+         */
+
+
+        const linkRegex =
+            /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/g;
+
+
+        let lastIndex = 0;
+
+        let match;
+
+
+        while (
+            (match = linkRegex.exec(content)) !== null
+        ) {
+
+
+            /*
+             * Văn bản trước link
+             */
+
+            element.appendChild(
+                document.createTextNode(
+                    content.substring(
+                        lastIndex,
+                        match.index
+                    )
+                )
+            );
+
+
+            /*
+             * Tạo link
+             */
+
+            const link =
+                document.createElement("a");
+
+
+            /*
+             * Markdown:
+             *
+             * match[1] = tên
+             * match[2] = URL
+             *
+             *
+             * URL trực tiếp:
+             *
+             * match[3] = URL
+             */
+
+            const linkText =
+                match[1] || match[3];
+
+
+            const linkUrl =
+                match[2] || match[3];
+
+
+            link.href =
+                linkUrl;
+
+
+            link.textContent =
+                linkText;
+
+
+            link.target =
+                "_self";
+
+
+            link.className =
+                "ai-link";
+
+
+            element.appendChild(
+                link
+            );
+
+
+            lastIndex =
+                linkRegex.lastIndex;
+        }
+
+
+        /*
+         * Văn bản còn lại
+         */
+
+        element.appendChild(
+            document.createTextNode(
+                content.substring(
+                    lastIndex
+                )
+            )
+        );
+    }
+
+
+    /* ==========================================
+       THÊM MESSAGE
+       ========================================== */
+
+    function addMessage(content, role) {
+
+        const messageDiv =
+            document.createElement("div");
+
+
+        messageDiv.className =
+            role === "AI"
+                ? "message ai"
+                : "message user";
+
+
+        const messageContent =
+            document.createElement("div");
+
+
+        messageContent.className =
+            "message-content";
+
+
+        if (role === "AI") {
+
+            renderAIContent(
+                messageContent,
+                content
+            );
+
+        }
+        else {
+
+            messageContent.textContent =
+                content;
+
+        }
+
+
+        messageDiv.appendChild(
+            messageContent
+        );
+
+
+        chatBox.appendChild(
+            messageDiv
+        );
+
+
+        scrollToBottom();
+    }
+
+
+    /* ==========================================
+       XỬ LÝ LINK CỦA CHAT CŨ
+       ========================================== */
+
+    function renderExistingMessages() {
+
+        const oldMessages =
+            document.querySelectorAll(
+                ".message-content[data-role='AI']"
+            );
+
+
+        oldMessages.forEach(
+            element => {
+
+                const content =
+                    element.textContent;
+
+
+                renderAIContent(
+                    element,
+                    content
+                );
+
+            }
+        );
+    }
+
+
+    /* ==========================================
+       CHAT MỚI
+       ========================================== */
+
+    function showNewChat() {
+
+        /*
+         * Conversation = 0
+         *
+         * Controller sẽ tạo conversation
+         * mới khi user gửi tin nhắn đầu tiên.
+         */
+
+        conversationId = 0;
+
+
+        /*
+         * Xóa chat hiện tại
+         */
+
+        chatBox.innerHTML = "";
+
+
+        /*
+         * Tạo welcome
+         */
+
+        const welcome =
+            document.createElement("div");
+
+
+        welcome.id =
+            "welcomeMessage";
+
+
+        welcome.className =
+            "welcome-message";
+
+
+        welcome.innerHTML = `
+
+            <div class="welcome-icon">
+                🤖
+            </div>
+
+            <h4>
+                Xin chào! Tôi là trợ lý du lịch AI.
+            </h4>
+
+            <p class="text-muted">
+                Tôi có thể giúp bạn tìm tour,
+                khách sạn và lên kế hoạch du lịch.
+            </p>
+
+            <div class="suggestion">
+
+                <button type="button"
+                        class="btn btn-outline-primary suggestion-btn"
+                        data-question="Tôi muốn đi Đà Nẵng, hãy gợi ý tour phù hợp">
+
+                    🏖️ Tour Đà Nẵng
+
+                </button>
+
+                <button type="button"
+                        class="btn btn-outline-primary suggestion-btn"
+                        data-question="Gợi ý khách sạn tốt ở Đà Nẵng">
+
+                    🏨 Khách sạn Đà Nẵng
+
+                </button>
+
+                <button type="button"
+                        class="btn btn-outline-primary suggestion-btn"
+                        data-question="Tôi muốn đi Phú Quốc, hãy tư vấn cho tôi">
+
+                    🌴 Du lịch Phú Quốc
+
+                </button>
+
+                <button type="button"
+                        class="btn btn-outline-primary suggestion-btn"
+                        data-question="Tôi có 5 triệu đồng, hãy tư vấn chuyến du lịch phù hợp">
+
+                    💰 Du lịch dưới 5 triệu
+
+                </button>
+
+            </div>
+        `;
+
+
+        chatBox.appendChild(
+            welcome
+        );
+
+
+        /*
+         * Gắn lại sự kiện
+         */
+
+        attachSuggestionEvents();
+
+
+        /*
+         * Bỏ active của lịch sử
+         */
+
+        document
+            .querySelectorAll(
+                ".conversation-item"
+            )
+            .forEach(
+                item => {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+        messageInput.focus();
+
+        scrollToBottom();
+    }
+
+
+    /* ==========================================
+       GỬI MESSAGE
+       ========================================== */
+
+    async function sendMessage() {
+
+        const message =
+            messageInput.value.trim();
+
+
+        if (!message) {
+            return;
+        }
+
+
+        /*
+         * Xóa welcome
+         */
+
+        const welcome =
+            document.getElementById(
+                "welcomeMessage"
+            );
+
+
+        if (welcome) {
+
+            welcome.remove();
+
+        }
+
+
+        /*
+         * Hiển thị câu hỏi User
+         */
+
+        addMessage(
+            message,
+            "User"
+        );
+
+
+        /*
+         * Xóa ô nhập
+         */
+
+        messageInput.value = "";
+
+
+        /*
+         * Disable gửi
+         */
+
+        sendButton.disabled =
+            true;
+
+
+        typing.style.display =
+            "block";
+
+
+        scrollToBottom();
+
+
+        try {
+
+            const response =
+                await fetch(
+                    '@Url.Action("Chat", "AI")',
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/x-www-form-urlencoded"
+
+                        },
+
+                        body:
+                            `conversationId=${conversationId}&message=${encodeURIComponent(message)}`
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Không thể kết nối tới AI."
+                );
+
             }
 
-            // Hiển thị câu hỏi của người dùng
-            addMessage(message, true);
 
-            // Xóa ô nhập
-            messageInput.value = "";
+            const data =
+                await response.json();
 
-            // Khóa nút trong lúc gửi
-            const sendButton = chatForm.querySelector("button[type='submit']");
-            sendButton.disabled = true;
 
-            const originalButtonText = sendButton.innerHTML;
+            if (data.success) {
 
-            sendButton.innerHTML =
-                '<span class="spinner-border spinner-border-sm me-1"></span>Đang gửi...';
 
-            try {
-                const token = document.querySelector(
-                    'input[name="__RequestVerificationToken"]'
-                ).value;
+                /*
+                 * Lưu conversation ID
+                 */
 
-                const formData = new URLSearchParams();
+                if (data.conversationId) {
 
-                formData.append("message", message);
-                formData.append("__RequestVerificationToken", token);
+                    conversationId =
+                        data.conversationId;
 
-                const response = await fetch("/AI/Chat", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-                    },
-                    body: formData.toString()
-                });
-
-                const data = await response.json();
-
-                if (!response.ok || !data.success) {
-                    throw new Error(
-                        data.message || "Không thể kết nối với Travel AI."
-                    );
                 }
 
-                // Hiển thị câu trả lời thật từ AIController
-                addMessage(data.message, false);
-            }
-            catch (error) {
-                console.error(error);
+
+                /*
+                 * Hiển thị câu trả lời AI
+                 */
 
                 addMessage(
-                    "Xin lỗi, hiện tại tôi không thể xử lý yêu cầu. Vui lòng thử lại.",
-                    false
+                    data.message,
+                    "AI"
                 );
-            }
-            finally {
-                sendButton.disabled = false;
-                sendButton.innerHTML = originalButtonText;
-                messageInput.focus();
-            }
-        });
 
-        document.querySelectorAll(".suggestion-btn")
-            .forEach(function(button) {
-                button.addEventListener("click", function() {
-                    messageInput.value = button.innerText.trim();
-                    messageInput.focus();
-                });
-            });
-    </script>
-}
+
+            }
+            else {
+
+                addMessage(
+                    data.message ||
+                    "Có lỗi xảy ra.",
+                    "AI"
+                );
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+
+            addMessage(
+                "Xin lỗi, hiện tại không thể kết nối với AI.",
+                "AI"
+            );
+
+        }
+        finally {
+
+            typing.style.display =
+                "none";
+
+
+            sendButton.disabled =
+                false;
+
+
+            messageInput.focus();
+
+
+            scrollToBottom();
+
+        }
+    }
+
+
+    /* ==========================================
+       NÚT GỢI Ý
+       ========================================== */
+
+    function attachSuggestionEvents() {
+
+        document
+            .querySelectorAll(
+                ".suggestion-btn"
+            )
+            .forEach(
+                button => {
+
+                    button.onclick =
+                        function () {
+
+                            messageInput.value =
+                                this.dataset.question;
+
+
+                            sendMessage();
+
+                        };
+
+                }
+            );
+    }
+
+
+    /* ==========================================
+       NÚT CHAT MỚI
+       ========================================== */
+
+    newChatButton.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            showNewChat();
+
+        }
+    );
+
+
+    /* ==========================================
+       NÚT GỬI
+       ========================================== */
+
+    sendButton.addEventListener(
+        "click",
+        sendMessage
+    );
+
+
+    /* ==========================================
+       ENTER ĐỂ GỬI
+       ========================================== */
+
+    messageInput.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================
+       KHỞI TẠO
+       ========================================== */
+
+    renderExistingMessages();
+
+    attachSuggestionEvents();
+
+    scrollToBottom();
+
+</script>
