@@ -1,0 +1,243 @@
+﻿@model TravelAI.Models.AIConversation
+
+@{
+    ViewData["Title"] = "Chi tiết hội thoại AI";
+
+    var userName = Model.User?.FullName ?? "Người dùng";
+    var userEmail = Model.User?.Email ?? "";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-chat-square-text text-primary me-2"></i>
+                Chi tiết hội thoại AI
+            </h2>
+
+            <p class="text-muted mb-0">
+                Xem nội dung trao đổi giữa người dùng và TravelAI
+            </p>
+        </div>
+
+        <a asp-controller="AIConversationAdmin"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Quay lại danh sách
+        </a>
+
+    </div>
+
+
+    <!-- THÔNG TIN NGƯỜI DÙNG -->
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-8">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="rounded-circle bg-primary-subtle text-primary
+                                    d-flex align-items-center justify-content-center me-3"
+                             style="width:56px;height:56px;">
+
+                            <i class="bi bi-person fs-4"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h5 class="fw-bold mb-1">
+                                @userName
+                            </h5>
+
+                            <div class="text-muted">
+                                @userEmail
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+                    <div class="small text-muted">
+                        Thời gian bắt đầu
+                    </div>
+
+                    <div class="fw-semibold">
+                        @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- THÔNG TIN HỘI THOẠI -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h5 class="fw-bold mb-1">
+                        @(string.IsNullOrWhiteSpace(Model.Title)
+                            ? "Cuộc trò chuyện"
+                            : Model.Title)
+                    </h5>
+
+                    <small class="text-muted">
+                        @Model.Messages.Count tin nhắn
+                    </small>
+
+                </div>
+
+                <span class="badge bg-primary-subtle text-primary">
+                    Hội thoại AI
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- KHUNG CHAT -->
+
+        <div id="conversationChat"
+             class="p-4"
+             style="
+                min-height:500px;
+                max-height:650px;
+                overflow-y:auto;
+                background:#f7f9fc;
+             ">
+
+            @if (Model.Messages == null ||
+                 !Model.Messages.Any())
+            {
+                <div class="text-center text-muted py-5">
+
+                    <i class="bi bi-chat-square-text fs-1 d-block mb-3"></i>
+
+                    Chưa có tin nhắn trong cuộc hội thoại.
+
+                </div>
+            }
+            else
+            {
+                foreach (var message in Model.Messages
+                    .OrderBy(x => x.CreatedAt))
+                {
+                    var isUser =
+                        message.Role.Equals(
+                            "User",
+                            StringComparison.OrdinalIgnoreCase);
+
+                    <div class="d-flex mb-4
+                                @(isUser
+                                    ? "justify-content-end"
+                                    : "justify-content-start")">
+
+                        <div style="max-width:75%;">
+
+                            <!-- TÊN -->
+                            <div class="small text-muted mb-1
+                                        @(isUser
+                                            ? "text-end"
+                                            : "text-start")">
+
+                                @if (isUser)
+                                {
+                                    <span>
+                                        @userName
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>
+                                        <i class="bi bi-robot me-1"></i>
+                                        TravelAI
+                                    </span>
+                                }
+
+                            </div>
+
+
+                            <!-- NỘI DUNG -->
+                            <div class="p-3 rounded-4
+                                        @(isUser
+                                            ? "bg-primary text-white"
+                                            : "bg-white border shadow-sm")"
+                                 style="
+                                    white-space:pre-wrap;
+                                    word-break:break-word;
+                                 ">
+
+                                @message.Content
+
+                            </div>
+
+
+                            <!-- THỜI GIAN -->
+                            <div class="small text-muted mt-1
+                                        @(isUser
+                                            ? "text-end"
+                                            : "text-start")">
+
+                                @message.CreatedAt.ToString(
+                                    "dd/MM/yyyy HH:mm")
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    #conversationChat {
+        scrollbar-width: thin;
+    }
+
+    #conversationChat::-webkit-scrollbar {
+        width: 7px;
+    }
+
+    #conversationChat::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    #conversationChat::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+</style>

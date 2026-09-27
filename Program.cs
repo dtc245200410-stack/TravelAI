@@ -32,6 +32,10 @@ builder.Services.AddScoped<OpenAIService>();
 
 builder.Services.AddScoped<OllamaService>();
 
+builder.Services.AddScoped<AdminAITools>();
+
+builder.Services.AddScoped<AdminAIAgentService>();
+
 var app = builder.Build();
 
 // ================= SEED DATA =================

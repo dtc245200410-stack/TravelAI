@@ -443,35 +443,47 @@
 
                     </div>
 
-
-                    <!-- ================= AI ================= -->
-
+                    <!-- QUẢN LÝ HỘI THOẠI AI -->
                     <div class="col-xl-3 col-lg-4 col-md-6">
-
-                        <a asp-controller="AdminAI"
+                        <a asp-controller="AIConversationAdmin"
                            asp-action="Index"
                            class="management-card">
 
                             <div class="management-icon bg-danger-subtle text-danger">
-
-                                <i class="bi bi-robot"></i>
-
+                                <i class="bi bi-chat-square-text"></i>
                             </div>
 
                             <div class="management-content">
+                                <h6>Quản lý hội thoại AI</h6>
+                                <p>Xem và theo dõi hội thoại AI của người dùng</p>
+                            </div>
 
-                                <h6>AI</h6>
+                            <i class="bi bi-chevron-right management-arrow"></i>
+                        </a>
+                    </div>
+
+
+                    <!-- HỖ TRỢ QUẢN LÝ HỆ THỐNG BẰNG AI -->
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <a asp-controller="AdminAI"
+                           asp-action="Index"
+                           class="management-card admin-ai-card">
+
+                            <div class="management-icon bg-primary-subtle text-primary">
+                                <i class="bi bi-robot"></i>
+                            </div>
+
+                            <div class="management-content">
+                                <h6>Trợ lý quản lý hệ thống AI</h6>
 
                                 <p>
-                                    Quản lý tính năng AI
+                                    Tra cứu dữ liệu, thống kê và hỗ trợ quản lý bằng AI
                                 </p>
-
                             </div>
 
                             <i class="bi bi-chevron-right management-arrow"></i>
 
                         </a>
-
                     </div>
 
 

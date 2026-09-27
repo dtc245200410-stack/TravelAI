@@ -1,0 +1,299 @@
+﻿@model IEnumerable<TravelAI.Models.AIConversation>
+
+@{
+    ViewData["Title"] = "Quản lý hội thoại AI";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-chat-square-text text-danger me-2"></i>
+                Quản lý hội thoại AI
+            </h2>
+
+            <p class="text-muted mb-0">
+                Theo dõi các cuộc hội thoại giữa người dùng và TravelAI
+            </p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Về Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- THỐNG KÊ -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="bg-primary-subtle text-primary rounded-3 p-3 me-3">
+                            <i class="bi bi-chat-dots fs-4"></i>
+                        </div>
+
+                        <div>
+                            <div class="text-muted small">
+                                Tổng hội thoại
+                            </div>
+
+                            <div class="fs-3 fw-bold">
+                                @Model.Count()
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="bg-success-subtle text-success rounded-3 p-3 me-3">
+                            <i class="bi bi-chat-left-text fs-4"></i>
+                        </div>
+
+                        <div>
+                            <div class="text-muted small">
+                                Tổng tin nhắn
+                            </div>
+
+                            <div class="fs-3 fw-bold">
+                                @Model.Sum(x => x.Messages?.Count ?? 0)
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="bg-warning-subtle text-warning rounded-3 p-3 me-3">
+                            <i class="bi bi-people fs-4"></i>
+                        </div>
+
+                        <div>
+                            <div class="text-muted small">
+                                Người dùng đã sử dụng AI
+                            </div>
+
+                            <div class="fs-3 fw-bold">
+                                @Model.Select(x => x.UserId).Distinct().Count()
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DANH SÁCH HỘI THOẠI -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        Danh sách hội thoại
+                    </h5>
+
+                    <small class="text-muted">
+                        Các cuộc trò chuyện của người dùng với AI
+                    </small>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th style="width: 70px;">
+                            #
+                        </th>
+
+                        <th>
+                            Người dùng
+                        </th>
+
+                        <th>
+                            Chủ đề
+                        </th>
+
+                        <th>
+                            Số tin nhắn
+                        </th>
+
+                        <th>
+                            Bắt đầu
+                        </th>
+
+                        <th>
+                            Cập nhật
+                        </th>
+
+                        <th style="width: 120px;">
+                            Thao tác
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @if (!Model.Any())
+                    {
+                        <tr>
+
+                            <td colspan="7"
+                                class="text-center py-5">
+
+                                <div class="text-muted">
+
+                                    <i class="bi bi-chat-square-text fs-1 d-block mb-3"></i>
+
+                                    Chưa có cuộc hội thoại AI nào.
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+                    else
+                    {
+                        var index = 1;
+
+                        foreach (var conversation in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @index
+                                </td>
+
+                                <td>
+
+                                    <div class="fw-semibold">
+                                        @(conversation.User?.FullName
+                                            ?? "Không xác định")
+                                    </div>
+
+                                    <small class="text-muted">
+                                        @(conversation.User?.Email
+                                            ?? "")
+                                    </small>
+
+                                </td>
+
+                                <td>
+
+                                    <span class="fw-semibold">
+                                        @(string.IsNullOrWhiteSpace(
+                                            conversation.Title)
+                                            ? "Cuộc trò chuyện"
+                                            : conversation.Title)
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    <span class="badge bg-primary-subtle text-primary">
+                                        @(conversation.Messages?.Count ?? 0)
+                                        tin nhắn
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    @conversation.CreatedAt.ToString(
+                                        "dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @conversation.UpdatedAt.ToString(
+                                        "dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+
+                                    <a asp-controller="AIConversationAdmin"
+                                       asp-action="Details"
+                                       asp-route-id="@conversation.Id"
+                                       class="btn btn-sm btn-outline-primary">
+
+                                        <i class="bi bi-eye me-1"></i>
+                                        Xem
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                            index++;
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

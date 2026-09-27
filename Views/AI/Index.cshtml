@@ -6,8 +6,8 @@
 
 <style>
     /* ==============================
-           TRANG AI
-           ============================== */
+       TRANG AI
+       ============================== */
 
     .ai-page {
         background: #f5f7fb;
@@ -31,8 +31,8 @@
 
 
     /* ==============================
-           SIDEBAR
-           ============================== */
+       SIDEBAR
+       ============================== */
 
     .ai-sidebar {
         width: 270px;
@@ -64,11 +64,11 @@
         cursor: pointer;
     }
 
-        .new-chat-btn:hover {
-            background: #eef5ff;
-            border-color: #0d6efd;
-            color: #0d6efd;
-        }
+    .new-chat-btn:hover {
+        background: #eef5ff;
+        border-color: #0d6efd;
+        color: #0d6efd;
+    }
 
     .history-title {
         padding: 5px 15px 10px;
@@ -95,16 +95,16 @@
         transition: 0.2s;
     }
 
-        .conversation-item:hover {
-            background: #eaf2ff;
-            color: #0d6efd;
-        }
+    .conversation-item:hover {
+        background: #eaf2ff;
+        color: #0d6efd;
+    }
 
-        .conversation-item.active {
-            background: #dbeafe;
-            color: #0d6efd;
-            font-weight: 600;
-        }
+    .conversation-item.active {
+        background: #dbeafe;
+        color: #0d6efd;
+        font-weight: 600;
+    }
 
     .conversation-icon {
         flex-shrink: 0;
@@ -124,8 +124,8 @@
 
 
     /* ==============================
-           KHU VỰC CHAT
-           ============================== */
+       KHU VỰC CHAT
+       ============================== */
 
     .ai-main {
         flex: 1;
@@ -140,21 +140,21 @@
         padding: 22px 25px;
     }
 
-        .ai-header h2 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 23px;
-        }
+    .ai-header h2 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 23px;
+    }
 
-        .ai-header p {
-            margin: 7px 0 0;
-            opacity: 0.9;
-        }
+    .ai-header p {
+        margin: 7px 0 0;
+        opacity: 0.9;
+    }
 
 
     /* ==============================
-           CHAT BOX
-           ============================== */
+       CHAT BOX
+       ============================== */
 
     .chat-box {
         flex: 1;
@@ -170,13 +170,13 @@
         margin-bottom: 18px;
     }
 
-        .message.user {
-            justify-content: flex-end;
-        }
+    .message.user {
+        justify-content: flex-end;
+    }
 
-        .message.ai {
-            justify-content: flex-start;
-        }
+    .message.ai {
+        justify-content: flex-start;
+    }
 
     .message-content {
         max-width: 75%;
@@ -201,8 +201,57 @@
 
 
     /* ==============================
-           LINK CỦA AI
-           ============================== */
+       AI ĐANG XỬ LÝ - 3 DẤU CHẤM
+       ============================== */
+
+    .ai-thinking-message {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 18px;
+    }
+
+    .ai-thinking-content {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 12px 16px;
+        background: #f1f5f9;
+        border-radius: 16px;
+        border-bottom-left-radius: 4px;
+    }
+
+    .thinking-dot {
+        width: 6px;
+        height: 6px;
+        background: #6b7280;
+        border-radius: 50%;
+        animation: aiThinking 1.2s infinite;
+    }
+
+    .thinking-dot:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+
+    .thinking-dot:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    @@keyframes aiThinking {
+        0%, 60%, 100% {
+            opacity: 0.3;
+            transform: translateY(0);
+        }
+
+        30% {
+            opacity: 1;
+            transform: translateY(-3px);
+        }
+    }
+
+
+    /* ==============================
+       LINK CỦA AI
+       ============================== */
 
     .ai-link {
         display: inline-block;
@@ -215,16 +264,16 @@
         transition: 0.2s;
     }
 
-        .ai-link:hover {
-            background: #0b5ed7;
-            color: white !important;
-            text-decoration: none;
-        }
+    .ai-link:hover {
+        background: #0b5ed7;
+        color: white !important;
+        text-decoration: none;
+    }
 
 
     /* ==============================
-           WELCOME
-           ============================== */
+       WELCOME
+       ============================== */
 
     .welcome-message {
         text-align: center;
@@ -243,27 +292,15 @@
         margin-top: 25px;
     }
 
-        .suggestion button {
-            margin: 4px;
-            border-radius: 20px;
-        }
-
-
-    /* ==============================
-           AI ĐANG SUY NGHĨ
-           ============================== */
-
-    .typing {
-        display: none;
-        color: #6b7280;
-        font-style: italic;
-        margin-bottom: 15px;
+    .suggestion button {
+        margin: 4px;
+        border-radius: 20px;
     }
 
 
     /* ==============================
-           Ô NHẬP
-           ============================== */
+       Ô NHẬP
+       ============================== */
 
     .chat-input {
         background: white;
@@ -271,14 +308,14 @@
         padding: 18px;
     }
 
-        .chat-input textarea {
-            resize: none;
-        }
+    .chat-input textarea {
+        resize: none;
+    }
 
 
     /* ==============================
-           MOBILE
-           ============================== */
+       MOBILE
+       ============================== */
 
     @@media (max-width: 768px) {
 
@@ -317,6 +354,7 @@
 
         <div class="ai-layout">
 
+
             <!-- =====================================
                  SIDEBAR
                  ===================================== -->
@@ -324,13 +362,13 @@
             <aside class="ai-sidebar">
 
                 <div class="sidebar-header">
+
                     <strong>
                         🤖 Travel AI
                     </strong>
+
                 </div>
 
-
-                <!-- ĐOẠN CHAT MỚI -->
 
                 <a href="#"
                    id="newChatButton"
@@ -348,8 +386,6 @@
                 </div>
 
 
-                <!-- DANH SÁCH LỊCH SỬ -->
-
                 <div class="conversation-list">
 
                     @if (Model.Conversations != null &&
@@ -363,10 +399,12 @@
                                     : "";
 
                             <a href="@Url.Action(
-                                                               "Index",
-                                                               "AI",
-                                                               new { conversationId = conversation.Id }
-                                                           )"
+                                "Index",
+                                "AI",
+                                new
+                                {
+                                    conversationId = conversation.Id
+                                })"
                                class="conversation-item @activeClass">
 
                                 <span class="conversation-icon">
@@ -375,7 +413,8 @@
 
                                 <span class="conversation-title">
 
-                                    @(string.IsNullOrWhiteSpace(conversation.Title)
+                                    @(string.IsNullOrWhiteSpace(
+                                        conversation.Title)
                                         ? "Cuộc trò chuyện"
                                         : conversation.Title)
 
@@ -428,11 +467,11 @@
                 <div id="chatBox"
                      class="chat-box">
 
-
                     @if (Model.CurrentConversation?.Messages != null &&
                          Model.CurrentConversation.Messages.Any())
                     {
-                        foreach (var message in Model.CurrentConversation.Messages
+                        foreach (var message in
+                            Model.CurrentConversation.Messages
                             .OrderBy(x => x.CreatedAt))
                         {
                             if (message.Role == "User")
@@ -465,8 +504,6 @@
                     }
                     else
                     {
-                        <!-- WELCOME -->
-
                         <div id="welcomeMessage"
                              class="welcome-message">
 
@@ -485,9 +522,7 @@
 
                             </p>
 
-
                             <div class="suggestion">
-
 
                                 <button type="button"
                                         class="btn btn-outline-primary suggestion-btn"
@@ -497,7 +532,6 @@
 
                                 </button>
 
-
                                 <button type="button"
                                         class="btn btn-outline-primary suggestion-btn"
                                         data-question="Gợi ý khách sạn tốt ở Đà Nẵng">
@@ -505,7 +539,6 @@
                                     🏨 Khách sạn Đà Nẵng
 
                                 </button>
-
 
                                 <button type="button"
                                         class="btn btn-outline-primary suggestion-btn"
@@ -515,7 +548,6 @@
 
                                 </button>
 
-
                                 <button type="button"
                                         class="btn btn-outline-primary suggestion-btn"
                                         data-question="Tôi có 5 triệu đồng, hãy tư vấn chuyến du lịch phù hợp">
@@ -524,21 +556,10 @@
 
                                 </button>
 
-
                             </div>
 
                         </div>
                     }
-
-
-                    <!-- AI ĐANG SUY NGHĨ -->
-
-                    <div id="typing"
-                         class="typing">
-
-                        🤖 AI đang suy nghĩ...
-
-                    </div>
 
                 </div>
 
@@ -556,7 +577,6 @@
                                   rows="2"
                                   placeholder="Ví dụ: Tôi muốn đi Đà Nẵng 3 ngày, ngân sách 5 triệu..."></textarea>
 
-
                         <button id="sendButton"
                                 type="button"
                                 class="btn btn-primary px-4">
@@ -568,7 +588,6 @@
                         </button>
 
                     </div>
-
 
                     <div class="text-muted small mt-2">
 
@@ -601,9 +620,6 @@
 
     const chatBox =
         document.getElementById("chatBox");
-
-    const typing =
-        document.getElementById("typing");
 
     const newChatButton =
         document.getElementById("newChatButton");
@@ -640,38 +656,16 @@
 
         element.innerHTML = "";
 
-
-        /*
-         * Hỗ trợ:
-         *
-         * 1. Markdown
-         *
-         * [Tên tour](https://localhost:7090/Tour/Details/1)
-         *
-         *
-         * 2. URL trực tiếp
-         *
-         * https://localhost:7090/Tour/Details/1
-         */
-
-
         const linkRegex =
             /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/g;
-
 
         let lastIndex = 0;
 
         let match;
 
-
         while (
             (match = linkRegex.exec(content)) !== null
         ) {
-
-
-            /*
-             * Văn bản trước link
-             */
 
             element.appendChild(
                 document.createTextNode(
@@ -682,70 +676,36 @@
                 )
             );
 
-
-            /*
-             * Tạo link
-             */
-
             const link =
                 document.createElement("a");
-
-
-            /*
-             * Markdown:
-             *
-             * match[1] = tên
-             * match[2] = URL
-             *
-             *
-             * URL trực tiếp:
-             *
-             * match[3] = URL
-             */
 
             const linkText =
                 match[1] || match[3];
 
-
             const linkUrl =
                 match[2] || match[3];
-
 
             link.href =
                 linkUrl;
 
-
             link.textContent =
                 linkText;
-
 
             link.target =
                 "_self";
 
-
             link.className =
                 "ai-link";
 
-
-            element.appendChild(
-                link
-            );
-
+            element.appendChild(link);
 
             lastIndex =
                 linkRegex.lastIndex;
         }
 
-
-        /*
-         * Văn bản còn lại
-         */
-
         element.appendChild(
             document.createTextNode(
-                content.substring(
-                    lastIndex
-                )
+                content.substring(lastIndex)
             )
         );
     }
@@ -760,20 +720,16 @@
         const messageDiv =
             document.createElement("div");
 
-
         messageDiv.className =
             role === "AI"
                 ? "message ai"
                 : "message user";
 
-
         const messageContent =
             document.createElement("div");
 
-
         messageContent.className =
             "message-content";
-
 
         if (role === "AI") {
 
@@ -790,23 +746,80 @@
 
         }
 
-
         messageDiv.appendChild(
             messageContent
         );
-
 
         chatBox.appendChild(
             messageDiv
         );
 
+        scrollToBottom();
+
+        return messageDiv;
+    }
+
+
+    /* ==========================================
+       TẠO 3 DẤU CHẤM ĐỘNG
+       ========================================== */
+
+    function createThinkingMessage() {
+
+        removeThinkingMessage();
+
+        const thinkingDiv =
+            document.createElement("div");
+
+        thinkingDiv.id =
+            "aiThinkingMessage";
+
+        thinkingDiv.className =
+            "message ai ai-thinking-message";
+
+        thinkingDiv.innerHTML = `
+
+            <div class="ai-thinking-content">
+
+                <span class="thinking-dot"></span>
+
+                <span class="thinking-dot"></span>
+
+                <span class="thinking-dot"></span>
+
+            </div>
+
+        `;
+
+        chatBox.appendChild(
+            thinkingDiv
+        );
 
         scrollToBottom();
     }
 
 
     /* ==========================================
-       XỬ LÝ LINK CỦA CHAT CŨ
+       XÓA 3 DẤU CHẤM
+       ========================================== */
+
+    function removeThinkingMessage() {
+
+        const thinkingMessage =
+            document.getElementById(
+                "aiThinkingMessage"
+            );
+
+        if (thinkingMessage) {
+
+            thinkingMessage.remove();
+
+        }
+    }
+
+
+    /* ==========================================
+       XỬ LÝ LINK CHAT CŨ
        ========================================== */
 
     function renderExistingMessages() {
@@ -816,13 +829,11 @@
                 ".message-content[data-role='AI']"
             );
 
-
         oldMessages.forEach(
             element => {
 
                 const content =
                     element.textContent;
-
 
                 renderAIContent(
                     element,
@@ -840,38 +851,20 @@
 
     function showNewChat() {
 
-        /*
-         * Conversation = 0
-         *
-         * Controller sẽ tạo conversation
-         * mới khi user gửi tin nhắn đầu tiên.
-         */
+        removeThinkingMessage();
 
         conversationId = 0;
 
-
-        /*
-         * Xóa chat hiện tại
-         */
-
         chatBox.innerHTML = "";
-
-
-        /*
-         * Tạo welcome
-         */
 
         const welcome =
             document.createElement("div");
 
-
         welcome.id =
             "welcomeMessage";
 
-
         welcome.className =
             "welcome-message";
-
 
         welcome.innerHTML = `
 
@@ -884,8 +877,10 @@
             </h4>
 
             <p class="text-muted">
+
                 Tôi có thể giúp bạn tìm tour,
                 khách sạn và lên kế hoạch du lịch.
+
             </p>
 
             <div class="suggestion">
@@ -923,29 +918,17 @@
                 </button>
 
             </div>
-        `;
 
+        `;
 
         chatBox.appendChild(
             welcome
         );
 
-
-        /*
-         * Gắn lại sự kiện
-         */
-
         attachSuggestionEvents();
 
-
-        /*
-         * Bỏ active của lịch sử
-         */
-
         document
-            .querySelectorAll(
-                ".conversation-item"
-            )
+            .querySelectorAll(".conversation-item")
             .forEach(
                 item => {
 
@@ -955,7 +938,6 @@
 
                 }
             );
-
 
         messageInput.focus();
 
@@ -972,32 +954,28 @@
         const message =
             messageInput.value.trim();
 
-
         if (!message) {
             return;
         }
 
+        if (sendButton.disabled) {
+            return;
+        }
 
-        /*
-         * Xóa welcome
-         */
+
+        /* Xóa welcome */
 
         const welcome =
             document.getElementById(
                 "welcomeMessage"
             );
 
-
         if (welcome) {
-
             welcome.remove();
-
         }
 
 
-        /*
-         * Hiển thị câu hỏi User
-         */
+        /* Hiển thị câu hỏi */
 
         addMessage(
             message,
@@ -1005,26 +983,19 @@
         );
 
 
-        /*
-         * Xóa ô nhập
-         */
+        /* Xóa ô nhập */
 
         messageInput.value = "";
 
 
-        /*
-         * Disable gửi
-         */
+        /* Khóa nút gửi */
 
-        sendButton.disabled =
-            true;
+        sendButton.disabled = true;
 
 
-        typing.style.display =
-            "block";
+        /* Hiển thị 3 dấu chấm */
 
-
-        scrollToBottom();
+        createThinkingMessage();
 
 
         try {
@@ -1036,10 +1007,8 @@
                         method: "POST",
 
                         headers: {
-
                             "Content-Type":
                                 "application/x-www-form-urlencoded"
-
                         },
 
                         body:
@@ -1061,12 +1030,12 @@
                 await response.json();
 
 
+            /* Xóa 3 dấu chấm */
+
+            removeThinkingMessage();
+
+
             if (data.success) {
-
-
-                /*
-                 * Lưu conversation ID
-                 */
 
                 if (data.conversationId) {
 
@@ -1075,16 +1044,10 @@
 
                 }
 
-
-                /*
-                 * Hiển thị câu trả lời AI
-                 */
-
                 addMessage(
                     data.message,
                     "AI"
                 );
-
 
             }
             else {
@@ -1102,6 +1065,7 @@
 
             console.error(error);
 
+            removeThinkingMessage();
 
             addMessage(
                 "Xin lỗi, hiện tại không thể kết nối với AI.",
@@ -1111,19 +1075,14 @@
         }
         finally {
 
-            typing.style.display =
-                "none";
-
+            removeThinkingMessage();
 
             sendButton.disabled =
                 false;
 
-
             messageInput.focus();
 
-
             scrollToBottom();
-
         }
     }
 
@@ -1135,9 +1094,7 @@
     function attachSuggestionEvents() {
 
         document
-            .querySelectorAll(
-                ".suggestion-btn"
-            )
+            .querySelectorAll(".suggestion-btn")
             .forEach(
                 button => {
 
@@ -1146,7 +1103,6 @@
 
                             messageInput.value =
                                 this.dataset.question;
-
 
                             sendMessage();
 
