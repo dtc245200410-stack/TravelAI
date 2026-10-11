@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace TravelAI.Models
 {
@@ -7,6 +7,9 @@ namespace TravelAI.Models
         public int Id { get; set; }
 
         public int UserId { get; set; }
+
+        [Required, StringLength(20)]
+        public string Scope { get; set; } = "Travel";
 
         public User? User { get; set; }
 

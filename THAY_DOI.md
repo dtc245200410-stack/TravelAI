@@ -1,0 +1,50 @@
+# Danh sách tệp mới/thay đổi
+
+- Mới: `BAO_CAO_KIEM_THU.md`
+- Mới: `Controllers/AIChatControllerBase.cs`
+- Thay đổi: `Controllers/AIController.cs`
+- Thay đổi: `Controllers/AIConversationAdminController.cs`
+- Thay đổi: `Controllers/AdminAIController.cs`
+- Thay đổi: `Controllers/HotelController.cs`
+- Thay đổi: `Controllers/TourController.cs`
+- Thay đổi: `Data/TravelDbContext.cs`
+- Mới: `Data/TravelDbContextFactory.cs`
+- Mới: `Migrations/20261011072735_AddAIConversationScope.Designer.cs`
+- Mới: `Migrations/20261011072735_AddAIConversationScope.cs`
+- Thay đổi: `Migrations/TravelDbContextModelSnapshot.cs`
+- Mới: `Models/AIChatContracts.cs`
+- Thay đổi: `Models/AIConversation.cs`
+- Mới: `Models/AIOptions.cs`
+- Thay đổi: `Models/ViewModels/AIChatViewModel.cs`
+- Thay đổi: `Program.cs`
+- Mới: `README_AI_LOCAL.md`
+- Mới: `SUA_LOI_CHAT403.md`
+- Mới: `SUA_LOI_SQLSERVER_AI.md`
+- Mới: `SUA_LOI_TIM_TOUR.md`
+- Mới: `SUA_LOI_XEP_HANG_TOUR.md`
+- Mới: `Scripts/Benchmark-Ollama.ps1`
+- Mới: `Scripts/Check-Project.ps1`
+- Mới: `Scripts/Diagnose-TourSearch.sql`
+- Mới: `Scripts/Setup-LocalAI.ps1`
+- Mới: `Scripts/Update-AI.sql`
+- Mới: `Services/AIRequestGate.cs`
+- Mới: `Services/AIText.cs`
+- Thay đổi: `Services/AdminAIAgentService.cs`
+- Thay đổi: `Services/AdminAITools.cs`
+- Thay đổi: `Services/OllamaService.cs`
+- Mới: `Services/TravelAIService.cs`
+- Mới: `THAY_DOI.md`
+- Mới: `Tests/AIIntegrationTests.cs`
+- Mới: `Tests/TourRankingTests.cs`
+- Mới: `Tests/TravelAI.Tests.csproj`
+- Thay đổi: `TravelAI.csproj`
+- Thay đổi: `TravelAI.slnx`
+- Thay đổi: `Views/AI/Index.cshtml`
+- Thay đổi: `Views/AdminAI/Index.cshtml`
+- Mới: `Views/Shared/_AIChat.cshtml`
+- Mới: `Views/Shared/_AIChatLayout.cshtml`
+- Thay đổi: `appsettings.json`
+- Mới: `wwwroot/css/ai-chat.css`
+- Mới: `wwwroot/js/ai-chat.js`
+
+Tài liệu nguyên văn controller/model/view và mã đầy đủ được bàn giao riêng.

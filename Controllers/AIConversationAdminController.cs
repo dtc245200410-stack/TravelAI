@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TravelAI.Data;
@@ -26,7 +26,7 @@ namespace TravelAI.Controllers
                     .Include(x => x.Messages)
                     .Where(x =>
                         x.User != null &&
-                        x.User.Role != "Admin")
+                        x.User.Role != "Admin" && x.Scope == "Travel")
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToListAsync();
 
@@ -42,7 +42,7 @@ namespace TravelAI.Controllers
                     .FirstOrDefaultAsync(x =>
                         x.Id == id &&
                         x.User != null &&
-                        x.User.Role != "Admin");
+                        x.User.Role != "Admin" && x.Scope == "Travel");
 
             if (conversation == null)
             {

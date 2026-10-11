@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TravelAI.Models;
 
 namespace TravelAI.Data
@@ -30,6 +30,11 @@ namespace TravelAI.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<AIConversation>()
+                .Property(x => x.Scope).HasDefaultValue("Travel");
+            modelBuilder.Entity<AIConversation>()
+                .HasIndex(x => new { x.UserId, x.Scope, x.UpdatedAt });
 
             // HotelBooking -> Hotel
             // Không tự động xóa booking khi xóa khách sạn.

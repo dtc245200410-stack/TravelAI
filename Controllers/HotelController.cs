@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -39,10 +39,10 @@ namespace TravelAI.Controllers
             {
                 hotels = hotels.Where(h =>
                     h.Name.Contains(searchString) ||
-                    h.Description.Contains(searchString) ||
+                    (h.Description != null && h.Description.Contains(searchString)) ||
                     h.Address.Contains(searchString) ||
-                    h.City.Contains(searchString) ||
-                    h.Province.Contains(searchString));
+                    (h.City != null && h.City.Contains(searchString)) ||
+                    (h.Province != null && h.Province.Contains(searchString)));
             }
 
             // ================= LỌC THÀNH PHỐ =================

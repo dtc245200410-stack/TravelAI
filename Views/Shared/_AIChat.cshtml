@@ -1,0 +1,49 @@
+@model TravelAI.ViewModels.AIChatViewModel
+@using System.Text.Json
+@{
+    var suggestions = Model.IsAdmin
+        ? new[] { "Báo cáo tổng quan hệ thống tháng này", "Tour nào được đặt nhiều trong 30 ngày gần đây?", "Kiểm tra đơn đã xác nhận nhưng chưa thanh toán", "Gợi ý cải thiện dữ liệu và dịch vụ trong hệ thống" }
+        : new[] { "Tìm tour Đà Nẵng 3 ngày dưới 5 triệu mỗi người", "Tư vấn tour cho 2 người, tổng ngân sách 10 triệu", "Có tour nào khởi hành trong thời gian tới?", "Tìm khách sạn ở Phú Quốc" };
+    var config = new {
+        baseUrl = Url.Action("Index", Model.ControllerName),
+        conversationId = Model.CurrentConversation?.Id,
+        isAdmin = Model.IsAdmin,
+        conversations = Model.Conversations.Select(c => new { c.Id, c.Title, c.UpdatedAt }),
+        messages = Model.CurrentConversation?.Messages.OrderBy(m => m.Id).Select(m => new { m.Id, m.Role, m.Content, m.CreatedAt }),
+        suggestions
+    };
+}
+<div class="chat-app" id="chatApp">
+    <aside class="sidebar" id="sidebar" aria-label="Lịch sử trò chuyện">
+        <a class="brand" href="@Url.Action("Index", "Home")"><span class="brand-mark">✈</span> Travel<span>AI</span></a>
+        <div class="workspace-label">@(Model.IsAdmin ? "KHÔNG GIAN QUẢN LÍ" : "TRỢ LÝ DU LỊCH")</div>
+        <button class="new-chat" id="newChat" type="button"><span>＋</span> Cuộc trò chuyện mới</button>
+        <label class="search"><span>⌕</span><input id="historySearch" placeholder="Tìm cuộc trò chuyện" aria-label="Tìm cuộc trò chuyện" /></label>
+        <div class="sidebar-heading">GẦN ĐÂY</div>
+        <nav id="conversationList" class="history-list" aria-label="Danh sách hội thoại"></nav>
+        <div class="sidebar-bottom">
+            <a href="@(Model.IsAdmin ? Url.Action("Index", "Admin") : Url.Action("Index", "Tour"))">@(Model.IsAdmin ? "↗ Mở trang quản trị" : "↗ Khám phá tour")</a>
+            <div class="profile"><span class="profile-avatar">@(Model.IsAdmin ? "QL" : "KH")</span><div><strong>@User.Identity?.Name</strong><small>@(Model.IsAdmin ? "Quản trị viên" : "Khách hàng")</small></div></div>
+        </div>
+    </aside>
+    <button id="sidebarOverlay" class="sidebar-overlay" type="button" aria-label="Đóng lịch sử"></button>
+    <main class="chat-main">
+        <header class="chat-header">
+            <div class="header-left"><button id="toggleSidebar" class="icon-button" type="button" aria-label="Bật/tắt lịch sử">☰</button><div><strong>@(Model.IsAdmin ? "TravelAI · Quản lí" : "TravelAI · Du lịch")</strong><small id="currentTitle">@(Model.CurrentConversation?.Title ?? "Cuộc trò chuyện mới")</small></div></div>
+            <div class="connection" id="connection" role="status"><span></span> Đang kiểm tra kết nối</div>
+        </header>
+        <div class="messages" id="messages" role="log" aria-label="Tin nhắn hội thoại" aria-live="polite"></div>
+        <button type="button" id="scrollBottom" class="scroll-bottom" aria-label="Cuộn xuống cuối" hidden>↓</button>
+        <footer class="composer-area">
+            <div id="feedback" class="feedback" role="status"></div>
+            <form id="chatForm" class="composer">
+                @Html.AntiForgeryToken()
+                <label class="sr-only" for="messageInput">Nhập câu hỏi</label>
+                <textarea id="messageInput" rows="1" maxlength="2000" placeholder="@(Model.IsAdmin ? "Hỏi về số liệu, báo cáo hoặc cách cải thiện hệ thống…" : "Bạn muốn khám phá nơi nào?")"></textarea>
+                <div class="composer-tools"><span>✦ @(Model.IsAdmin ? "Dữ liệu hệ thống" : "Tư vấn từ tour thực tế")</span><button id="sendButton" type="submit" aria-label="Gửi câu hỏi">↑</button><button id="stopButton" type="button" aria-label="Dừng trả lời" hidden>■</button></div>
+            </form>
+            <div class="composer-hint">Enter để gửi · Shift + Enter để xuống dòng. @(Model.IsAdmin ? "Số liệu có thời điểm và kỳ thống kê; gợi ý có link mở trang xử lý." : "Kiểm tra giá và chỗ trên trang tour trước khi đặt.")</div>
+        </footer>
+    </main>
+</div>
+<script id="chatConfig" type="application/json">@Html.Raw(JsonSerializer.Serialize(config, new JsonSerializerOptions(JsonSerializerDefaults.Web)))</script>

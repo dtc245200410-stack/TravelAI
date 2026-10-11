@@ -1,14 +1,12 @@
-﻿using TravelAI.Models;
+using TravelAI.Models;
 
-namespace TravelAI.ViewModels
+namespace TravelAI.ViewModels;
+
+public sealed class AIChatViewModel
 {
-    public class AIChatViewModel
-    {
-        // Cuộc trò chuyện đang được mở
-        public AIConversation? CurrentConversation { get; set; }
-
-        // Danh sách các cuộc trò chuyện của người dùng
-        public List<AIConversation> Conversations { get; set; }
-            = new List<AIConversation>();
-    }
+    public AIConversation? CurrentConversation { get; set; }
+    public List<AIConversation> Conversations { get; set; } = [];
+    public bool IsAdmin { get; set; }
+    public string ModelName { get; set; } = "";
+    public string ControllerName => IsAdmin ? "AdminAI" : "AI";
 }

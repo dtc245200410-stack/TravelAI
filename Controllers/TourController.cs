@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TravelAI.Data;
 
@@ -38,9 +38,9 @@ namespace TravelAI.Controllers
             {
                 tours = tours.Where(t =>
                     t.Name.Contains(searchString) ||
-                    t.Description.Contains(searchString) ||
-                    t.DepartureLocation.Contains(searchString) ||
-                    t.Destination.Name.Contains(searchString));
+                    (t.Description != null && t.Description.Contains(searchString)) ||
+                    (t.DepartureLocation != null && t.DepartureLocation.Contains(searchString)) ||
+                    (t.Destination != null && t.Destination.Name.Contains(searchString)));
             }
 
             // ==============================
@@ -50,7 +50,7 @@ namespace TravelAI.Controllers
             if (!string.IsNullOrWhiteSpace(destination))
             {
                 tours = tours.Where(t =>
-                    t.Destination.Name == destination);
+                    t.Destination != null && t.Destination.Name == destination);
             }
 
             // ==============================
